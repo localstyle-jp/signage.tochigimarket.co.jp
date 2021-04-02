@@ -25,6 +25,9 @@ class UsersController extends AppController
     {
         parent::initialize();
 
+        $this->SiteConfigs = $this->getTableLocator()->get('SiteConfigs');
+        $this->UserSites = $this->getTableLocator()->get('UserSites');
+
         $this->modelName = $this->name;
         $this->set('ModelName', $this->modelName);
     }
@@ -52,6 +55,21 @@ class UsersController extends AppController
         parent::_lists($cond, array('order' => array($this->modelName.'.id' =>  'ASC'),
                                             'limit' => null));
 
+        $query = $this->viewVars['query'];
+        if (!empty($query)) {
+            foreach ($query as $e) {
+                $user_sites = $this->UserSites->find()->where(['UserSites.user_id' => $e->id])->contain(['SiteConfigs' => function($q){return $q->select(['site_name']);}])->all();
+                $sites = [];
+                if (!empty($user_sites)) {
+                    foreach ($user_sites as $s) {
+                        $sites[] = $s->site_config->site_name;
+                    }
+                }
+                $e->sites = implode('、', $sites);
+            }
+        }
+        $datas = $query->toArray();
+        $this->set(compact('datas', 'query'));
     }
     private function _getQuery() {
         $query = [];
@@ -77,22 +95,60 @@ class UsersController extends AppController
         $validate = null;
 
         if ($this->request->is(['post', 'put'])) {
+            $site_config_ids = $this->request->getData('user_sites');
+            // unset($this->request->data['user_sites'];
 
             if ($id) {
                 if ($this->request->getData('_password')) {
                     $this->request->data['password'] = $this->request->getData('_password');
+                    $this->request->data['temp_password'] = '';
                     $validate = 'modifyIsPass';
                 } else {
                     $validate = 'modify';
                 }
             } else {
                 $validate = 'new';
-                $this->request->data['password'] = $this->request->getData('_password');
             }
+        } else {
+            // $user_sites = $this->UserSites->find()->where(['UserSites.user_id' => $id])->extract('site_config_id');
+            // if (!empty($user_sites)) {
+            //     foreach ($user_sites as $val) {
+            //         $site_config_ids[] = $val;
+            //     }
+            // }
+            $site_config_ids = $this->Users->getUserSite($id);
         }
 
+        $callback = function($id) use($site_config_ids) {
+            $save_ids = [];
+            if (!empty($site_config_ids)) {
+                
+                foreach ($site_config_ids as $config_id) {
+                    $user_site = $this->UserSites->find()
+                                                 ->where(['UserSites.user_id' => $id, 'UserSites.site_config_id' => $config_id])
+                                                 ->first();
+                    if (empty($user_site)) {
+                        $user_site = $this->UserSites->newEntity();
+                        $user_site->user_id = $id;
+                        $user_site->site_config_id = $config_id;
+                        $this->UserSites->save($user_site);
+                    }
+                    $save_ids[] = $user_site->id;
+                }
+            }
+            $delete_cond = [
+                'UserSites.user_id' => $id
+            ];
+            if (!empty($save_ids)) {
+                $delete_cond['UserSites.id not in'] = $save_ids;
+            }
 
-        return parent::_edit($id, [ 'validate' => $validate]);
+            $this->UserSites->deleteAll($delete_cond);
+        };
+
+        $this->set(compact('site_config_ids'));
+
+        return parent::_edit($id, ['callback' => $callback, 'validate' => $validate]);
     }
 
     public function delete($id, $type, $columns = null) {
@@ -116,6 +172,8 @@ class UsersController extends AppController
     public function setList() {
         
         $list = array();
+
+        $list['site_list'] = $this->SiteConfigs->getList();
 
         $list['role_list'] = User::$role_list;
 

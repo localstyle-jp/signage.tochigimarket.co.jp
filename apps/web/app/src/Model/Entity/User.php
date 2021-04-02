@@ -13,11 +13,13 @@ class User extends AppEntity
     const ROLE_DEMO = 90;
 
     static $role_list = [
+        self::ROLE_DEVELOP => '開発者',
         self::ROLE_ADMIN => 'システム管理',
         self::ROLE_CMS => 'CMS登録権限',
     ];
 
     static $role_key_list = [
+        self::ROLE_DEVELOP => 'develop',
         self::ROLE_ADMIN => 'admin',
         self::ROLE_CMS => 'staff'
     ];

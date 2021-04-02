@@ -20,28 +20,15 @@ class UsersTable extends AppTable {
                             // 
     public function initialize(array $config)
     {
+        $this->hasMany('UserSites')->setDependent(true);
 
         parent::initialize($config);
         
     }
 
-    public function validationCsvImport(Validator $validator) {
-        $validator->setProvider('User', 'App\Validator\UserValidation');
-
-        $validator = $this->validationDefault($validator);
-
-        $validator
-            ->notEmpty('password', 'パスワードを入力してください')
-            ->add('password', 'maxlength', ['rule' => ['maxLength', 30], 'message' => '30文字以内で入力してください'])
-            ->add('password', 'check_password', ['rule' => ['checkPasswordRule'], 'provider' => 'User', 'message' => 'このパスワードは使えません'])
-            ;
-
-        return $validator;
-    }
-
     public function validationNew(Validator $validator) {
         $validator = $this->validationDefault($validator);
-        $validator = $this->validationFirstPassword($validator);
+        $validator = $this->validationTmpPassword($validator);
 
         return $validator;
     }
@@ -67,45 +54,42 @@ class UsersTable extends AppTable {
         $validator
             ->notEmpty('name', '入力してください')
             ->add('name', 'maxLength', [
-                'rule' => ['maxLength', 40],
-                'message' => '40文字以内で入力してください'])
+                'rule' => ['maxLength', 50],
+                'message' => '50文字以内で入力してください'])
 
-            // ->notEmpty('email', '入力してください')
-            // ->add('email', 'maxLength', [
-            //     'rule' => ['maxLength', 200],
-            //     'message' => __('200字以内で入力してください')])
-            // ->add('email', 'custom', [
-            //     'rule' => ['isUnique'],
-            //     'provider' => 'User',
-            //     'message' => 'このメールアドレスは既に登録済みです'])
+            ->allowEmpty('email')
+            ->add('email', 'maxLength', [
+                'rule' => ['maxLength', 200],
+                'message' => __('200字以内で入力してください')])
+            ->add('email', 'custom', [
+                'rule' => ['isUnique'],
+                'provider' => 'User',
+                'message' => 'このメールアドレスは既に登録済みです'])
 
             ->notEmpty('username', '入力してください')
             ->add('username', 'chkUserName', [
                 'rule' => ['checkUsername'],
                 'provider' => 'User',
-                'message' => '使えない文字が含まれています'])
+                'message' => '使えない文字が含まれているか、数字から始まる文字列は指定出来ません'])
             ->add('username', 'Length', [
                 'rule' => ['lengthBetween', 3, 30],
                 'message' => '3文字以上30文字以内で入力してください'])
             ->add('username', 'unique', [
                 'rule' => ['isUnique'],
                 'provider' => 'User',
-                'message' => 'ご希望のユーザーIDは既に使われております'])
-
-            ->notEmpty('company_id', '選択してください')
-            
+                'message' => 'ご希望のアカウントは既に使われております'])
             ;
         
         return $validator;
     }
 
-    public function validationFirstPassword(Validator $validator) {
+    public function validationTmpPassword(Validator $validator) {
         $validator->setProvider('User', 'App\Validator\UserValidation');
 
         $validator
-            ->notEmpty('_password', '入力してください')
-            ->add('_password', 'maxlength', ['rule' => ['maxLength', 30], 'message' => '30文字以内で入力してください'])
-            ->add('_password', 'check_password', ['rule' => ['checkPasswordRule'], 'provider' => 'User', 'message' => 'このパスワードは使えません'])
+            ->notEmpty('temp_password', '入力してください')
+            ->add('temp_password', 'maxlength', ['rule' => ['maxLength', 30], 'message' => '30文字以内で入力してください'])
+            ->add('temp_password', 'check_password', ['rule' => ['checkPasswordRule'], 'provider' => 'User', 'message' => 'このパスワードは使えません'])
             ;
         
         return $validator;
@@ -116,9 +100,7 @@ class UsersTable extends AppTable {
         $validator->setProvider('User', 'App\Validator\UserValidation');
 
         $validator
-            ->notEmpty('password', '入力してください')
             ->add('password', 'comWith', ['rule' => ['compareWith', 'password_confirm'], 'message' => 'パスワードが一致しません'])
-            ->add('password', 'maxlength', ['rule' => ['maxLength', 30], 'message' => '30文字以内で入力してください'])
             ->add('password', 'check_password', ['rule' => ['checkPasswordRule'], 'provider' => 'User', 'message' => 'このパスワードは使えません'])
             ;
 
@@ -143,5 +125,17 @@ class UsersTable extends AppTable {
 
     }
 
+    public function getUserSite($user_id) {
+        $this->UserSites = TableRegistry::get('UserSites');
+        $site_config_ids = [];
 
+        $user_sites = $this->UserSites->find()->where(['UserSites.user_id' => $user_id])->extract('site_config_id');
+        if (!empty($user_sites)) {
+            foreach ($user_sites as $val) {
+                $site_config_ids[$val] = $val;
+            }
+        }
+
+        return $site_config_ids;
+    }
 }

@@ -11,6 +11,7 @@ class UserAdminHelper extends AppHelper
                     // １行目
                     [
                         'ユーザー管理' => '/admin/users',
+                        'サイト管理' => '/admin/site-configs',
 
                     ],
                     // 2行目
@@ -40,30 +41,27 @@ class UserAdminHelper extends AppHelper
                     // '動画管理' => [
                     // ],
                     ' ' => [
-                        '媒体' => [
-                            'icon' => 'fas fa-mobile-alt',
-                            'link' => '/media/'
+                        '素材' => [
+                            'icon' => '',
+                            'link' => '/materials/'
                         ],
-                        'アーティスト' => [
-                            'icon' => 'fas fa-users',
-                            'link' => '/artists/'
+                        'コンテンツ' => [
+                            'icon' => '',
+                            'link' => '/contents/'
                         ],
-                        '楽曲' => [
-                            'icon' => 'fas fa-music',
+                        '機械とURL' => [
+                            'icon' => '',
                             'link' => '/musics/'
                         ],
-                        '報告先' => [
-                            'icon' => 'far fa-building',
-                            'link'=> '/companies/'
-                        ],
+                        
                     ],
                     // 2行目
-                    '  ' => [
-                        'レポート出力' => [
-                            'icon' => 'far fa-clipboard',
-                            'link' => '/reports/'
-                        ]
-                    ]
+                    // '  ' => [
+                    //     'レポート出力' => [
+                    //         'icon' => 'far fa-clipboard',
+                    //         'link' => '/reports/'
+                    //     ]
+                    // ]
                 ],
                 // '管理者メニュー' => [
 
@@ -117,6 +115,9 @@ class UserAdminHelper extends AppHelper
         ];
 
     public function getUserMenu($type='main') {
+        if ($type=='develop') {
+            $type = 'admin';
+        }
         return self::$userMenu[$type];
     }
     public function getAdminMenu($type='main') {

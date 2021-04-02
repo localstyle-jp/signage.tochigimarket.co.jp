@@ -70,6 +70,19 @@
         <?php endif; ?>
 
             <tr>
+              <td>管理するサイト</td>
+              <td>
+              <?php foreach ($site_list as $config_id => $name): ?>
+                <?= $this->Form->input("user_sites.{$config_id}", ['type' => 'checkbox',
+                                                      'value' => $config_id,
+                                                      'checked' => in_array((int)$config_id, $site_config_ids, false),
+                                                      'label' => $name
+                ]); ?>
+              <?php endforeach; ?>
+              </td>
+            </tr>
+
+            <tr>
               <td>権限</td>
               <td>
                 <?= $this->Form->input("role", ['type' => 'select', 'options' => $role_list]); ?>

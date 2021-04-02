@@ -7,30 +7,6 @@ AddHandler server-parsed .html
 RewriteEngine On
 RewriteBase /
 
-# top
-RewriteCond ^sitepages/sitehome/index.html -f
-RewriteRule ^$ sitepages/sitehome/index.html [L]
-# detail
-RewriteRule ^([0-9]+\.html)$ /sitepages/sitehome/$1 [L]
-
-# site top
-#RewriteRule ^([a-zA-Z][a-zA-Z0-9_\-]+)\/$ sitepages/$1/index.html [L]
-# site detail
-RewriteRule ^([a-zA-Z][a-zA-Z0-9_\-]+)\/([0-9]+\.html)$ /sitepages/$1/$2 [L]
-
-# contents top
-RewriteCond %{REQUEST_FILENAME}/index.html !-f
-RewriteRule ^([a-zA-Z][a-zA-Z0-9_\-]+)\/([a-zA-Z][a-zA-Z0-9_]+)\/$ sitepages/$1/$2/index.html [L]
-
-RewriteCond %{REQUEST_FILENAME}/index.html !-f
-RewriteRule ^([a-zA-Z][a-zA-Z0-9_\-]+)\/([a-zA-Z][a-zA-Z0-9_\-]+)\/([a-zA-Z][a-zA-Z0-9_]+)\/$ sitepages/$1/$2/$3/index.html [L]
-
-#sitepages
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{DOCUMENT_ROOT}/sitepages%{REQUEST_URI} -d [OR]
-RewriteCond %{DOCUMENT_ROOT}/sitepages%{REQUEST_URI} -f
-RewriteRule ^(.*) sitepages/$1 [L]
-
 
 #cakephp
 RewriteCond %{REQUEST_URI} !\.(gif|png|jpg|jpeg|js|css|ico)$ [NC]
