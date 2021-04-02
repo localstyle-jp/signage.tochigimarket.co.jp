@@ -608,4 +608,8 @@ class AppController extends BaseController
 
         $this->rest_success($data);
     }
+
+    public function getSiteId() {
+        return $this->Session->read('current)site_id');
+    }
 }

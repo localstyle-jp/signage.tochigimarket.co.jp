@@ -46,7 +46,7 @@ class HomeController extends AppController
         $this->getEventManager()->off($this->Csrf);
     }
 
-        public function topRedirect() {
+    public function topRedirect() {
         return $this->redirect(Router::url(['_name' => 'userTop']));
     }
 

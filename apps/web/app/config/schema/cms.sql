@@ -52,6 +52,8 @@ CREATE TABLE contents
   created datetime NOT NULL,
   modified datetime NOT NULL,
   site_config_id int unsigned DEFAULT 0 NOT NULL,
+  position int unsigned DEFAULT 0 NOT NULL,
+  status enum('publish','draft') DEFAULT 'publish' NOT NULL,
   name varchar(40) DEFAULT '' NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -65,6 +67,7 @@ CREATE TABLE content_materials
   modified datetime NOT NULL,
   content_id int unsigned DEFAULT 0 NOT NULL,
   material_id int unsigned DEFAULT 0 NOT NULL,
+  position int unsigned NOT NULL DEFAULT 0,
   view_second int unsigned DEFAULT 0 NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -88,6 +91,8 @@ CREATE TABLE materials
   id int unsigned NOT NULL AUTO_INCREMENT,
   created datetime NOT NULL,
   modified datetime NOT NULL,
+  position int unsigned DEFAULT 0 NOT NULL,
+  status enum('publish','draft') DEFAULT 'publish' NOT NULL,
   role int unsigned DEFAULT 0 NOT NULL,
   name varchar(40) DEFAULT '' NOT NULL,
   type decimal(2) unsigned NOT NULL,
