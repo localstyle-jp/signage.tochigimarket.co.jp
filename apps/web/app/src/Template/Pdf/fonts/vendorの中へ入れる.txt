@@ -1,0 +1,2 @@
+ここにあるフォントファイルを下記へぶち込む
+/home/ing-system/vendor/tecnick.com/tcpdf/fonts
