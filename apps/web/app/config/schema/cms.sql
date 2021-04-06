@@ -81,6 +81,9 @@ CREATE TABLE machine_boxes
   modified datetime NOT NULL,
   site_config_id int unsigned DEFAULT 0 NOT NULL,
   content_id int unsigned DEFAULT 0,
+  name varchar(40) DEFAULT '' NOT NULL,
+  position int unsigned NOT NULL DEFAULT 0,
+  url varchar(100) DEFAULT '' NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 

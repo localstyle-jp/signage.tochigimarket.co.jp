@@ -464,4 +464,9 @@ class AppController extends Controller
 
         return;
     }
+
+    public function getSiteId() {
+        return 1;
+        // return $this->Session->read('current_site_id');
+    }
 }

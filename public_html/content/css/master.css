@@ -1,0 +1,25 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+a{
+	color: #53bdea;
+	text-decoration: underline;
+}
+a:hover {
+	color: #53bdea;
+	text-decoration: none;
+}
+
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+- 
+header
++-+-+-+-+-+-+-+-+-+-+-+-+-+- */
+
+
+
+
+
+@media print{}
+
+

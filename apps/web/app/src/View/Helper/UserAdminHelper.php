@@ -51,7 +51,7 @@ class UserAdminHelper extends AppHelper
                         ],
                         '機械とURL' => [
                             'icon' => '',
-                            'link' => '/musics/'
+                            'link' => '/machine-boxes/'
                         ],
                         
                     ],

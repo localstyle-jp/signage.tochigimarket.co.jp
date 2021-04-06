@@ -8,6 +8,8 @@ use Cake\Network\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
+
+use App\Model\Entity\Media;
 use App\Model\Entity\Material;
 
 /**
@@ -17,14 +19,15 @@ use App\Model\Entity\Material;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class ContentsController extends AppController
+class MachineBoxesController extends AppController
 {
     private $list = [];
 
     public function initialize()
     {
-        $this->Materials = $this->getTableLocator()->get('Materials');
-        $this->ContentMaterials = $this->getTableLocator()->get('ContentMaterials');
+
+        $this->Contents = $this->getTableLocator()->get('Contents');
+
 
         parent::initialize();
     }
@@ -46,6 +49,8 @@ class ContentsController extends AppController
     protected function _getQuery() {
         $query = [];
 
+        $query['sch_name'] = $this->request->getQuery('sch_name');
+
 
         return $query;
     }
@@ -54,7 +59,9 @@ class ContentsController extends AppController
         $cond = [];
         $cnt = 0;
 
-
+        if ($query['sch_name']) {
+            $cond[$cnt++] = "%{$query['sch_name']}%";
+        }
 
         return $cond;
     }
@@ -84,64 +91,17 @@ class ContentsController extends AppController
         $redirect = ['action' => 'index'];
         $rates = [];
 
-        $associated = ['ContentMaterials'];
+        $associated = [];
 
-        $user_id = $this->getUserId();
-        // $this->_getUserSite($user_id);
-        $config_id = $this->getSiteId();
-        $this->set(compact('user_id'));
-        if ($this->request->is(['post', 'put'])) {
-            $this->request->data['site_config_id'] = $this->getSiteId();
-        }
-        
-        $contain =[
-            'ContentMaterials'=> function($q){
-                return $q->contain(['Materials'])->order(['ContentMaterials.position' => 'ASC']);
-            } 
-        ];
-        
         $options = [
             'callback' => $callback,
             'get_callback' => $get_callback,
             'redirect' => $redirect,
-            'associated' => $associated,
-            'contain' => $contain
+            'associated' => $associated
         ];
-        
+
         parent::_edit($id, $options);
 
-    }
-
-    public function addMaterial() {
-        $this->viewBuilder()->setLayout("plain");
-        $this->setList();
-
-        $rownum = $this->request->getData('rownum');
-        $material_id = $this->request->getData('material_id');
-
-        $master = $this->Materials->find()->where(['Materials.id' => $material_id])->first();
-
-        $data = [];
-        if (!empty($master)) {
-            $data = [
-                'id' => null,
-                'material_id' => $master->id,
-                'position' => 0,
-                'material' =>[
-                    'type' => $master->type,
-                    'name' => $master->name,
-                    'image' => $master->image,
-                    'movie_tag' => $master->movie_tag,
-                    'url' => $master->url,
-                    'content' => '',
-                    'attaches' => $master->attaches
-                ]
-            ];
-        }
-        $result = $this->ContentMaterials->newEntity($data);
-        $result['material']['content'] = $master->content;
-        $material = $result->toArray();
-        $this->set(compact('rownum', 'material'));
     }
 
 
@@ -173,10 +133,10 @@ class ContentsController extends AppController
 
     public function setList() {
         
-        $list = array(
-            'type_list' => Material::$type_list
-        );
+        $list = array();
 
+        $config_id = $this->getSiteId();
+        $list['content_list'] = $this->Contents->find('list')->where(['Contents.site_config_id' => $config_id])->all()->toArray();
 
 
         if (!empty($list)) {
@@ -187,5 +147,29 @@ class ContentsController extends AppController
         return $list;
     }
 
+    public function popList() {
+        $this->viewBuilder()->setLayout("pop");
+
+        $query = $this->_getQueryPop();
+        $cond = $this->_getConditionsPop($query);
+        $this->set(compact('query'));
+
+        $this->_lists($cond, ['limit' => 10, 'order' => ['Materials.position' => 'ASC']]);
+
+    }
+    private function _getQueryPop() {
+        $query = [];
+
+        $query = $this->_getQuery();
+
+        return $query;
+    }
+
+    private function _getConditionsPop($query) {
+        $cond = [];
+
+        $cond = $this->_getConditions($query);
+        return $cond;
+    }
 
 }

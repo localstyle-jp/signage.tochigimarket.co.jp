@@ -4,11 +4,11 @@
 <?php $this->end(); ?>
 
 <div class="title_area">
-  <h1>コンテンツ</h1>
+  <h1>機械とURL</h1>
   <div class="pankuzu">
     <ul>
       <?= $this->element('pankuzu_home'); ?>
-      <li><a href="<?= $this->Url->build(['action' => 'index', '?' => []]); ?>">コンテンツ</a></li>
+      <li><a href="<?= $this->Url->build(['action' => 'index', '?' => []]); ?>">機械とURL</a></li>
       <li><span><?= ($data['id'] > 0)? '編集': '新規登録'; ?></span></li>
     </ul>
   </div>
@@ -22,16 +22,28 @@
 <?= $this->Form->create($entity, array('type' => 'file', 'context' => ['validator' => 'default']));?>
 <?= $this->Form->input('id', array('type' => 'hidden', 'value' => $entity->id, 'id' => 'idId'));?>
 <?= $this->Form->input('position', array('type' => 'hidden'));?>
-<!-- 仮追加 -->
-<?= $this->Form->input('site_config_id', array('type' => 'hidden'));?>
-
           <table class="vertical_table table__meta">
 
             <tr>
-              <td>コンテンツ名<span class="attent">※必須</span></td>
+              <td>名前<span class="attent">※必須</span></td>
               <td>
                 <?= $this->Form->input('name', array('type' => 'text', 'maxlength' => 40,));?>
                 <br><span>※40文字以内で入力してください</span>
+              </td>
+            </tr>
+
+            <tr>
+              <td>URL<span class="attent">※必須</span></td>
+              <td>
+                <?= $this->Form->input('url', array('type' => 'text', 'maxlength' => 100,));?>
+                <br><span>※URLのみを入力してください</span>
+              </td>
+            </tr>
+
+            <tr>
+              <td>表示コンテンツ</td>
+              <td>
+                <?= $this->Form->input('content_id', ['type' => 'select', 'options' => $content_list, 'empty' => ['0' => '選択してください']]); ?>
               </td>
             </tr>
 
@@ -43,26 +55,6 @@
             </tr>
 
         </table>
-
-        <table id="blockTable" class="vertical_table block_area table__edit" style="table-layout: fixed;">
-          <colgroup>
-            <col style="width: 70px;">
-            <col style="width: 150px;">
-            <col>
-            <col style="width: 90px;">
-          </colgroup>
-          <tbody id="blockArea" class="list_table">
-          <?php if (!empty($entity->content_materials)): ?>
-          <?php foreach ($entity->content_materials as $k => $material): ?>
-            <?= $this->element('content_material', ['material' => $material, 'rownum' => $k]); ?>
-          <?php endforeach; ?>  
-          <?php endif; ?>
-          </tbody>
-        </table>
-
-        <div class="btn_area" style="margin-bottom: 20px;">
-          <a href="javascript:void(0);" class="btn btn-primary" id="btnMaterial"><i class="far fa-plus-square"></i>素材を選択</a>
-        </div>
 
         <div class="btn_area">
         <?php if (!empty($data['id']) && $data['id'] > 0){ ?>
@@ -91,52 +83,13 @@
 <?php $this->start('beforeBodyClose');?>
 <link rel="stylesheet" href="/user/common/css/cms.css">
 <script src="/user/common/js/cms.js"></script>
+
 <?= $this->Html->script('/user/common/js/system/pop_box'); ?>
-
 <script>
-var pop_box = new PopBox();
-var material_row = <?= !empty($entity->content_materials)?count($entity->content_materials)+1:0 ?>;
 
-function addMaterial(id) {
-  var url = '/user/contents/addMaterial';
-  var params = {
-    'material_id' : id,
-    'rownum' : material_row
-  };
 
-  $.post(url, params, function(a) {
-    $("#blockArea").append(a);
 
-    material_row++;
-  });
-  
-}
-
-$(function(){
-    // 素材
-  $("#btnMaterial").on('click', function() {
-    pop_box.select = function(material_id) {
-      addMaterial(material_id);
-      pop_box.close();
-    };
-
-    pop_box.open({
-          element: "#btnMaterial",
-          href: "/user/materials/pop_list",
-          open: true,
-          onComplete: function(){
-          },
-          onClosed: function() {
-              pop_box.remove();
-          },
-          opacity: 0.5,
-          iframe: true,
-          width: '900px',
-          height: '750px'
-        });
-
-        return false;
-  });
-})
 </script>
+
+<?= $this->Html->script('/user/common/js/info/edit'); ?>
 <?php $this->end();?>
