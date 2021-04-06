@@ -88,7 +88,7 @@ class ContentsController extends AppController
 
         if ($this->request->is(['post', 'put'])) {
             // $this->request->data['site_config_id'] = $this->getSiteId();
-            
+            // dd($this->request->getData());
             if (array_key_exists('content_materials', $this->request->getData())) {
                 $position = 0;
                 
@@ -96,12 +96,11 @@ class ContentsController extends AppController
                     $this->request->data['content_materials'][$k]['position'] = ++$position;
                 }
             }
-            // dd($this->request->getData());
         }
-
+        
         $contain =[
             'ContentMaterials'=> function($q){
-                return $q->contain(['Materials'])->order(['Materials.position' => 'ASC']);
+                return $q->contain(['Materials'])->order(['ContentMaterials.position' => 'ASC']);
             } 
         ];
         
@@ -112,6 +111,8 @@ class ContentsController extends AppController
             'associated' => $associated,
             'contain' => $contain
         ];
+        
+        // dd($this->request->getData());
 
         parent::_edit($id, $options);
 
@@ -145,7 +146,6 @@ class ContentsController extends AppController
         }
         $result = $this->ContentMaterials->newEntity($data);
         $result['material']['content'] = $master->content;
-
         $material = $result->toArray();
         // dd($material);
         $this->set(compact('rownum', 'material'));

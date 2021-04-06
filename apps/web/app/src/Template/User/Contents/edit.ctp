@@ -95,7 +95,7 @@
 
 <script>
 var pop_box = new PopBox();
-var material_row = 0;
+var material_row = <?= !empty($entity->content_materials)?count($entity->content_materials)+1:0 ?>;
 
 function addMaterial(id) {
   var url = '/user/contents/addMaterial';

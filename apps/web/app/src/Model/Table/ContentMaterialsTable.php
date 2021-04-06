@@ -19,10 +19,10 @@ class ContentMaterialsTable extends AppTable {
                 // 
     public function initialize(array $config)
     {
-        $this->addBehavior('Position', [
-                'order' => 'ASC',
-                'group' => ['site_config_id']
-            ]);
+        // $this->addBehavior('Position', [
+        //         'order' => 'ASC',
+        //         'group' => ['content_id']
+        //     ]);
 
         $this->belongsTo('Contents');
         $this->belongsTo('Materials');

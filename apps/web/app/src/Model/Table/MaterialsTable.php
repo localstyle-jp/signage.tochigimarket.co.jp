@@ -52,7 +52,7 @@ class MaterialsTable extends AppTable {
 
         $validator
             ->notEmpty('name', '入力してください')
-            ->add('name', 'maxLength', ['rule' => ['maxLength', 40],'message' => __('40字以内で入力してください') ])
+            ->add('name', 'maxLength', ['rule' => ['maxLength', 40],'message' => ('40字以内で入力してください') ])
             ;
         
         return $validator;
