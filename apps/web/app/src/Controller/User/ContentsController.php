@@ -8,6 +8,7 @@ use Cake\Network\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
+use App\Model\Entity\Material;
 
 /**
  * Static content controller
@@ -102,6 +103,7 @@ class ContentsController extends AppController
 
     public function addMaterial() {
         $this->viewBuilder()->setLayout("plain");
+        $this->setList();
 
         $rownum = $this->request->getData('rownum');
         $material_id = $this->request->getData('material_id');
@@ -111,13 +113,21 @@ class ContentsController extends AppController
         $data = [];
         if (!empty($master)) {
             $data = [
-                'id' => $master->id
+                'id' => $master->id,
+                'type' => $master->type,
+                'name' => $master->name,
+                'image' => $master->image,
+                'movie_tag' => $master->movie_tag,
+                'url' => $master->url,
+                'content' => $master->content,
+                'attaches' => $master->attaches
             ];
         }
         $result = $this->ContentMaterials->newEntity($data);
+        $result['content'] = $master->content;
 
         $material = $result->toArray();
-
+        // dd($material);
         $this->set(compact('rownum', 'material'));
     }
 
@@ -150,7 +160,9 @@ class ContentsController extends AppController
 
     public function setList() {
         
-        $list = array();
+        $list = array(
+            'type_list' => Material::$type_list
+        );
 
 
 

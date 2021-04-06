@@ -31,8 +31,66 @@
                 <br><span>※40文字以内で入力してください</span>
               </td>
             </tr>
+            
+
+            <tr>
+              <td>タイプ<span class="attent">※必須</span></td>
+              <td>
+                <?= $this->Form->select('type', $type_list,['id' => 'typeSelect','onChange' => 'select()']);?>
+                <br><span>※素材タイプを選択してください</span>
+              </td>
+            </tr>
+
+            <tr class="imageArea">
+              <td>画像<span class="attent">※必須</span></td>
+              <?php if (!empty($entity['attaches']['image']['0'])) :?>
+              <td>
+                <img src="<?= $this->Url->build($entity['attaches']['image']['0'])?>" style="width: 300px;">
+                <?= $this->Form->input("attaches.image.0", ['type' => 'hidden']); ?>
+              </td>
+              <?php else:?>
+
+              <td>
+              <?= $this->Form->input('image', array('type' => 'file','accept' => 'image/jpeg,image/png,image/gif', 'id' => 'idMainImage', 'class' => 'attaches'));?>
+                <br><span>※jpeg , jpg , gif , png ファイルのみ</span>
+              </td>
+              <?php endif;?>
+            </tr>
 
 
+
+            
+
+
+            <tr class="movieArea">
+              <td>動画<span class="attent">※必須</span></td>
+              <td>
+              <?= $this->Form->input('movie_tag', array('type' => 'file', 'class' => 'attaches'));?>
+                <!-- <br><span>※入力してください</span> -->
+              </td>
+            </tr>
+            
+
+            <tr class="urlArea">
+              <td>URL<span class="attent">※必須</span></td>
+              <td>
+                <?= $this->Form->input('url', array('type' => 'text', 'maxlength' => 255,));?>
+                <br><span>※URLのみを入力してください</span>
+              </td>
+            </tr>
+
+            <tr class="contentArea">
+              <td>コンテンツ<span class="attent">※必須</span></td>
+              <td id="blockTable">
+                <div>
+                <?= $this->Form->input('content', ['type' => 'textarea',
+                                                    'class' => 'editor'
+                                                  ]); ?>
+                </div>
+                <div>※全角文字はイタリック体が効きません。</div>
+              </td>
+
+            </tr>
 
 
             <tr>
@@ -70,12 +128,54 @@
 
 <?php $this->start('beforeBodyClose');?>
 <link rel="stylesheet" href="/user/common/css/cms.css">
+<link rel="stylesheet" href="/user/common/css/redactor/redactor.min.css">
 <script src="/user/common/js/cms.js"></script>
-
+<script src="/user/common/js/redactor/redactor-custom-min.js"></script>
+<script src="/user/common/js/redactor/ja.js"></script>
+<script src="/user/common/js/redactor/alignment.js"></script>
+<script src="/user/common/js/redactor/counter.js"></script>
+<script src="/user/common/js/redactor/fontcolor.js"></script>
+<script src="/user/common/js/redactor/fontsize.js"></script>
+<?= $this->Html->script('/user/common/js/system/pop_box'); ?>
 <script>
-
+var pop_box = new PopBox();
 $(function(){
-
+  $('.imageArea').show();
+  $('.contentArea').hide();
+  $('.movieArea').hide();
+  $('.urlArea').hide();
+  if($('#typeSelect').val() != 1){
+    select();
+  }
 })
+
+function select(){
+  var type = $('#typeSelect').val();
+  if(type == '1'){
+    $('.imageArea').show();
+    $('.contentArea').hide();
+    $('.movieArea').hide();
+    $('.urlArea').hide();
+  }else if(type == '2') {
+    $('.imageArea').hide();
+    $('.contentArea').hide();
+    $('.movieArea').show();
+    $('.urlArea').hide();
+  }else if(type == '3'){
+    $('.imageArea').hide();
+    $('.contentArea').hide();
+    $('.movieArea').hide();
+    $('.urlArea').show();
+  }else if(type == '4'){
+    $('.imageArea').show();
+    $('.contentArea').show();
+    $('.movieArea').hide();
+    $('.urlArea').hide();
+  }
+}
+
+
 </script>
+
+<?= $this->Html->script('/user/common/js/info/edit'); ?>
 <?php $this->end();?>

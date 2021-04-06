@@ -10,6 +10,7 @@ use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 
 use App\Model\Entity\Media;
+use App\Model\Entity\Material;
 
 /**
  * Static content controller
@@ -129,7 +130,9 @@ class MaterialsController extends AppController
 
     public function setList() {
         
-        $list = array();
+        $list = array(
+            'type_list' => Material::$type_list
+        );
 
 
 

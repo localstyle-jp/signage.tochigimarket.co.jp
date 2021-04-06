@@ -14,7 +14,20 @@ class MaterialsTable extends AppTable {
     ];
 
     public $attaches = array('images' =>
-                            array(),
+                            array('image' => array('extensions' => array('jpg', 'jpeg', 'gif', 'png'),
+                                                'width' => 1200,
+                                                'height' => 1200,
+                                                'file_name' => 'img_%d_%s',
+                                                'thumbnails' => array(
+                                                    's' => array(
+                                                        'prefix' => 's_',
+                                                        'width' => 320,
+                                                        'height' => 240
+                                                        )
+                                                    ),
+                                                )
+                                //image_1
+                                ),
                             'files' => array(),
                             );
                 // 
@@ -25,6 +38,8 @@ class MaterialsTable extends AppTable {
                 // 'group' => ['parent_id']
             ]);
 
+        $this->addBehavior('FileAttache');
+        
         $this->hasMany('ContentMaterials')->setDependent(true);
 
 
