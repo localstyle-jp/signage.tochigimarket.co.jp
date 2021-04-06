@@ -610,6 +610,6 @@ class AppController extends BaseController
     }
 
     public function getSiteId() {
-        return $this->Session->read('current)site_id');
+        return $this->Session->read('current_site_id');
     }
 }
