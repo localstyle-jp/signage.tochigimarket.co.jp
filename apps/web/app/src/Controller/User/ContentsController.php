@@ -87,14 +87,30 @@ class ContentsController extends AppController
         $associated = ['ContentMaterials'];
 
         if ($this->request->is(['post', 'put'])) {
-            $this->request->data['site_config_id'] = $this->getSiteId();
+            // $this->request->data['site_config_id'] = $this->getSiteId();
+            
+            if (array_key_exists('content_materials', $this->request->getData())) {
+                $position = 0;
+                
+                foreach ($this->request->getData('content_materials') as $k => $v) {
+                    $this->request->data['content_materials'][$k]['position'] = ++$position;
+                }
+            }
+            // dd($this->request->getData());
         }
 
+        $contain =[
+            'ContentMaterials'=> function($q){
+                return $q->contain(['Materials'])->order(['Materials.position' => 'ASC']);
+            } 
+        ];
+        
         $options = [
             'callback' => $callback,
             'get_callback' => $get_callback,
             'redirect' => $redirect,
-            'associated' => $associated
+            'associated' => $associated,
+            'contain' => $contain
         ];
 
         parent::_edit($id, $options);
@@ -113,18 +129,22 @@ class ContentsController extends AppController
         $data = [];
         if (!empty($master)) {
             $data = [
-                'id' => $master->id,
-                'type' => $master->type,
-                'name' => $master->name,
-                'image' => $master->image,
-                'movie_tag' => $master->movie_tag,
-                'url' => $master->url,
-                'content' => $master->content,
-                'attaches' => $master->attaches
+                'id' => null,
+                'material_id' => $master->id,
+                'position' => 0,
+                'material' =>[
+                    'type' => $master->type,
+                    'name' => $master->name,
+                    'image' => $master->image,
+                    'movie_tag' => $master->movie_tag,
+                    'url' => $master->url,
+                    'content' => '',
+                    'attaches' => $master->attaches
+                ]
             ];
         }
         $result = $this->ContentMaterials->newEntity($data);
-        $result['content'] = $master->content;
+        $result['material']['content'] = $master->content;
 
         $material = $result->toArray();
         // dd($material);

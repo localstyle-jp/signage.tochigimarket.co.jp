@@ -65,8 +65,8 @@
             <tr class="movieArea">
               <td>動画<span class="attent">※必須</span></td>
               <td>
-              <?= $this->Form->input('movie_tag', array('type' => 'file', 'class' => 'attaches'));?>
-                <!-- <br><span>※入力してください</span> -->
+              <?= $this->Form->input('movie_tag', array('type' => 'textarea', 'maxlength' => 2000));?>
+                <br><span>※埋め込みタグを入力してください</span>
               </td>
             </tr>
             

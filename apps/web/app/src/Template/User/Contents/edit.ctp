@@ -22,6 +22,9 @@
 <?= $this->Form->create($entity, array('type' => 'file', 'context' => ['validator' => 'default']));?>
 <?= $this->Form->input('id', array('type' => 'hidden', 'value' => $entity->id, 'id' => 'idId'));?>
 <?= $this->Form->input('position', array('type' => 'hidden'));?>
+<!-- 仮追加 -->
+<?= $this->Form->input('site_config_id', array('type' => 'hidden', 'value' => '1'));?>
+
           <table class="vertical_table table__meta">
 
             <tr>
@@ -104,7 +107,7 @@ function addMaterial(id) {
   $.post(url, params, function(a) {
     $("#blockArea").append(a);
 
-    rownum++;
+    material_row++;
   });
   
 }
