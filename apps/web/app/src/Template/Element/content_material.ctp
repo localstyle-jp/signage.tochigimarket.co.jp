@@ -22,7 +22,9 @@
     
     <?php elseif($material['material']['type'] == 2):?>
       <div>
-        動画：<?= $material['material']['movie_tag'] ?>
+        動画：
+        <iframe width="560" height="315" src="<?= $material['material']['movie_tag'] ?>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        
       </div>
     
     <?php elseif($material['material']['type'] == 3):?>
