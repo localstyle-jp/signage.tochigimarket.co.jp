@@ -54,7 +54,7 @@
           <tbody id="blockArea" class="list_table">
           <?php if (!empty($entity->content_materials)): ?>
           <?php foreach ($entity->content_materials as $k => $material): ?>
-            <?= $this->element('content_material', ['material' => $material, 'rownum' => $k]); ?>
+            <?= $this->element('content_material', ['material' => $material, 'rownum' => $k, 'entity' => $entity]); ?>
           <?php endforeach; ?>  
           <?php endif; ?>
           </tbody>

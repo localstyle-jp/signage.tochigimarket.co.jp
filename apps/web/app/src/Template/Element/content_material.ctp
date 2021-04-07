@@ -1,3 +1,10 @@
+<?php
+// dd($material);
+ if(empty($material['material'])){
+  $entity = $this->ContentMaterials->getMaterials($entity);
+  // dd($entity);  
+}
+?>
 <tr id="block_no_" data-sub-block-move="1" class="first-dir">
   <td>
     <div class="sort_handle"></div>
