@@ -48,7 +48,7 @@ class MaterialsTable extends AppTable {
 
     public function validationDefault(Validator $validator)
     {
-        $validator->setProvider('App', 'App\Validator\AppValidation');
+        // $validator->setProvider('App', 'App\Validator\AppValidation');
 
         $validator
             ->notEmpty('name', '入力してください')
@@ -58,4 +58,58 @@ class MaterialsTable extends AppTable {
         return $validator;
     }
 
+    // 画像
+    public function validationImageNew(Validator $validator) {
+
+        $validator = $this->validationDefault($validator);
+
+        $validator
+            ->notEmpty('image', '選択してください')
+        ;
+
+        return $validator;
+    }
+
+    public function validationImageUpdate(Validator $validator) {
+        $validator = $this->validationDefault($validator);
+
+        $validator
+            ->notEmpty('_old_image', '選択してください')
+        ;
+
+        return $validator;
+    }
+
+    // 動画
+    public function validationMovieNew(Validator $validator) {
+        $validator = $this->validationDefault($validator);
+
+        $validator
+            ->notEmpty('movie_tag', '入力してください')
+            ->notEmpty('view_second', '情報取得してください')
+            ->add('view_second', 'comaprison', ['rule' => ['comparison', '>', 0], 'message' => '情報取得してください'])
+        ;
+
+        return $validator;
+    }
+
+    public function validationMovieUpdate(Validator $validator) {
+
+        return $this->validationMovieNew($validator);
+
+    }
+
+    // URL
+    public function validationUrlNew(Validator $validator) {
+        $validator = $this->validationDefault($validator);
+
+        $validator
+            ->notEmpty('url', '入力してください')
+        ;
+
+        return $validator;
+    }
+    public function validationUrlUpdate(Validator $validator) {
+        return $this->validationUrlNew($validator);
+    }
 }

@@ -62,6 +62,7 @@ class ContentController extends AppController
         $items = [];
         $scene_list = [];
         $materials = [];
+        $material_youtube = [];
         $item_count = 0;
         foreach ($content->content_materials as $material) {
             $item_count++;
@@ -84,6 +85,14 @@ class ContentController extends AppController
                 $data['content'] = '<img src="' . $material->material->attaches['image']['0'] . '" alt="">';
             } elseif ($material->material->type == Material::TYPE_URL) {
                 $data['content'] = '<iframe src="' . $material->material->url . '" width="1920" height="1080"></iframe>';
+            } elseif ($material->material->type == Material::TYPE_MOVIE) {
+                $data['content'] = '<div id="player_' . $item_count . '"></div>';
+                $material_youtube['no' . $item_count] = [
+                    'no' => $item_count,
+                    'obj' => null,
+                    'error_flg' => 0,
+                    'code' => $material->material->movie_tag
+                ];
             }
             
             $materials[] = $data;
@@ -91,7 +100,7 @@ class ContentController extends AppController
 
         $Material = new Material;
 
-        $this->set(compact('content', 'query', 'items', 'scene_list', 'Material', 'materials'));
+        $this->set(compact('content', 'query', 'items', 'scene_list', 'Material', 'materials', 'material_youtube'));
 
 
         

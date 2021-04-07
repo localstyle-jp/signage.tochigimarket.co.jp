@@ -27,6 +27,7 @@ class MachineBoxesController extends AppController
     {
 
         $this->Contents = $this->getTableLocator()->get('Contents');
+        $this->SiteConfigs = $this->getTableLocator()->get('SiteConfigs');
 
 
         parent::initialize();
@@ -74,12 +75,21 @@ class MachineBoxesController extends AppController
         $query = $this->_getQuery();
         $cond = $this->_getConditions($query);
 
+        $contain = [
+            'Contents'
+        ];
+
         $is_search = ($this->request->getQuery() ? true : false);
 
-        $this->set(compact('query', 'is_search'));
+        $site_config_id = $this->getSiteId();
+        $site_config = $this->SiteConfigs->find()->where(['SiteConfigs.id' => $site_config_id])->first();
 
-        $this->_lists($cond, ['order' => 'position ASC',
-                              'limit' => null]);
+        $this->set(compact('query', 'is_search', 'site_config'));
+
+        $this->_lists($cond, ['order' => ['MachineBoxes.position' =>  'ASC'],
+                              'limit' => null,
+                              'contain' => $contain
+                          ]);
     }
 
     public function edit($id=0) {

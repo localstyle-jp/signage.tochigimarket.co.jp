@@ -79,6 +79,8 @@ class AppController extends BaseController
                                     'validate' => 'default',
                                     'associated' => [],
                                     'get_callback' => null,
+                                    'error_callback' => null,
+                                    'saveFields' => null
                                 ),
                               $option);
         extract($option);
@@ -109,16 +111,13 @@ class AppController extends BaseController
                     $q->contain($contain);
                 }
                 $old = $q->first();
+                $entity_options['fieldList'] = $saveFields;
                 $entity = $this->{$this->modelName}->patchEntity($old, $this->request->getData(), $entity_options);
             } else {
                 $entity = $this->{$this->modelName}->newEntity($this->request->getData(), $entity_options);
             }
 
             if ($entity->getErrors()) {
-                $data = $this->request->getData();
-                if (!array_key_exists('id', $data)) {
-                    $data['id'] = $id;
-                }
                 if (property_exists($this->{$this->modelName}, 'useHierarchization') && !empty($this->{$this->modelName}->useHierarchization)) {
                     $vals = $this->{$this->modelName}->useHierarchization;
                     $_model = $vals['sequence_model'];
@@ -132,11 +131,7 @@ class AppController extends BaseController
                     }
                 }
                 // TODO::
-                // $this->redirect($this->referer());
-                // $request = $this->getRequest()->withParsedBody($this->{$this->modelName}->toFormData($entity));
-                $request = $this->getRequest()->withParsedBody($data);
-                $this->setRequest($request);
-                $this->set('data', $data);
+
                 $isValid = false;
             }
                       
@@ -173,10 +168,15 @@ class AppController extends BaseController
                 }
 
             } else {
-                $data = $this->request->getData();
+                
+                $data = $entity->toArray();
                 if (!array_key_exists('id', $data)) {
                     $data['id'] = $id;
                 }
+                if (!is_null($error_callback)) {
+                    $data = $error_callback($data);
+                }
+                
                 $this->set('data', $data);
                 $this->Flash->set('正しく入力されていない項目があります');
             }

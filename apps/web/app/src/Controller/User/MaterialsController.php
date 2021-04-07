@@ -87,6 +87,22 @@ class MaterialsController extends AppController
         $callback = null;
         $redirect = ['action' => 'index'];
         $rates = [];
+        $validate = 'default';
+
+        if ($this->request->is(['put', 'post'])) {
+
+            $post_data = $this->request->getData();
+
+            if (array_key_exists($post_data['type'], Material::$validation_list)) {
+                $validate = Material::$validation_list[$post_data['type']];
+                if ($id) {
+                    $validate .= 'Update';
+                } else {
+                    $validate .= 'New';
+                }
+            }
+
+        }
 
         $associated = [];
 
@@ -94,7 +110,8 @@ class MaterialsController extends AppController
             'callback' => $callback,
             'get_callback' => $get_callback,
             'redirect' => $redirect,
-            'associated' => $associated
+            'associated' => $associated,
+            'validate' => $validate
         ];
 
         parent::_edit($id, $options);

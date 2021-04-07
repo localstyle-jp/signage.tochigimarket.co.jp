@@ -47,6 +47,7 @@
               <td>
                 <img src="<?= $this->Url->build($entity['attaches']['image']['0'])?>" style="width: 300px;">
                 <?= $this->Form->input("attaches.image.0", ['type' => 'hidden']); ?>
+                <?= $this->Form->input("_old_image", ['type' => 'hidden', 'value' => $entity->image]); ?>
               </td>
               <?php else:?>
 
@@ -58,15 +59,19 @@
             </tr>
 
 
-
-            
-
-
             <tr class="movieArea">
               <td>動画<span class="attent">※必須</span></td>
               <td>
-              <?= $this->Form->input('movie_tag', array('type' => 'text', 'maxlength' => 100));?>
-                <br><span>※埋め込みタグ(src部分のみ)を入力してください</span>
+              <?= $this->Form->input('movie_tag', array('type' => 'text', 'maxlength' => 40, 'style' => 'width:200px;'));?>
+                <span class="btn_area">
+                  <a href="javascript:void(0);" class="btn btn-info btn-sm" id="btnYoutubeInfo">情報取得</a>
+                </span>
+                <br><span>※埋め込みタグ(src部分のみ)を入力してください</span><br>
+                <div id="player"></div>
+                <div>
+                  <?= $this->Form->input('view_second', ['type' => 'text', 'readonly' => true, 'style' => 'width: 60px;', 'id' => 'idViewSecond', 'class' => 'text-right']); ?>秒
+                  
+                </div>
               </td>
             </tr>
             
@@ -138,6 +143,13 @@
 <script src="/user/common/js/redactor/fontsize.js"></script>
 <?= $this->Html->script('/user/common/js/system/pop_box'); ?>
 <script>
+var player;
+
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
 var pop_box = new PopBox();
 $(function(){
   $('.imageArea').show();
@@ -174,8 +186,53 @@ function select(){
   }
 }
 
+function movie_management() {
+  var movie = $("#movie-tag").val();
+
+    if (movie != "") {
+      
+
+      player = new YT.Player('player', {
+        // height: '300px',
+        videoId: movie,
+        wmode: 'transparent',
+        // width: '300px',
+        playerVars:{
+          'autoplay': 0,
+          'controls': 0,
+          'loop': 0,
+          'playlist': movie,
+          'rel': 0,
+          'showinfo': 0,
+          'color': 'white'
+        },
+        events: {
+          'onReady': function (event) {
+            event.target.mute();
+            $("#idViewSecond").val(event.target.getDuration());
+          },
+          'onStateChange': function (event) {
+
+          },
+          'onError': function (event) {
+
+          }
+        }
+      });
+    }
+}
+$(function() {
+  
+
+  $("#btnYoutubeInfo").on('click', function() {
+    movie_management();
+  });
+
+  $("#movie-tag").on('change', function() {
+    $("#idViewSecond").val('');
+  });
+})
 
 </script>
 
-<?= $this->Html->script('/user/common/js/info/edit'); ?>
 <?php $this->end();?>

@@ -49,7 +49,7 @@ class UserAdminHelper extends AppHelper
                             'icon' => '',
                             'link' => '/contents/'
                         ],
-                        '機械とURL' => [
+                        '表示端末' => [
                             'icon' => '',
                             'link' => '/machine-boxes/'
                         ],

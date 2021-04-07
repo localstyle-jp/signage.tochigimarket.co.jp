@@ -80,9 +80,11 @@ class ContentsController extends AppController
 
         $this->setList();
         $get_callback = null;
+        $error_callback = null;
         $callback = null;
         $redirect = ['action' => 'index'];
         $rates = [];
+        $delete_ids = [];
 
         $associated = ['ContentMaterials'];
 
@@ -91,8 +93,46 @@ class ContentsController extends AppController
         $config_id = $this->getSiteId();
         $this->set(compact('user_id'));
         if ($this->request->is(['post', 'put'])) {
-            $this->request->data['site_config_id'] = $this->getSiteId();
+            $this->request->data['site_config_id'] = $config_id;
+
+            if (array_key_exists('content_materials', $this->request->getData())) {
+                $position = 0;
+                foreach ($this->request->getData('content_materials') as $k => $v) {
+                    if ($v['is_delete'] == 1) {
+                        if ($v['id']) {
+                            $delete_ids[] = $v['id'];
+                        }
+                        continue;
+                    }
+                    $this->request->data['content_materials'][$k]['position'] = ++$position;
+                }
+            }
         }
+
+        // 成功時のコールバック
+        $callback = function($id) use($delete_ids) {
+            // 削除
+            if (!empty($delete_ids)) {
+                $this->ContentMaterials->deleteAll(['ContentMaterials.content_id' => $id, function($exp) use($delete_ids) {
+                    return $exp->in('id', $delete_ids);
+                }]);
+            }
+        };
+
+        // エラー時のコールバック
+        $error_callback = function($datas) {
+            if (!empty($datas['content_materials'])) {
+                foreach ($datas['content_materials'] as $k =>  $data) {
+                    if (empty($data['material']) && $data['material_id']) {
+                        $datas['content_materials'][$k]['material'] = $this->Materials->find()->where(['Materials.id' => $data['material_id']])->first()->toArray();
+                    }
+                    if (empty($data['id'])) {
+                        $datas['content_materials'][$k]['id'] = null;
+                    }
+                }
+            }
+            return $datas;
+        };
         
         $contain =[
             'ContentMaterials'=> function($q){
@@ -103,6 +143,7 @@ class ContentsController extends AppController
         $options = [
             'callback' => $callback,
             'get_callback' => $get_callback,
+            'error_callback' => $error_callback,
             'redirect' => $redirect,
             'associated' => $associated,
             'contain' => $contain

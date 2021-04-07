@@ -1,62 +1,61 @@
-<?php
-// dd($material);
- if(empty($material['material'])){
-  $entity = $this->ContentMaterials->getMaterials($entity);
-  // dd($entity);  
-}
-?>
-<tr id="block_no_" data-sub-block-move="1" class="first-dir">
+<?php use App\Model\Entity\Material; ?>
+<tr id="block_no_<?= $rownum; ?>" class="first-dir">
   <td>
     <div class="sort_handle"></div>
     
   </td>
+
+  <!-- 素材名 -->
   <td><?= h($material['material']['name']) ?></td>
+
+  <!-- 種別 -->
+  <td>
+    <?= Material::$type_list[$material['material']['type']]; ?>
+  </td>
+
+  <!-- 表示秒数 -->
+  <td>
+  <?= $this->Form->input("content_materials.{$rownum}.view_second",['type' => 'text','maxlength' => 5]); ?>秒
+  </td>
+
+  <!-- 内容 -->
   <td>
     <?= $this->Form->input("content_materials.{$rownum}.id", ['type' => 'hidden', 'value' => $material['id']]); ?>
     <?= $this->Form->input("content_materials.{$rownum}.position", ['type' => 'hidden', 'value' => $material['position']]); ?>
     <?= $this->Form->input("content_materials.{$rownum}.material_id", ['type' => 'hidden', 'value' => $material['material_id']]); ?>
-    <div>
-    素材名：<?= h($material['material']['name']) ?>
-    </div>
-    <div>
-    素材タイプ：<?= $type_list[h($material['material']['type'])] ?>
-    </div>
+    <?= $this->Form->input("content_materials.{$rownum}.is_delete", ['type' => 'hidden', 'value' => 0, 'id' => 'idIsDelete_' . $rownum]); ?>
 
-    <?php if($material['material']['type'] == 1):?>
+    <?php if($material['material']['type'] == Material::TYPE_IMAGE):?>
       <div>
-        画像；<img src="<?= h($material['material']['attaches']['image']['s']) ?>">
+        <img src="<?= h($material['material']['attaches']['image']['s']) ?>">
       </div>
     
-    <?php elseif($material['material']['type'] == 2):?>
+    <?php elseif($material['material']['type'] == Material::TYPE_MOVIE):?>
       <div>
-        動画：
-        <iframe width="560" height="315" src="<?= $material['material']['movie_tag'] ?>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <iframe width="300" src="https://www.youtube.com/embed/<?= $material['material']['movie_tag']; ?>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         
       </div>
     
-    <?php elseif($material['material']['type'] == 3):?>
+    <?php elseif($material['material']['type'] == Material::TYPE_URL):?>
       <div>
-        URL:<a href="<?= h($material['material']['url']) ?>"><?= h($material['material']['url']) ?></a>
+        <a href="<?= h($material['material']['url']); ?>"><?= h($material['material']['url']); ?></a>
       </div>
     
-    <?php elseif($material['material']['type'] == 4):?>
+    <?php elseif($material['material']['type'] == Material::TYPE_PAGE):?>
       <div>
-        画像；<img src="<?= h($material['material']['attaches']['image']['s']) ?>">
+        <img src="<?= h($material['material']['attaches']['image']['s']) ?>">
       </div>
       <div>
-        文章；<?= mb_substr(strip_tags($material['material']['content']), 0, 10) ?>...
+        <?= mb_substr(strip_tags($material['material']['content']), 0, 10) ?>...
       </div>
     <?php endif;?>
     
   </td>
-  <td>
-  表示秒数
-  <?= $this->Form->input("content_materials.{$rownum}.view_second",['type' => 'text','maxlength' => 5]) ?>秒
-  </td>
+  
 
   <td>
-      <div class='btn_area' style='float: right;'>
-        <a href="javascript:void(0);" class="btn_confirm small_btn btn_list_delete size_min" data-row="<?= h($rownum);?>" style='text-align:center; width:auto;'>削除</a>
+      <div class='btn_area' style=''>
+        <a href="javascript:void(0);" class="btn btn-secondary btn-sm delete_row" data-row="<?= h($rownum);?>">削除</a>
     </div>
   </td>
 </tr>

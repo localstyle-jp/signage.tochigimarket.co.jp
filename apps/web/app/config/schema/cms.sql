@@ -84,6 +84,9 @@ CREATE TABLE machine_boxes
   name varchar(40) DEFAULT '' NOT NULL,
   position int unsigned NOT NULL DEFAULT 0,
   url varchar(100) DEFAULT '' NOT NULL,
+  resolution decimal(2) unsigned DEFAULT 0 NOT NULL,
+  width int DEFAULT 0 NOT NULL,
+  height int DEFAULT 0 NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
@@ -103,6 +106,7 @@ CREATE TABLE materials
   movie_tag text NOT NULL,
   url varchar(255) DEFAULT '' NOT NULL,
   content text NOT NULL,
+  view_second int NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 

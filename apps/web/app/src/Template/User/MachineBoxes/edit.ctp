@@ -4,11 +4,11 @@
 <?php $this->end(); ?>
 
 <div class="title_area">
-  <h1>機械とURL</h1>
+  <h1>表示端末</h1>
   <div class="pankuzu">
     <ul>
       <?= $this->element('pankuzu_home'); ?>
-      <li><a href="<?= $this->Url->build(['action' => 'index', '?' => []]); ?>">機械とURL</a></li>
+      <li><a href="<?= $this->Url->build(['action' => 'index', '?' => []]); ?>">表示端末</a></li>
       <li><span><?= ($data['id'] > 0)? '編集': '新規登録'; ?></span></li>
     </ul>
   </div>

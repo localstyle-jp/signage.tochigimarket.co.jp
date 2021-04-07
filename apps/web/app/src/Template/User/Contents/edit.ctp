@@ -48,13 +48,25 @@
           <colgroup>
             <col style="width: 70px;">
             <col style="width: 150px;">
+            <col style="width: 100px;">
+            <col style="width: 90px;">
             <col>
             <col style="width: 90px;">
           </colgroup>
+
+          <thead>
+            <th></th>
+            <th>素材名</th>
+            <th>種別</th>
+            <th>内容</th>
+            <th>表示秒数</th>
+            <th></th>
+          </thead>
+
           <tbody id="blockArea" class="list_table">
-          <?php if (!empty($entity->content_materials)): ?>
-          <?php foreach ($entity->content_materials as $k => $material): ?>
-            <?= $this->element('content_material', ['material' => $material, 'rownum' => $k, 'entity' => $entity]); ?>
+          <?php if (!empty($data['content_materials'])): ?>
+          <?php foreach ($data['content_materials'] as $k => $material): ?>
+            <?= $this->element('content_material', ['material' => $material, 'rownum' => $k]); ?>
           <?php endforeach; ?>  
           <?php endif; ?>
           </tbody>
@@ -95,7 +107,7 @@
 
 <script>
 var pop_box = new PopBox();
-var material_row = <?= !empty($entity->content_materials)?count($entity->content_materials)+1:0 ?>;
+var material_row = <?= !empty($entity->content_materials)?count($entity->content_materials):0 ?>;
 
 function addMaterial(id) {
   var url = '/user/contents/addMaterial';
@@ -136,6 +148,33 @@ $(function(){
         });
 
         return false;
+  });
+
+  // 行削除
+  $('body #blockArea').on('click', '.delete_row', function() {
+    var row = $(this).data('row');
+    var val = $("#idIsDelete_" + row).val();
+
+    if (val == 0) {
+      val = 1;
+      $('#block_no_' + row + ' input, #block_no_' + row + ' textarea, #block_no_' + row + ' select').attr('readonly', true);
+      $("#block_no_" + row).addClass('bg-secondary');
+      $(this).text('元に戻す');
+      $(this).removeClass('btn-secondary');
+      $(this).addClass('btn-danger');
+    } else {
+      val = 0;
+      $('#block_no_' + row + ' input, #block_no_' + row + ' textarea, #block_no_' + row + ' select').attr('readonly', false);
+      $("#block_no_" + row).removeClass('bg-secondary');
+      $(this).text('削除');
+      $(this).removeClass('btn-danger');
+      $(this).addClass('btn-secondary');
+    }
+
+    $("#idIsDelete_" + row).val(val);
+
+    return false;
+
   });
 })
 </script>

@@ -1,9 +1,9 @@
 <div class="title_area">
-      <h1>機械とURL</h1>
+      <h1>表示端末</h1>
       <div class="pankuzu">
         <ul>
           <?= $this->element('pankuzu_home'); ?>
-          <li><span>機械とURL</span></li>
+          <li><span>表示端末</span></li>
         </ul>
       </div>
     </div>
@@ -33,7 +33,9 @@ $count['total'] = $data_query->count();
           <colgroup>
             <col style="width: 74px;">
             <col>
-            <col style="width: 150px;">
+            <col style="width: 300px;">
+            <col style="width: 200px;">
+            <col style="width: 100px;">
           <?php if (!$is_search): ?>
             <col style="width: 150px;">
           <?php endif; ?>
@@ -42,7 +44,9 @@ $count['total'] = $data_query->count();
 
             <tr>
               <th >状態</th>
-              <th style="text-align:left;">コンテンツ名</th>
+              <th style="text-align:left;">名前</th>
+              <th>表示コンテンツ</th>
+              <th>URL</th>
               <th>操作</th>
             <?php if (!$is_search): ?>
               <th>並び順</th>
@@ -73,6 +77,24 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
 
               <td>
                 <?= $this->Html->link($data->name, ['action' => 'edit', $data->id, '?' => []], ['class' => 'btn-block text-left'])?>
+              </td>
+
+              <td>
+              <?php if ($data->content_id): ?>
+                <?= $data->content->name; ?>
+                <span class="btn_area">
+                  <a href="<?= $this->Url->build(['controller' => 'contents', 'action' => 'edit', $data->content_id]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> 編集</a>
+                </span>
+                <?php else: ?>
+                  （未設定）
+                <?php endif; ?>
+              </td>
+
+              <td>
+                <?php $url = '/view/' . $site_config->slug . '/' . trim($data->url, '/') . '/'; ?>
+                <a href="<?= $url; ?>" target="_blank">
+                  <?= $url; ?>
+                </a>
               </td>
 
 

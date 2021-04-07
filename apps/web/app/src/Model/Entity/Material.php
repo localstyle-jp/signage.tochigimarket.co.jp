@@ -16,4 +16,10 @@ class Material extends AppEntity
         self::TYPE_URL => 'URL',
         self::TYPE_PAGE => 'ページ'
     ];
+    static $validation_list = [
+        self::TYPE_IMAGE => 'image',
+        self::TYPE_MOVIE => 'movie',
+        self::TYPE_URL => 'url',
+        self::TYPE_PAGE => 'page'
+    ];
 }
