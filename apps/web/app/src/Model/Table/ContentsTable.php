@@ -10,7 +10,7 @@ class ContentsTable extends AppTable {
     // テーブルの初期値を設定する
     public $defaultValues = [
         "id" => null,
-        'type' => 1
+        "serial_no" => 0
     ];
 
     public $attaches = array('images' =>
@@ -44,6 +44,19 @@ class ContentsTable extends AppTable {
             ;
         
         return $validator;
+    }
+
+    public function serialIncrement($id) {
+        $content = $this->find()->where(['Contents.id' => $id])->first();
+
+        if (empty($content)) {
+            return;
+        }
+
+        $entity = $this->patchEntity($content, ['serial_no' => $content->serial_no + 1]);
+        $this->save($entity);
+
+        return;
     }
 
 }

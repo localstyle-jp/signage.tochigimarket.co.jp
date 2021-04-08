@@ -27,7 +27,11 @@ class MachineBoxesController extends AppController
     {
 
         $this->Contents = $this->getTableLocator()->get('Contents');
+        $this->ContentMaterials = $this->getTableLocator()->get('ContentMaterials');
         $this->SiteConfigs = $this->getTableLocator()->get('SiteConfigs');
+        $this->MachineContents = $this->getTableLocator()->get('MachineContents');
+        $this->MachineMaterials = $this->getTableLocator()->get('MachineMaterials');
+        $this->Materials = $this->getTableLocator()->get('Materials');
 
 
         parent::initialize();
@@ -51,6 +55,7 @@ class MachineBoxesController extends AppController
         $query = [];
 
         $query['sch_name'] = $this->request->getQuery('sch_name');
+        $query['sch_content'] = $this->request->getQuery('sch_content');
 
 
         return $query;
@@ -60,8 +65,8 @@ class MachineBoxesController extends AppController
         $cond = [];
         $cnt = 0;
 
-        if ($query['sch_name']) {
-            $cond[$cnt++] = "%{$query['sch_name']}%";
+        if ($query['sch_content']) {
+            $cond[$cnt++]['MachineBoxes.content_id'] = $query['sch_content'];
         }
 
         return $cond;
@@ -76,7 +81,8 @@ class MachineBoxesController extends AppController
         $cond = $this->_getConditions($query);
 
         $contain = [
-            'Contents'
+            'Contents',
+            'MachineContents'
         ];
 
         $is_search = ($this->request->getQuery() ? true : false);
@@ -103,6 +109,29 @@ class MachineBoxesController extends AppController
 
         $associated = [];
 
+        $site_config_id = $this->getSiteId();
+        $site_config = $this->SiteConfigs->find()->where(['SiteConfigs.id' => $site_config_id])->first();
+
+        if ($this->request->is(['put', 'post'])) {
+            $this->request->data['site_config_id'] = $site_config_id;
+        }
+
+        $callback = function($id) {
+            // MachineContentsなければ作る
+            $entity = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $id])->first();
+            if (empty($entity->machine_content_id)) {
+                $machine_content = $this->MachineContents->newEntity($this->MachineContents->defaultValues);
+                $this->MachineContents->save($machine_content);
+                // MachineBox紐付け
+                $machine_box = $this->MachineBoxes->patchEntity($entity, ['machine_content_id' => $machine_content->id]);
+                $this->MachineBoxes->save($machine_box);
+            } else {
+                $machine_content = $this->MachineContents->find()->where(['MachineContents.id' => $entity->machine_content_id])->first();
+            }
+            // Contents → MachineContents
+            $this->transferMachine($entity->content_id, $machine_content->id);
+        };
+
         $options = [
             'callback' => $callback,
             'get_callback' => $get_callback,
@@ -110,8 +139,21 @@ class MachineBoxesController extends AppController
             'associated' => $associated
         ];
 
+        $this->set(compact('site_config'));
+
         parent::_edit($id, $options);
 
+    }
+
+    public function updateContent($id) {
+
+        $box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $id])->first();
+
+        if (!empty($box)) {
+            $this->transferMachine($box->content_id, $box->machine_content_id);
+        }
+
+        return $this->redirect(['action' => 'index']);
     }
 
 
@@ -146,7 +188,7 @@ class MachineBoxesController extends AppController
         $list = array();
 
         $config_id = $this->getSiteId();
-        $list['content_list'] = $this->Contents->find('list')->where(['Contents.site_config_id' => $config_id])->all()->toArray();
+        $list['content_list'] = $this->Contents->find('list')->where(['Contents.site_config_id' => $config_id])->order(['Contents.position' => 'ASC'])->all()->toArray();
 
 
         if (!empty($list)) {
@@ -157,29 +199,58 @@ class MachineBoxesController extends AppController
         return $list;
     }
 
-    public function popList() {
-        $this->viewBuilder()->setLayout("pop");
+    /**
+     * [transferMachine description]
+     * @param  [type] $source_id 転送元コンテンツID
+     * @param  [type] $dest      転送先マシンコンテンツEntity
+     * @return [type]            [description]
+     */
+    private function transferMachine($source_id, $dest_id) {
 
-        $query = $this->_getQueryPop();
-        $cond = $this->_getConditionsPop($query);
-        $this->set(compact('query'));
+        // try {
+            $source = $this->Contents->get($source_id);
+            if (empty($source)) {
+                return false;
+            }
 
-        $this->_lists($cond, ['limit' => 10, 'order' => ['Materials.position' => 'ASC']]);
+            $update = $source->toArray();
+            unset($update['id']);
+            unset($update['created']);
+            unset($update['modified']);
 
+            // 転送先
+            $dest = $this->MachineContents->find()->where(['MachineContents.id' => $dest_id])->first();
+            if (empty($dest)) {
+                return false;
+            }
+
+            $entity = $this->MachineContents->patchEntity($dest, $update);
+
+            $r = $this->MachineContents->save($entity);
+
+            if (!$r) {
+                return false;
+            }
+
+            $content_materials = $this->ContentMaterials->find()->where(['ContentMaterials.content_id' => $source_id])->contain(['Materials'])->all();
+            if ($content_materials->isEmpty()) {
+                return false;
+            }
+
+            foreach ($content_materials as $source_material) {
+                $material = $this->MachineMaterials->newEntity($source_material->material->toArray());
+                $material->machine_content_id = $entity->id;
+                $material->position = $source_material->position;
+                $material->view_second = $source_material->view_second;
+                $this->MachineMaterials->save($material);
+
+                // 画像コピー
+                $this->Materials->copyAttachement($source_material->material->id, 'MachineMaterials');
+            }
+        // } catch (Exception $e) {
+
+        // }
+
+        return true;
     }
-    private function _getQueryPop() {
-        $query = [];
-
-        $query = $this->_getQuery();
-
-        return $query;
-    }
-
-    private function _getConditionsPop($query) {
-        $cond = [];
-
-        $cond = $this->_getConditions($query);
-        return $cond;
-    }
-
 }

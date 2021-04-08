@@ -5,11 +5,12 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\Utility\Inflector;
 
-class ContentMaterialsTable extends AppTable {
+class MachineContentsTable extends AppTable {
 
     // テーブルの初期値を設定する
     public $defaultValues = [
         "id" => null,
+        "serial_no" => 0
     ];
 
     public $attaches = array('images' =>
@@ -19,13 +20,10 @@ class ContentMaterialsTable extends AppTable {
                 // 
     public function initialize(array $config)
     {
-        // $this->addBehavior('Position', [
-        //         'order' => 'DESC',
-        //         'group' => ['content_id']
-        //     ]);
+        
 
-        $this->belongsTo('Contents');
-        $this->belongsTo('Materials');
+        $this->hasMany('MachineMaterials')->setDependent(true);
+        $this->hasOne('MachineBoxes')->setDependent(false);
 
 
         parent::initialize($config);
@@ -33,9 +31,11 @@ class ContentMaterialsTable extends AppTable {
 
     public function validationDefault(Validator $validator)
     {
+        $validator->setProvider('App', 'App\Validator\AppValidation');
+
         $validator
-            ->notEmpty('view_second', '入力してください')
-            ->add('view_second', 'num', ['rule' => ['numeric'],'message' => ('数字で入力してください') ])
+            ->notEmpty('name', '入力してください')
+            ->add('name', 'maxLength', ['rule' => ['maxLength', 40],'message' => __('40字以内で入力してください') ])
             ;
         
         return $validator;

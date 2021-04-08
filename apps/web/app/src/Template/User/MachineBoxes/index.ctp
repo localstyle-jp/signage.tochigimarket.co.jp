@@ -20,6 +20,30 @@ $count['total'] = $data_query->count();
     
     <div class="content_inr">
 
+      <div class="box">
+          <h3>検索条件</h3>
+          <div class="table_area form_area">
+<?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'url' => array('action' => 'index'), 'class' => '')); ?>
+              <table class=" table border-0">
+                  <tr>
+                    <td class="border-0" style="width: 120px;text-align: center;vertical-align: middle;">表示コンテンツ</td>
+                    <td class="border-0" colspan="3">
+                      <?= $this->Form->input('sch_content', ['type' => 'select',
+                                                             'value' => $query['sch_content'],
+                                                             'options' => $content_list,
+                                                             'empty' => ['0' => '全て']
+                                                           ]); ?>
+                    </td>
+                  </tr>
+              </table>
+
+              <div class="btn_area">
+                <a class="btn btn-secondary" href="<?= $this->Url->build(['action' => 'index']); ?>"><i class="fas fa-eraser"></i> クリア</a>
+                <button class="btn btn-primary" onclick="document.fm_search.submit();"><i class="fas fa-search"></i> 検索開始</button>
+              </div>
+<?= $this->Form->end(); ?>
+          </div>
+      </div>
 
       <div class="box">
         <h3 class="box__caption--count"><span>登録一覧</span><span class="count"><?php echo $count['total']; ?>件の登録</span></h3>
@@ -35,7 +59,7 @@ $count['total'] = $data_query->count();
             <col>
             <col style="width: 300px;">
             <col style="width: 200px;">
-            <col style="width: 100px;">
+            <col style="width: 300px;">
           <?php if (!$is_search): ?>
             <col style="width: 150px;">
           <?php endif; ?>
@@ -45,8 +69,7 @@ $count['total'] = $data_query->count();
             <tr>
               <th >状態</th>
               <th style="text-align:left;">名前</th>
-              <th>表示コンテンツ</th>
-              <th>URL</th>
+              <th colspan="2">表示コンテンツ [シリアルNo.]</th>
               <th>操作</th>
             <?php if (!$is_search): ?>
               <th>並び順</th>
@@ -80,27 +103,37 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
               </td>
 
               <td>
-              <?php if ($data->content_id): ?>
-                <?= $data->content->name; ?>
-                <span class="btn_area">
-                  <a href="<?= $this->Url->build(['controller' => 'contents', 'action' => 'edit', $data->content_id]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> 編集</a>
-                </span>
+              <?php if ($data->machine_content_id): ?>
+                <?= $data->machine_content->name; ?> [<?= $data->machine_content->serial_no; ?>]
+                
                 <?php else: ?>
                   （未設定）
                 <?php endif; ?>
               </td>
 
               <td>
-                <?php $url = '/view/' . $site_config->slug . '/' . trim($data->url, '/') . '/'; ?>
-                <a href="<?= $url; ?>" target="_blank">
-                  <?= $url; ?>
-                </a>
+              <?php if ($data->machine_content_id): ?>
+                <span class="btn_area">
+                  <a href="<?= $this->Url->build(['controller' => 'contents', 'action' => 'edit', $data->content_id]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> コンテンツの編集</a>
+
+                
+                </span>
+              <?php endif; ?>
               </td>
 
 
               <td>
+                <?php $url = '/view/' . $site_config->slug . '/' . trim($data->url, '/') . '/'; ?>
                 <div class="btn_area" style="text-align:left;">
                   <a href="<?= $this->Url->build(['action' => 'edit', $data->id]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> 編集</a>
+                  <a href="<?= $url; ?>" class="btn btn-info btn-sm" target="_blank"><i class="fas fa-search"></i> プレビュー</a>
+                <?php if ($data->content->serial_no != $data->machine_content->serial_no): ?>
+                  <a href="javascript:void(0);" class="btn btn-warning btn-sm" style="color:#212529;" id="btnUpdateContent" data-id="<?= $data->id; ?>"><i class="fas fa-sync-alt"></i> 最新版にする</a>
+                  <?= $this->Form->create(false, ['type' => 'get', 'url' => ['action' => 'update-content', $data->id], 'id' => 'fm_update_'.$data->id]); ?>
+                  <?= $this->Form->end(); ?>
+                <?php else: ?>
+                  <a href="#" class="btn btn-success btn-sm disabled" aria-disabled="true"><i class="fas fa-sync-alt"></i> 最新版です</a>
+                <?php endif; ?>
                 </div>
               </td>
 
@@ -140,7 +173,9 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
     </div>
 </div>
 <?php $this->start('beforeBodyClose');?>
-<link rel="stylesheet" href="/admin/common/css/cms.css">
+<link rel="stylesheet" href="/user/common/css/cms.css">
+<script src="/user/common/js/jquery.ui.datepicker-ja.js"></script>
+<script src="/user/common/js/cms.js"></script>
 <script>
 function change_category() {
   $("#fm_search").submit();
@@ -148,6 +183,30 @@ function change_category() {
 }
 $(function () {
 
+$("#btnUpdateContent").on('click', function() {
+  var id = $(this).data('id');
+
+  alert_dlg('現在のコンテンツを最新版にします。元に戻すことは出来ません。よろしいですか？', 
+    {
+      buttons:[
+        {
+          text:'いいえ',
+          click: function(){
+            $(this).dialog("close");
+          }
+        },
+        {
+          text:'はい',
+          click: function(){
+            $("#fm_update_" + id).submit();
+            $(this).dialog("close");
+          }
+        }
+    ]
+    });
+
+  return false;
+});
 
 
 })

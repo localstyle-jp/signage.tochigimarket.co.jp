@@ -34,6 +34,9 @@ class HomeController extends AppController
 {
     public function initialize()
     {
+
+        $this->MachineBoxes = $this->getTableLocator()->get('MachineBoxes');
+
         parent::initialize();
 
     }
@@ -97,8 +100,21 @@ class HomeController extends AppController
             $this->setCommon();
 
             $this->setList();
+
+            $machines = $this->getMachines();
+            $this->set(compact('machines'));
         }
         $this->render($view);
+    }
+
+    private function getMachines() {
+        $machines = [];
+
+        $site_config_id = $this->getSiteId();
+
+        $machines = $this->MachineBoxes->find()->where(['MachineBoxes.site_config_id' => $site_config_id])->contain(['SiteConfigs','Contents', 'MachineContents'])->all();
+
+        return $machines;
     }
 
     public function logout() {

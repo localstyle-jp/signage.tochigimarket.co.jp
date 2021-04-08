@@ -30,6 +30,9 @@ class ContentController extends AppController
         $this->Contents = $this->getTableLocator()->get('Contents');
         $this->UserSites = $this->getTableLocator()->get('UserSites');
         $this->MachineBoxes = $this->getTableLocator()->get('MachineBoxes');
+        $this->MachineContents = $this->getTableLocator()->get('MachineContents');
+
+
 
 
         $this->modelName = 'Infos';
@@ -57,6 +60,9 @@ class ContentController extends AppController
 
         $query = $this->_getQuery();
 
+        if (empty($content) || empty($content->content_materials)) {
+            throw new NotFoundException('ページが見つかりません');
+        }
 
         // アイテム
         $items = [];
@@ -103,6 +109,66 @@ class ContentController extends AppController
         $this->set(compact('content', 'query', 'items', 'scene_list', 'Material', 'materials', 'material_youtube'));
 
 
+        
+    }
+
+    public function machine($id) {
+
+        // コンテンツ
+        $content = $this->MachineContents->find()->where(['MachineContents.id' => $id])
+                                    ->contain(['MachineMaterials' => function($q) {
+                                        return $q->order(['MachineMaterials.position' => 'ASC']);
+                                    }])
+                                    ->first();
+
+        $query = $this->_getQuery();
+
+
+        // アイテム
+        $items = [];
+        $scene_list = [];
+        $materials = [];
+        $material_youtube = [];
+        $item_count = 0;
+        foreach ($content->machine_materials as $material) {
+            $item_count++;
+
+            $item = [];
+            $item['time'] = intval($material->view_second) * 1000;
+            if ($material->type != Material::TYPE_MOVIE) {
+                $item['action'] = 'next';
+            } else {
+                $item['action'] = 'play_video_' . $item_count;
+            }
+
+            $items[strval($item_count)] = $item;
+            $scene_list[] = intval($item_count);
+
+            // 素材
+            $data = [];
+            $data['class'] = 'box type_' . $item_count;
+            if ($material->type == Material::TYPE_IMAGE) {
+                $data['content'] = '<img src="' . $material->attaches['image']['0'] . '" alt="">';
+            } elseif ($material->type == Material::TYPE_URL) {
+                $data['content'] = '<iframe src="' . $material->url . '" width="1920" height="1080"></iframe>';
+            } elseif ($material->type == Material::TYPE_MOVIE) {
+                $data['content'] = '<div id="player_' . $item_count . '"></div>';
+                $material_youtube['no' . $item_count] = [
+                    'no' => $item_count,
+                    'obj' => null,
+                    'error_flg' => 0,
+                    'code' => $material->movie_tag
+                ];
+            }
+            
+            $materials[] = $data;
+        }
+
+        $Material = new Material;
+
+        $this->set(compact('content', 'query', 'items', 'scene_list', 'Material', 'materials', 'material_youtube'));
+
+        $this->render('index');
         
     }
 

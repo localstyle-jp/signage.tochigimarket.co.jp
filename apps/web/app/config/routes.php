@@ -64,6 +64,8 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/content/:id', ['controller' => 'content', 'action' => 'index'])
            ->setPass(['id']);
 
+    $routes->connect('/content/machine/:id', ['controller' => 'content', 'action' => 'machine'])
+           ->setPass(['id']);
 
     $routes->connect('/:controller/', ['action' => 'index', 'prefix' => 'user']);
     $routes->connect('/:controller/:action', ['prefix' => 'user']);

@@ -1,0 +1,115 @@
+<?php 
+namespace App\Model\Table;
+
+use Cake\ORM\Table;
+use Cake\Validation\Validator;
+use Cake\Utility\Inflector;
+
+class MachineMaterialsTable extends AppTable {
+
+    // テーブルの初期値を設定する
+    public $defaultValues = [
+        "id" => null,
+        'type' => 1
+    ];
+
+    public $attaches = array('images' =>
+                            array('image' => array('extensions' => array('jpg', 'jpeg', 'gif', 'png'),
+                                                'width' => 1200,
+                                                'height' => 1200,
+                                                'file_name' => 'img_%d_%s',
+                                                'thumbnails' => array(
+                                                    's' => array(
+                                                        'prefix' => 's_',
+                                                        'width' => 320,
+                                                        'height' => 240
+                                                        )
+                                                    ),
+                                                )
+                                //image_1
+                                ),
+                            'files' => array(),
+                            );
+                // 
+    public function initialize(array $config)
+    {
+        // $this->addBehavior('Position', [
+        //         'order' => 'ASC',
+        //         // 'group' => ['parent_id']
+        //     ]);
+
+        $this->addBehavior('FileAttache');
+        
+        $this->belongsTo('MachineContents');
+
+
+        parent::initialize($config);
+    }
+
+    public function validationDefault(Validator $validator)
+    {
+        // $validator->setProvider('App', 'App\Validator\AppValidation');
+
+        $validator
+            ->notEmpty('name', '入力してください')
+            ->add('name', 'maxLength', ['rule' => ['maxLength', 40],'message' => ('40字以内で入力してください') ])
+            ;
+        
+        return $validator;
+    }
+
+    // 画像
+    public function validationImageNew(Validator $validator) {
+
+        $validator = $this->validationDefault($validator);
+
+        $validator
+            ->notEmpty('image', '選択してください')
+        ;
+
+        return $validator;
+    }
+
+    public function validationImageUpdate(Validator $validator) {
+        $validator = $this->validationDefault($validator);
+
+        $validator
+            ->notEmpty('_old_image', '選択してください')
+        ;
+
+        return $validator;
+    }
+
+    // 動画
+    public function validationMovieNew(Validator $validator) {
+        $validator = $this->validationDefault($validator);
+
+        $validator
+            ->notEmpty('movie_tag', '入力してください')
+            ->notEmpty('view_second', '情報取得してください')
+            ->add('view_second', 'comaprison', ['rule' => ['comparison', '>', 0], 'message' => '情報取得してください'])
+        ;
+
+        return $validator;
+    }
+
+    public function validationMovieUpdate(Validator $validator) {
+
+        return $this->validationMovieNew($validator);
+
+    }
+
+    // URL
+    public function validationUrlNew(Validator $validator) {
+        $validator = $this->validationDefault($validator);
+
+        $validator
+            ->notEmpty('url', '入力してください')
+        ;
+
+        return $validator;
+    }
+    public function validationUrlUpdate(Validator $validator) {
+        return $this->validationUrlNew($validator);
+    }
+}

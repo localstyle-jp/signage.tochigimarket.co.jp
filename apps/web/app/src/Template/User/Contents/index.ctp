@@ -33,7 +33,9 @@ $count['total'] = $data_query->count();
           <colgroup>
             <col style="width: 74px;">
             <col>
+            <col style="width: 100px;">
             <col style="width: 150px;">
+            <col style="width: 300px;">
           <?php if (!$is_search): ?>
             <col style="width: 150px;">
           <?php endif; ?>
@@ -43,6 +45,8 @@ $count['total'] = $data_query->count();
             <tr>
               <th >状態</th>
               <th style="text-align:left;">コンテンツ名</th>
+              <th>シリアルNo.</th>
+              <th>更新日時</th>
               <th>操作</th>
             <?php if (!$is_search): ?>
               <th>並び順</th>
@@ -75,10 +79,23 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
                 <?= $this->Html->link($data->name, ['action' => 'edit', $data->id, '?' => []], ['class' => 'btn-block text-left'])?>
               </td>
 
+              <td>
+                <div class="w-100 text-right">
+                  <?= $data->serial_no; ?>
+                </div>
+              </td>
+
+              <td>
+                <div class="w-100 text-center">
+                  <?= $data->modified->format('Y/m/d H:i'); ?>
+                </div>
+              </td>
 
               <td>
                 <div class="btn_area" style="text-align:left;">
                   <a href="<?= $this->Url->build(['action' => 'edit', $data->id]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> 編集</a>
+                  <a href="<?= $this->Url->build(['controller' => 'machine-boxes', 'action' => 'index', '?' => ['sch_content' => $data->id]]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-desktop"></i> 端末一覧</a>
+                  <a href="/content/<?= $data->id; ?>" class="btn btn-info btn-sm" target="_blank"><i class="fas fa-search"></i> プレビュー</a>
                 </div>
               </td>
 

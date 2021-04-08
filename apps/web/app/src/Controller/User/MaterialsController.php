@@ -57,7 +57,7 @@ class MaterialsController extends AppController
         $cnt = 0;
 
         if ($query['sch_name']) {
-            $cond[$cnt++] = "%{$query['sch_name']}%";
+            $cond[$cnt++]['Materials.name like'] = "%{$query['sch_name']}%";
         }
 
         return $cond;

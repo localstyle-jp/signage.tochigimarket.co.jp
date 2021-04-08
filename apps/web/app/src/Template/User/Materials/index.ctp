@@ -1,3 +1,5 @@
+<?php use App\Model\Entity\Material; ?>
+
 <div class="title_area">
       <h1>素材</h1>
       <div class="pankuzu">
@@ -33,6 +35,7 @@ $count['total'] = $data_query->count();
           <colgroup>
             <col style="width: 74px;">
             <col>
+            <col style="width: 100px;">
             <col style="width: 150px;">
           <?php if (!$is_search): ?>
             <col style="width: 150px;">
@@ -43,6 +46,7 @@ $count['total'] = $data_query->count();
             <tr>
               <th >状態</th>
               <th style="text-align:left;">素材名</th>
+              <th>タイプ</th>
               <th>操作</th>
             <?php if (!$is_search): ?>
               <th>並び順</th>
@@ -73,6 +77,10 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
 
               <td>
                 <?= $this->Html->link($data->name, ['action' => 'edit', $data->id, '?' => []], ['class' => 'btn-block text-left'])?>
+              </td>
+
+              <td>
+                <?= Material::$type_list[$data->type]; ?>
               </td>
 
 

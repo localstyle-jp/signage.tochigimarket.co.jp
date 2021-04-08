@@ -17,14 +17,13 @@ use App\Model\Entity\Material;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class ContentsController extends AppController
+class MachineContentsController extends AppController
 {
     private $list = [];
 
     public function initialize()
     {
-        $this->Materials = $this->getTableLocator()->get('Materials');
-        $this->ContentMaterials = $this->getTableLocator()->get('ContentMaterials');
+        $this->MachineMaterials = $this->getTableLocator()->get('MachineMaterials');
 
         parent::initialize();
     }
@@ -60,19 +59,7 @@ class ContentsController extends AppController
     }
 
     public function index() {
-        $this->checkLogin();
-
-        $this->setList();
-
-        $query = $this->_getQuery();
-        $cond = $this->_getConditions($query);
-
-        $is_search = ($this->request->getQuery() ? true : false);
-
-        $this->set(compact('query', 'is_search'));
-
-        $this->_lists($cond, ['order' => 'position ASC',
-                              'limit' => null]);
+        return $this->redirect(['controller' => 'machine-boxes', 'action' => 'index']);
     }
 
     public function edit($id=0) {
@@ -86,7 +73,7 @@ class ContentsController extends AppController
         $rates = [];
         $delete_ids = [];
 
-        $associated = ['ContentMaterials'];
+        $associated = ['MachineMaterials'];
 
         $user_id = $this->getUserId();
         // $this->_getUserSite($user_id);

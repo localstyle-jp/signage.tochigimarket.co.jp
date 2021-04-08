@@ -44,6 +44,7 @@
               <td>表示コンテンツ</td>
               <td>
                 <?= $this->Form->input('content_id', ['type' => 'select', 'options' => $content_list, 'empty' => ['0' => '選択してください']]); ?>
+
               </td>
             </tr>
 
@@ -56,7 +57,22 @@
 
         </table>
 
+      <?php if ($data['id']): ?>
+        <table class="vertical_table table__meta">
+          <tr>
+            <td>フルパス</td>
+            <td>
+              <?php $url = $this->Url->build('/', true) . 'view/' . $site_config->slug . '/' . trim($entity->url, '/') . '/'; ?>
+              <?= $this->Form->input('_full_path', ['type' => 'text', 'class' => 'w-100', 'readonly' => true, 'value' => $url]); ?>
+            </td>
+          </tr>
+        </table>
+      <?php endif; ?>
+
         <div class="btn_area">
+        <?php if ($data['id']): ?>
+          <div class="text-danger"><strong>※「変更する」ボタンを押すと最新版のコンテンツに更新されます。</strong></div>
+        <?php endif; ?>
         <?php if (!empty($data['id']) && $data['id'] > 0){ ?>
             <a href="#" class="btn btn-primary w-20 rounded-pill submitButton"><i class="fas fa-check"></i> 変更する</a>
           <?php if (empty($is_import_data)): ?>

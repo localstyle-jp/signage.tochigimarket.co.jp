@@ -27,6 +27,6 @@ $(function () {
 </script>
 </head>
 <body style="margin: 0; height:1080px;">
-  <iframe src="<?= $this->Url->build(['controller' => 'content', 'action' => 'index', $machine->content_id, '?' => $query]); ?>" width="1920" height="1080"></iframe>
+  <iframe src="<?= $this->Url->build(['controller' => 'content', 'action' => 'machine', $machine->machine_content_id, '?' => $query]); ?>" width="1920" height="1080"></iframe>
 </body>
 </html>

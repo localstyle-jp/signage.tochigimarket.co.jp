@@ -18,5 +18,5 @@ RewriteRule ^(.*)$ index.php [QSA,L]
 
 AuthType Basic
 AuthName "Input your ID and Password."
-AuthUserFile /home/ing-system/public_html/.htpasswd
+AuthUserFile /home/test-signage/public_html/.htpasswd
 require valid-user

@@ -27,6 +27,8 @@ class MachineBoxesTable extends AppTable {
         $this->belongsTo('SiteConfigs');
         $this->belongsTo('Contents');
 
+        $this->belongsTo('MachineContents');
+
 
         parent::initialize($config);
     }

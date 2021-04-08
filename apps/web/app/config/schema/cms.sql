@@ -55,6 +55,7 @@ CREATE TABLE contents
   position int unsigned DEFAULT 0 NOT NULL,
   status enum('publish','draft') DEFAULT 'publish' NOT NULL,
   name varchar(40) DEFAULT '' NOT NULL,
+  serial_no int unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
@@ -90,6 +91,33 @@ CREATE TABLE machine_boxes
   PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+-- 機械箱コンテンツ
+CREATE TABLE machine_contents
+(
+  id int unsigned NOT NULL AUTO_INCREMENT,
+  created datetime NOT NULL,
+  modified datetime NOT NULL,
+  site_config_id int unsigned DEFAULT 0 NOT NULL,
+  position int unsigned DEFAULT 0 NOT NULL,
+  status enum('publish','draft') DEFAULT 'publish' NOT NULL,
+  name varchar(40) DEFAULT '' NOT NULL,
+  serial_no int unsigned DEFAULT 0 NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+
+-- 機械箱コンテンツ素材
+CREATE TABLE machine_content_materials
+(
+  id int unsigned NOT NULL AUTO_INCREMENT,
+  created datetime NOT NULL,
+  modified datetime NOT NULL,
+  machine_content_id int unsigned DEFAULT 0 NOT NULL,
+  material_id int unsigned DEFAULT 0 NOT NULL,
+  position int unsigned DEFAULT 0 NOT NULL,
+  view_second int unsigned DEFAULT 0 NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- 素材
 CREATE TABLE materials

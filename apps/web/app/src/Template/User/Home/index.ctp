@@ -39,6 +39,92 @@
     </div>
   <?php endforeach; ?>
 
-</div>
+    <div class="box">
+      <h3>表示端末</h3>
+      <div class="table_area">
+      <?php if (!empty($machines)): ?>
+        <div class="row">
+        <?php foreach ($machines as $key => $data): ?>
+        <?php $status = ($data->status == 'publish' ? true : false); ?>
+        <div class="col-lg-4 mb-5">
+          <div class="card" style="width: 300px;">
+            <div class="card-header">
+              <?= $this->element('status_button', ['status' => $status, 'id' => $data->id]); ?>
+              </div>
+            <div class="card-body">
+              <h5 class="card-title"><?= h($data->name); ?></h5>
+              <div class="btn_area">
+                <a href="<?= '/view/' . $data->site_config->slug . '/' . trim($data->url, '/') . '/'; ?>" target="_blank" class="btn btn-info btn-sm"><i class="fas fa-search"></i> プレビュー</a>
+                <a href="<?= $this->Url->build(['controller' => 'machine-boxes','action' => 'edit', $data->id]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> 編集</a>
+              
+              </div>
 
+              <div class="btn_area text-center mt-2">
+              <?php if ($data->content_id): ?>
+                <?php if (empty($data->machine_content) || $data->content->serial_no != $data->machine_content->serial_no): ?>
+                  <a href="javascript:void(0);" class="btn btn-warning btn-sm" style="color:#212529;" id="btnUpdateContent" data-id="<?= $data->id; ?>"><i class="fas fa-sync-alt"></i> 最新版にする</a>
+                  <?= $this->Form->create(false, ['type' => 'get', 'url' => ['action' => 'update-content', $data->id], 'id' => 'fm_update_'.$data->id]); ?>
+                  <?= $this->Form->end(); ?>
+                <?php else: ?>
+                  <a href="#" class="btn btn-success btn-sm " aria-disabled="true" id="btnLastVersion"><i class="fas fa-sync-alt"></i> 最新版です</a>
+                <?php endif; ?>
+              <?php endif; ?>
+              </div>
+
+            </div>
+            <div class="card-footer">
+              <?= $this->element('card-sort', ['id' => $data->id, 'query' => [], 'key' => $key, 'count' => count($machines) - 1]); ?>
+            </div>
+          </div>
+        </div>
+        <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+
+      </div>
+    </div>
+
+</div>
+<?php $this->start('beforeBodyClose');?>
+<script src="/user/common/js/jquery.ui.datepicker-ja.js"></script>
+<script src="/user/common/js/cms.js"></script>
+<script>
+function change_category() {
+  $("#fm_search").submit();
+  
+}
+$(function () {
+
+$("#btnUpdateContent").on('click', function() {
+  var id = $(this).data('id');
+
+  alert_dlg('現在のコンテンツを最新版にします。元に戻すことは出来ません。よろしいですか？', 
+    {
+      buttons:[
+        {
+          text:'いいえ',
+          click: function(){
+            $(this).dialog("close");
+          }
+        },
+        {
+          text:'はい',
+          click: function(){
+            $("#fm_update_" + id).submit();
+            $(this).dialog("close");
+          }
+        }
+    ]
+    });
+
+  return false;
+});
+
+$("#btnLastVersion").on('click', function() {
+  alert_dlg('最新版です');
+});
+
+})
+</script>
+<?php $this->end();?>
 
