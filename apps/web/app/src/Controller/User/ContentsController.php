@@ -142,6 +142,11 @@ class ContentsController extends AppController
                 return $q->contain(['Materials'])->order(['ContentMaterials.position' => 'ASC']);
             } 
         ];
+
+        // リダイレクト
+        if ($this->request->getQuery('mode') == 'machine') {
+            $redirect = ['controller' => 'machine-boxes', 'action' => 'index', '?' => ['sch_content' => $id]];
+        }
         
         $options = [
             'callback' => $callback,

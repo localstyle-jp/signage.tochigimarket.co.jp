@@ -56,6 +56,10 @@ class MaterialsController extends AppController
         $cond = [];
         $cnt = 0;
 
+        $site_config_id = $this->getSiteId();
+
+        $cond[$cnt++]['Materials.site_config_id'] = $site_config_id;
+
         if ($query['sch_name']) {
             $cond[$cnt++]['Materials.name like'] = "%{$query['sch_name']}%";
         }
@@ -90,6 +94,9 @@ class MaterialsController extends AppController
         $validate = 'default';
 
         if ($this->request->is(['put', 'post'])) {
+
+            $site_config_id = $this->getSiteId();
+            $this->request->data['site_config_id'] = $site_config_id;
 
             $post_data = $this->request->getData();
 

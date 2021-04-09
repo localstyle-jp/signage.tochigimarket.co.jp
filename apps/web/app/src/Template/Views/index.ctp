@@ -28,5 +28,45 @@ $(function () {
 </head>
 <body style="margin: 0; height:1080px;">
   <iframe src="<?= $this->Url->build(['controller' => 'content', 'action' => 'machine', $machine->machine_content_id, '?' => $query]); ?>" width="1920" height="1080"></iframe>
+
+<script src="/user/common/js/cms-slim.js"></script>
+<script>
+var reload = 1;
+
+var disableReload = function(id) {
+  var url = '/v1/management/disable-reload.json';
+  var params = {
+    id: id
+  };
+  ajax_get(url, 'post', params, function(a) {
+    if (a.error.code == 0) {
+    }
+  });
+};
+
+var checkReload = function(id) {
+  var url = '/v1/management/is-reload.json';
+  var params = {
+    id: id
+  };
+  ajax_get(url, 'post', params, function(a) {
+    if (a.error.code == 0) {
+      if (a.result.reload_flag == 1) {
+        window.location.reload();
+      }
+    }
+  });
+};
+
+setInterval(checkReload, 10000, <?= $machine->id; ?>);
+
+$(function(){
+  if (reload == 1) {
+    disableReload(<?= $machine->id; ?>);
+    reload = 0;
+  }
+
+})
+</script>
 </body>
 </html>

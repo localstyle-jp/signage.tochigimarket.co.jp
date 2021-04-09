@@ -112,7 +112,10 @@ class HomeController extends AppController
 
         $site_config_id = $this->getSiteId();
 
-        $machines = $this->MachineBoxes->find()->where(['MachineBoxes.site_config_id' => $site_config_id])->contain(['SiteConfigs','Contents', 'MachineContents'])->all();
+        $machines = $this->MachineBoxes->find()->where(['MachineBoxes.site_config_id' => $site_config_id])
+                                        ->contain(['SiteConfigs','Contents', 'MachineContents'])
+                                        ->order(['MachineBoxes.position' => 'ASC'])
+                                        ->all();
 
         return $machines;
     }

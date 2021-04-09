@@ -57,8 +57,8 @@ $count['total'] = $data_query->count();
           <colgroup>
             <col style="width: 74px;">
             <col>
-            <col style="width: 300px;">
-            <col style="width: 200px;">
+            <col style="width: 250px;">
+            <col style="width: 150px;">
             <col style="width: 300px;">
           <?php if (!$is_search): ?>
             <col style="width: 150px;">
@@ -114,7 +114,7 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
               <td>
               <?php if ($data->machine_content_id): ?>
                 <span class="btn_area">
-                  <a href="<?= $this->Url->build(['controller' => 'contents', 'action' => 'edit', $data->content_id]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> コンテンツの編集</a>
+                  <a href="<?= $this->Url->build(['controller' => 'contents', 'action' => 'edit', $data->content_id, '?' => ['mode' => 'machine']]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> コンテンツの編集</a>
 
                 
                 </span>
@@ -128,7 +128,7 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
                   <a href="<?= $this->Url->build(['action' => 'edit', $data->id]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> 編集</a>
                   <a href="<?= $url; ?>" class="btn btn-info btn-sm" target="_blank"><i class="fas fa-search"></i> プレビュー</a>
                 <?php if ($data->content->serial_no != $data->machine_content->serial_no): ?>
-                  <a href="javascript:void(0);" class="btn btn-warning btn-sm" style="color:#212529;" id="btnUpdateContent" data-id="<?= $data->id; ?>"><i class="fas fa-sync-alt"></i> 最新版にする</a>
+                  <a href="javascript:void(0);" class="btn btn-warning btn-sm blinking" style="color:#212529;" id="btnUpdateContent" data-id="<?= $data->id; ?>"><i class="fas fa-sync-alt"></i> 最新版にする</a>
                   <?= $this->Form->create(false, ['type' => 'get', 'url' => ['action' => 'update-content', $data->id], 'id' => 'fm_update_'.$data->id]); ?>
                   <?= $this->Form->end(); ?>
                 <?php else: ?>
@@ -186,7 +186,7 @@ $(function () {
 $("#btnUpdateContent").on('click', function() {
   var id = $(this).data('id');
 
-  alert_dlg('現在のコンテンツを最新版にします。元に戻すことは出来ません。よろしいですか？', 
+  alert_dlg('現在のコンテンツを最新版にします。<br><span class="text-danger">自動的に表示端末のブラウザの再読み込みを実行します。</span><br>元に戻すことは出来ません。よろしいですか？', 
     {
       buttons:[
         {

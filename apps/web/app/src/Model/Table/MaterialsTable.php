@@ -112,4 +112,26 @@ class MaterialsTable extends AppTable {
     public function validationUrlUpdate(Validator $validator) {
         return $this->validationUrlNew($validator);
     }
+
+    // ページ
+    public function validationPageNew(Validator $validator) {
+        $validator = $this->validationDefault($validator);
+
+        $validator
+            ->notEmpty('content', '入力してください')
+            ->notEmpty('image', '選択してください')
+        ;
+
+        return $validator;
+    }
+    public function validationPageUpdate(Validator $validator) {
+        $validator = $this->validationDefault($validator);
+
+        $validator
+            ->notEmpty('content', '入力してください')
+            ->notEmpty('_old_image', '選択してください')
+        ;
+
+        return $validator;
+    }
 }

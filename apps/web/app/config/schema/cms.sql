@@ -88,6 +88,8 @@ CREATE TABLE machine_boxes
   resolution decimal(2) unsigned DEFAULT 0 NOT NULL,
   width int DEFAULT 0 NOT NULL,
   height int DEFAULT 0 NOT NULL,
+  memo text NOT NULL,
+  reload_flag decimal(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
@@ -135,6 +137,7 @@ CREATE TABLE materials
   url varchar(255) DEFAULT '' NOT NULL,
   content text NOT NULL,
   view_second int NOT NULL DEFAULT 0,
+  site_config_id int unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 

@@ -35,7 +35,7 @@
             <tr>
               <td>URL<span class="attent">※必須</span></td>
               <td>
-                <?= $this->Form->input('url', array('type' => 'text', 'maxlength' => 100,));?>
+                <?= '/view/' . $site_config->slug . '/'; ?><?= $this->Form->input('url', array('type' => 'text', 'maxlength' => 100, 'style' => 'width:200px;'));?>
                 <br><span>※URLのみを入力してください</span>
               </td>
             </tr>
@@ -45,6 +45,13 @@
               <td>
                 <?= $this->Form->input('content_id', ['type' => 'select', 'options' => $content_list, 'empty' => ['0' => '選択してください']]); ?>
 
+              </td>
+            </tr>
+
+            <tr>
+              <td>メモ</td>
+              <td>
+                <?= $this->Form->input('memo', ['type' => 'textarea', 'style' => 'height:80px;']); ?>
               </td>
             </tr>
 
@@ -64,6 +71,13 @@
             <td>
               <?php $url = $this->Url->build('/', true) . 'view/' . $site_config->slug . '/' . trim($entity->url, '/') . '/'; ?>
               <?= $this->Form->input('_full_path', ['type' => 'text', 'class' => 'w-100', 'readonly' => true, 'value' => $url]); ?>
+            </td>
+          </tr>
+
+          <tr>
+            <td>ブラウザの再読み込み</td>
+            <td>
+              <?= $this->Form->input('reload_flag', ['type' => 'checkbox', 'value' => '1', 'hiddenField' => true, 'label' => '表示端末側のブラウザを再読み込みさせます（10秒以内に実行されます）']); ?>
             </td>
           </tr>
         </table>

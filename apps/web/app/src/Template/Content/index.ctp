@@ -54,8 +54,9 @@ tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
+var player;
 <?php if(!empty($material_youtube)): ?>
-var player = <?= json_encode($material_youtube); ?>;
+player = <?= json_encode($material_youtube); ?>;
 <?php endif; ?>
 
 

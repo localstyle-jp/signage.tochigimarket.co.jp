@@ -49,8 +49,19 @@
         <div class="col-lg-4 mb-5">
           <div class="card" style="width: 300px;">
             <div class="card-header">
-              <?= $this->element('status_button', ['status' => $status, 'id' => $data->id]); ?>
+              <div class="btn_area text-center mt-2">
+              <?php if ($data->content_id): ?>
+                <?php if (empty($data->machine_content) || $data->content->serial_no != $data->machine_content->serial_no): ?>
+                  <a href="javascript:void(0);" class="btn btn-warning btn-sm blinking w-100" style="color:#212529;" id="btnUpdateContent" data-id="<?= $data->id; ?>"><i class="fas fa-sync-alt"></i> 最新版にする</a>
+                  <?= $this->Form->create(false, ['type' => 'get', 'url' => ['controller' => 'machine-boxes','action' => 'update-content', $data->id], 'id' => 'fm_update_'.$data->id]); ?>
+                  <?= $this->Form->end(); ?>
+                <?php else: ?>
+                  <a href="#" class="btn btn-success btn-sm w-100" aria-disabled="true" id="btnLastVersion"><i class="fas fa-sync-alt"></i> 最新版です</a>
+                <?php endif; ?>
+              <?php endif; ?>
               </div>
+            </div>
+
             <div class="card-body">
               <h5 class="card-title"><?= h($data->name); ?></h5>
               <div class="btn_area">
@@ -59,21 +70,11 @@
               
               </div>
 
-              <div class="btn_area text-center mt-2">
-              <?php if ($data->content_id): ?>
-                <?php if (empty($data->machine_content) || $data->content->serial_no != $data->machine_content->serial_no): ?>
-                  <a href="javascript:void(0);" class="btn btn-warning btn-sm" style="color:#212529;" id="btnUpdateContent" data-id="<?= $data->id; ?>"><i class="fas fa-sync-alt"></i> 最新版にする</a>
-                  <?= $this->Form->create(false, ['type' => 'get', 'url' => ['action' => 'update-content', $data->id], 'id' => 'fm_update_'.$data->id]); ?>
-                  <?= $this->Form->end(); ?>
-                <?php else: ?>
-                  <a href="#" class="btn btn-success btn-sm " aria-disabled="true" id="btnLastVersion"><i class="fas fa-sync-alt"></i> 最新版です</a>
-                <?php endif; ?>
-              <?php endif; ?>
-              </div>
+              
 
             </div>
             <div class="card-footer">
-              <?= $this->element('card-sort', ['id' => $data->id, 'query' => [], 'key' => $key, 'count' => count($machines) - 1]); ?>
+              <?= nl2br(h($data->memo)); ?>
             </div>
           </div>
         </div>
@@ -98,7 +99,7 @@ $(function () {
 $("#btnUpdateContent").on('click', function() {
   var id = $(this).data('id');
 
-  alert_dlg('現在のコンテンツを最新版にします。元に戻すことは出来ません。よろしいですか？', 
+  alert_dlg('現在のコンテンツを最新版にします。<br><span class="text-danger">自動的に表示端末のブラウザの再読み込みを実行します。</span><br>元に戻すことは出来ません。よろしいですか？', 
     {
       buttons:[
         {

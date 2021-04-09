@@ -41,7 +41,7 @@
               </td>
             </tr>
 
-            <tr class="imageArea">
+            <tr class="changeArea imageArea contentArea">
               <td>画像<span class="attent">※必須</span></td>
               <?php if (!empty($entity['attaches']['image']['0'])) :?>
               <td>
@@ -54,19 +54,20 @@
               <td>
               <?= $this->Form->input('image', array('type' => 'file','accept' => 'image/jpeg,image/png,image/gif', 'id' => 'idMainImage', 'class' => 'attaches'));?>
                 <br><span>※jpeg , jpg , gif , png ファイルのみ</span>
+                <br><span class="changeArea imageArea">推奨サイズ 1920 x 1080</span><span class="changeArea contentArea">推奨サイズ 960 x 540</span>
               </td>
               <?php endif;?>
             </tr>
 
 
-            <tr class="movieArea">
+            <tr class="changeArea movieArea">
               <td>動画<span class="attent">※必須</span></td>
               <td>
               <?= $this->Form->input('movie_tag', array('type' => 'text', 'maxlength' => 40, 'style' => 'width:200px;'));?>
                 <span class="btn_area">
                   <a href="javascript:void(0);" class="btn btn-info btn-sm" id="btnYoutubeInfo">情報取得</a>
                 </span>
-                <br><span>※埋め込みタグ(src部分のみ)を入力してください</span><br>
+                <br><span class="text-danger">※Youtubeの動画コードを入力してください</span><br>
                 <div id="player"></div>
                 <div>
                   <?= $this->Form->input('view_second', ['type' => 'text', 'readonly' => true, 'style' => 'width: 60px;', 'id' => 'idViewSecond', 'class' => 'text-right']); ?>秒
@@ -76,7 +77,7 @@
             </tr>
             
 
-            <tr class="urlArea">
+            <tr class="changeArea urlArea">
               <td>URL<span class="attent">※必須</span></td>
               <td>
                 <?= $this->Form->input('url', array('type' => 'text', 'maxlength' => 255,));?>
@@ -84,7 +85,7 @@
               </td>
             </tr>
 
-            <tr class="contentArea">
+            <tr class="changeArea contentArea">
               <td>コンテンツ<span class="attent">※必須</span></td>
               <td id="blockTable">
                 <div>
@@ -141,7 +142,7 @@
 <script src="/user/common/js/redactor/counter.js"></script>
 <script src="/user/common/js/redactor/fontcolor.js"></script>
 <script src="/user/common/js/redactor/fontsize.js"></script>
-<?= $this->Html->script('/user/common/js/system/pop_box'); ?>
+
 <script>
 var player;
 
@@ -150,39 +151,25 @@ tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-var pop_box = new PopBox();
 $(function(){
-  $('.imageArea').show();
-  $('.contentArea').hide();
-  $('.movieArea').hide();
-  $('.urlArea').hide();
-  if($('#typeSelect').val() != 1){
+
     select();
-  }
+
 })
 
 function select(){
   var type = $('#typeSelect').val();
+
+  $('.changeArea').hide();
+
   if(type == '1'){
     $('.imageArea').show();
-    $('.contentArea').hide();
-    $('.movieArea').hide();
-    $('.urlArea').hide();
   }else if(type == '2') {
-    $('.imageArea').hide();
-    $('.contentArea').hide();
     $('.movieArea').show();
-    $('.urlArea').hide();
   }else if(type == '3'){
-    $('.imageArea').hide();
-    $('.contentArea').hide();
-    $('.movieArea').hide();
     $('.urlArea').show();
   }else if(type == '4'){
-    $('.imageArea').show();
     $('.contentArea').show();
-    $('.movieArea').hide();
-    $('.urlArea').hide();
   }
 }
 
@@ -234,5 +221,5 @@ $(function() {
 })
 
 </script>
-
+<?= $this->Html->script('/user/common/js/info/edit'); ?>
 <?php $this->end();?>

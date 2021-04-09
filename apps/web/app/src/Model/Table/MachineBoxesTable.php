@@ -20,7 +20,7 @@ class MachineBoxesTable extends AppTable {
     public function initialize(array $config)
     {
         $this->addBehavior('Position', [
-                'order' => 'ASC',
+                'order' => 'DESC',
                 'group' => ['site_config_id']
             ]);
 
