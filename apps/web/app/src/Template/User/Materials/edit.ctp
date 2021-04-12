@@ -75,6 +75,34 @@
                 </div>
               </td>
             </tr>
+
+            <tr class="changeArea mp4Area">
+              <?php $_column = 'file'; ?>
+              <td>動画ファイル<span class="attent">※必須</span></td>
+              <td>
+                <ul>
+                  <?php if (!empty($entity['attaches'][$_column]['0'])) :?>
+                  <li class="<?= h($entity['attaches'][$_column]['extention']); ?>">
+                    <?= $this->Form->input("file_name", ['type' => 'hidden', 'maxlength' => '50', 'style' => 'width:300px;', 'placeholder' => '添付ファイル']); ?>
+                    <?= $this->Form->input("file_size", ['type' => 'hidden', 'value' => h($entity['file_size'])]); ?>
+                    <div><?= $this->Html->link('ダウンロード', $entity['attaches'][$_column]['0'], array('target' => '_blank'))?></div>
+                  </li>
+                  <?= $this->Form->input("_old_{$_column}", array('type' => 'hidden', 'value' => h($entity[$_column]))); ?>
+                <?php endif;?>
+
+                  <li>
+                    <?= $this->Form->input("file", array('type' => 'file', 'class' => 'attaches'));?>
+                    <div class="remark">※MP4(.mp4)ファイルのみ</div>
+                    <div>※ファイルサイズxxxMB以内</div>
+                  </li>
+
+                  <li>
+                    <?= $this->Form->input('view_second', ['type' => 'text', 'readonly' => false, 'style' => 'width: 60px;', 'id' => 'idViewSecond', 'class' => 'text-right']); ?>秒
+                  </li>
+                </ul>
+
+              </td>
+            </tr>
             
 
             <tr class="changeArea urlArea">
@@ -170,6 +198,8 @@ function select(){
     $('.urlArea').show();
   }else if(type == '4'){
     $('.contentArea').show();
+  }else if (type == '5') {
+    $('.mp4Area').show();
   }
 }
 

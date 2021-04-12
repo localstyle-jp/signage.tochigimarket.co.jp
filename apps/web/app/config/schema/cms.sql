@@ -109,15 +109,26 @@ CREATE TABLE machine_contents
 
 
 -- 機械箱コンテンツ素材
-CREATE TABLE machine_content_materials
+CREATE TABLE machine_materials
 (
   id int unsigned NOT NULL AUTO_INCREMENT,
   created datetime NOT NULL,
   modified datetime NOT NULL,
-  machine_content_id int unsigned DEFAULT 0 NOT NULL,
-  material_id int unsigned DEFAULT 0 NOT NULL,
   position int unsigned DEFAULT 0 NOT NULL,
-  view_second int unsigned DEFAULT 0 NOT NULL,
+  status enum('publish','draft') DEFAULT 'publish' NOT NULL,
+  role int unsigned DEFAULT 0 NOT NULL,
+  name varchar(40) DEFAULT '' NOT NULL,
+  type decimal(2) unsigned NOT NULL,
+  image varchar(100) DEFAULT '' NOT NULL,
+  movie_tag text NOT NULL,
+  url varchar(255) DEFAULT '' NOT NULL,
+  content text NOT NULL,
+  file varchar(100) DEFAULT '' NOT NULL,
+  file_name varchar(100) DEFAULT '' NOT NULL,
+  file_size int unsigned DEFAULT 0 NOT NULL,
+  file_extension varchar(10) DEFAULT '' NOT NULL,
+  view_second int DEFAULT 0 NOT NULL,
+  machine_content_id int unsigned DEFAULT 0 NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
@@ -136,6 +147,10 @@ CREATE TABLE materials
   movie_tag text NOT NULL,
   url varchar(255) DEFAULT '' NOT NULL,
   content text NOT NULL,
+  file varchar(100) NOT NULL DEFAULT '',
+  file_name varchar(100) NOT NULL DEFAULT '',
+  file_size int NOT NULL DEFAULT 0,
+  file_extension varchar(10) NOT NULL DEFAULT '',
   view_second int NOT NULL DEFAULT 0,
   site_config_id int unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (id)

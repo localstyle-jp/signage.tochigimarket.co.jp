@@ -76,6 +76,7 @@ class ViewsController extends AppController
                                     ->first();
 
         $query = $this->_getQuery();
+        $query['t'] = microtime(true);
 
         $this->set(compact('site_config', 'machine', 'content', 'query'));
 

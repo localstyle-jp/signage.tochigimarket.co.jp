@@ -55,10 +55,14 @@ var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 var player;
+var mp4;
 <?php if(!empty($material_youtube)): ?>
 player = <?= json_encode($material_youtube); ?>;
 <?php endif; ?>
 
+<?php if (!empty($material_mp4)): ?>
+mp4 = <?= json_encode(($material_mp4)); ?>;
+<?php endif; ?>
 
 function onYouTubeIframeAPIReady() {
   var playerStateEnded = function () {
@@ -66,6 +70,7 @@ function onYouTubeIframeAPIReady() {
     $.each(player, function(i, val) {
       if (player[i].error_flg == 0) {
         player[i].obj.pauseVideo();
+        player[i].obj.mute();
         player[i].obj.seekTo(0, true);
       }
     });
@@ -106,7 +111,14 @@ function onYouTubeIframeAPIReady() {
   
 }
 
-var is_connect = 0;
+function playMp4(i) {
+
+  mp4[i].obj.play();
+
+  mp4[i].obj.addEventListener("ended", function(){
+    scene_manager();
+  }, false);
+}
 
 var scene_manager = function () {
     var items = <?= json_encode($items); ?>;
@@ -128,7 +140,7 @@ var scene_manager = function () {
         });
 
         $.each(player, function(i, val) {
-          if (player[i].error_flg == 1 && is_connect == 1) {
+          if (player[i].error_flg == 1 ) {
             reload();
             return false;
           }
@@ -142,12 +154,24 @@ var scene_manager = function () {
         var flg = 0;
         $.each(player, function(i, val) {
           if (flg == 0 && player[i].error_flg == 0 && items[scene_list[index]].action == 'play_video_' + val.no) {
+            player[i].obj.mute();
             player[i].obj.playVideo();
             __next();
             flg = 1;
             return false;
           }
         });
+
+        if (flg == 0) {
+          $.each(mp4, function(i, val) {
+            if (items[scene_list[index]].action == 'play_mp4_' + val.no) {
+              playMp4(i);
+              __next();
+              flg = 1;
+              return false;
+            }
+          });
+        }
         if (flg == 0) {
           setTimeout(function(){
               next();
@@ -209,14 +233,11 @@ var clock = function () {
   document.body.querySelector('.time_area').innerHTML = clock_time.toLocaleString();
 };
 
-var interval_clock = function () {
-  setInterval(function () {
-    // clock();
-  }, 1000);
-};
-
 $(function () {
-  interval_clock();
+
+  $.each(mp4, function(i, val) {
+    mp4[i].obj = document.getElementById('mp4_' + val.no);
+  })
   scene_manager();
 });
 </script>

@@ -69,44 +69,13 @@ class ContentController extends AppController
         $scene_list = [];
         $materials = [];
         $material_youtube = [];
+        $material_mp4 = [];
         $item_count = 0;
         foreach ($content->content_materials as $material) {
-            $item_count++;
-
-            $item = [];
-            $item['time'] = intval($material->view_second) * 1000;
-            if ($material->material->type != Material::TYPE_MOVIE) {
-                $item['action'] = 'next';
-            } else {
-                $item['action'] = 'play_video_' . $item_count;
-            }
-
-            $items[strval($item_count)] = $item;
-            $scene_list[] = intval($item_count);
-
-            // 素材
-            $data = [];
-            $data['class'] = 'box type_' . $item_count;
-            if ($material->material->type == Material::TYPE_IMAGE) {
-                $data['content'] = '<img src="' . $material->material->attaches['image']['0'] . '" alt="">';
-            } elseif ($material->material->type == Material::TYPE_URL) {
-                $data['content'] = '<iframe src="' . $material->material->url . '" width="1920" height="1080"></iframe>';
-            } elseif ($material->material->type == Material::TYPE_MOVIE) {
-                $data['content'] = '<div id="player_' . $item_count . '"></div>';
-                $material_youtube['no' . $item_count] = [
-                    'no' => $item_count,
-                    'obj' => null,
-                    'error_flg' => 0,
-                    'code' => $material->material->movie_tag
-                ];
-            }
-            
-            $materials[] = $data;
+            $this->setContents($material, $material->material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $item_count);
         }
 
-        $Material = new Material;
-
-        $this->set(compact('content', 'query', 'items', 'scene_list', 'Material', 'materials', 'material_youtube'));
+        $this->set(compact('content', 'query', 'items', 'scene_list', 'materials', 'material_youtube', 'material_mp4'));
 
 
         
@@ -131,45 +100,60 @@ class ContentController extends AppController
         $material_youtube = [];
         $item_count = 0;
         foreach ($content->machine_materials as $material) {
-            $item_count++;
-
-            $item = [];
-            $item['time'] = intval($material->view_second) * 1000;
-            if ($material->type != Material::TYPE_MOVIE) {
-                $item['action'] = 'next';
-            } else {
-                $item['action'] = 'play_video_' . $item_count;
-            }
-
-            $items[strval($item_count)] = $item;
-            $scene_list[] = intval($item_count);
-
-            // 素材
-            $data = [];
-            $data['class'] = 'box type_' . $item_count;
-            if ($material->type == Material::TYPE_IMAGE) {
-                $data['content'] = '<img src="' . $material->attaches['image']['0'] . '" alt="">';
-            } elseif ($material->type == Material::TYPE_URL) {
-                $data['content'] = '<iframe src="' . $material->url . '" width="1920" height="1080"></iframe>';
-            } elseif ($material->type == Material::TYPE_MOVIE) {
-                $data['content'] = '<div id="player_' . $item_count . '"></div>';
-                $material_youtube['no' . $item_count] = [
-                    'no' => $item_count,
-                    'obj' => null,
-                    'error_flg' => 0,
-                    'code' => $material->movie_tag
-                ];
-            }
-            
-            $materials[] = $data;
+            $this->setContents($material, $material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $item_count);
         }
 
-        $Material = new Material;
-
-        $this->set(compact('content', 'query', 'items', 'scene_list', 'Material', 'materials', 'material_youtube'));
+        $this->set(compact('content', 'query', 'items', 'scene_list', 'materials', 'material_youtube', 'material_mp4'));
 
         $this->render('index');
         
+    }
+
+    private function setContents($material, $detail, &$items, &$scene_list, &$materials, &$material_youtube, &$material_mp4, &$item_count) {
+        $item_count++;
+
+        $item = [];
+        $item['time'] = intval($material->view_second) * 1000;
+        if ($detail->type == Material::TYPE_MOVIE) {
+            $item['action'] = 'play_video_' . $item_count;
+        } elseif ($detail->type == Material::TYPE_MOVIE_MP4) {
+            $item['action'] = 'play_mp4_' . $item_count;
+        } else {
+            $item['action'] = 'next';
+        }
+
+        $items[strval($item_count)] = $item;
+        $scene_list[] = intval($item_count);
+
+        // 素材
+        $data = [];
+        $data['class'] = 'box type_' . $item_count;
+        if ($detail->type == Material::TYPE_IMAGE) {
+            $data['content'] = '<img src="' . $detail->attaches['image']['0'] . '" alt="">';
+        } elseif ($detail->type == Material::TYPE_URL) {
+            $data['content'] = '<iframe src="' . $detail->url . '" width="1920" height="1080"></iframe>';
+        } elseif ($detail->type == Material::TYPE_MOVIE) {
+            $data['content'] = '<div id="player_' . $item_count . '"></div>';
+            $material_youtube['no' . $item_count] = [
+                'no' => $item_count,
+                'obj' => null,
+                'error_flg' => 0,
+                'code' => $detail->movie_tag
+            ];
+        } elseif ($detail->type == Material::TYPE_MOVIE_MP4) {
+            $data['content'] = '<video id="mp4_' . $item_count . '"';
+            $data['content'] .= ' muted';
+            $data['content'] .= '>';
+            $data['content'] .= '<source src="' . $detail->attaches['file']['src'] . '">';
+            $data['content'] .= '</video>';
+            $material_mp4['no' . $item_count] = [
+                'no' => $item_count,
+                'obj' => null,
+                'error_flg' => 0,
+            ];
+        }
+        
+        $materials[] = $data;
     }
 
     public function error() {

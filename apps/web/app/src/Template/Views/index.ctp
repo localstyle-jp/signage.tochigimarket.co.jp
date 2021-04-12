@@ -31,7 +31,7 @@ $(function () {
 
 <script src="/user/common/js/cms-slim.js"></script>
 <script>
-var reload = 1;
+var reload_flag = 1;
 
 var disableReload = function(id) {
   var url = '/v1/management/disable-reload.json';
@@ -61,9 +61,9 @@ var checkReload = function(id) {
 setInterval(checkReload, 10000, <?= $machine->id; ?>);
 
 $(function(){
-  if (reload == 1) {
+  if (reload_flag == 1) {
     disableReload(<?= $machine->id; ?>);
-    reload = 0;
+    reload_flag = 0;
   }
 
 })

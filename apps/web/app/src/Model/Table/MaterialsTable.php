@@ -28,7 +28,13 @@ class MaterialsTable extends AppTable {
                                                 )
                                 //image_1
                                 ),
-                            'files' => array(),
+                            'files' => array(
+                                'file' => array(
+                                    'extensions' => array('mp4'),
+                                    'file_name' => 'e_f_%d_%s'
+                                    )
+                                // file_1
+                                ),
                             );
                 // 
     public function initialize(array $config)
@@ -131,6 +137,22 @@ class MaterialsTable extends AppTable {
             ->notEmpty('content', '入力してください')
             ->notEmpty('_old_image', '選択してください')
         ;
+
+        return $validator;
+    }
+
+    public function validationMp4New(Validator $validator) {
+        $validator = $this->validationDefault($validator);
+
+        $validator
+            ->notEmpty('file', '選択してください')
+        ;
+
+        return $validator;
+    }
+
+    public function validationMp4Update(Validator $validator) {
+        $validator = $this->validationDefault($validator);
 
         return $validator;
     }

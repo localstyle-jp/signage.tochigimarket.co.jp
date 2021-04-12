@@ -39,6 +39,11 @@
         <iframe width="300" src="https://www.youtube.com/embed/<?= $material['material']['movie_tag']; ?>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         
       </div>
+
+    <?php elseif ($material['material']['type'] == Material::TYPE_MOVIE_MP4): ?>
+      <video controls width="300px;">
+        <source src="<?= $material['material']['attaches']['file']['src']; ?>">
+      </video>
     
     <?php elseif($material['material']['type'] == Material::TYPE_URL):?>
       <div>
