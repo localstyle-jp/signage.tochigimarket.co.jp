@@ -11,6 +11,7 @@ use Cake\ORM\TableRegistry;
 
 use App\Model\Entity\Media;
 use App\Model\Entity\Material;
+use App\Model\Entity\MachineBox;
 
 /**
  * Static content controller
@@ -114,6 +115,13 @@ class MachineBoxesController extends AppController
 
         if ($this->request->is(['put', 'post'])) {
             $this->request->data['site_config_id'] = $site_config_id;
+            // 解像度
+            if ($this->request->getData('resolution') > 0) {
+                $_resolution = $this->list['resolution_list'][$this->request->getData('resolution')];
+                $resolution = explode('x', $_resolution);
+                $this->request->data['width'] = $resolution[0];
+                $this->request->data['height'] = $resolution[1];
+            }
         }
 
         $callback = function($id) {
@@ -195,6 +203,7 @@ class MachineBoxesController extends AppController
         $config_id = $this->getSiteId();
         $list['content_list'] = $this->Contents->find('list')->where(['Contents.site_config_id' => $config_id])->order(['Contents.position' => 'ASC'])->all()->toArray();
 
+        $list['resolution_list'] = MachineBox::$resolution_list;
 
         if (!empty($list)) {
             $this->set(array_keys($list),$list);

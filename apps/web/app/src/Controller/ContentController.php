@@ -64,6 +64,9 @@ class ContentController extends AppController
             throw new NotFoundException('ページが見つかりません');
         }
 
+        $width = 1920;
+        $height = 1080;
+
         // アイテム
         $items = [];
         $scene_list = [];
@@ -76,6 +79,7 @@ class ContentController extends AppController
         }
 
         $this->set(compact('content', 'query', 'items', 'scene_list', 'materials', 'material_youtube', 'material_mp4'));
+        $this->set(compact('width', 'height'));
 
 
         
@@ -87,10 +91,18 @@ class ContentController extends AppController
         $content = $this->MachineContents->find()->where(['MachineContents.id' => $id])
                                     ->contain(['MachineMaterials' => function($q) {
                                         return $q->order(['MachineMaterials.position' => 'ASC']);
-                                    }])
+                                    }, 'MachineBoxes'])
                                     ->first();
 
         $query = $this->_getQuery();
+
+        $width = $content->machine_box->width;
+        $height = $content->machine_box->height;
+
+        if ($content->machine_box->is_vertical == 1) {
+            $width = $content->machine_box->height;
+            $height = $content->machine_box->width;
+        }
 
 
         // アイテム
@@ -100,16 +112,17 @@ class ContentController extends AppController
         $material_youtube = [];
         $item_count = 0;
         foreach ($content->machine_materials as $material) {
-            $this->setContents($material, $material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $item_count);
+            $this->setContents($material, $material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $item_count, $content->machine_box);
         }
 
         $this->set(compact('content', 'query', 'items', 'scene_list', 'materials', 'material_youtube', 'material_mp4'));
+        $this->set(compact('width', 'height'));
 
         $this->render('index');
         
     }
 
-    private function setContents($material, $detail, &$items, &$scene_list, &$materials, &$material_youtube, &$material_mp4, &$item_count) {
+    private function setContents($material, $detail, &$items, &$scene_list, &$materials, &$material_youtube, &$material_mp4, &$item_count, $machine = null) {
         $item_count++;
 
         $item = [];
@@ -118,6 +131,8 @@ class ContentController extends AppController
             $item['action'] = 'play_video_' . $item_count;
         } elseif ($detail->type == Material::TYPE_MOVIE_MP4) {
             $item['action'] = 'play_mp4_' . $item_count;
+        } elseif ($detail->type == Material::TYPE_PAGE_MOVIE) {
+            $item['action'] = 'play_page_mp4_' . $detail->id;
         } else {
             $item['action'] = 'next';
         }
@@ -125,13 +140,24 @@ class ContentController extends AppController
         $items[strval($item_count)] = $item;
         $scene_list[] = intval($item_count);
 
+        $width = 1920;
+        $height = 1080;
+        if (!empty($machine)) {
+            $width = $machine->width;
+            $height = $machine->height;
+            if ($machine->is_vertical == 1) {
+                $width = $machine->height;
+                $height = $machine->width;
+            }
+        }
+
         // 素材
         $data = [];
         $data['class'] = 'box type_' . $item_count;
         if ($detail->type == Material::TYPE_IMAGE) {
             $data['content'] = '<img src="' . $detail->attaches['image']['0'] . '" alt="">';
         } elseif ($detail->type == Material::TYPE_URL) {
-            $data['content'] = '<iframe src="' . $detail->url . '" width="1920" height="1080"></iframe>';
+            $data['content'] = '<iframe src="' . $detail->url . '" width="' . $width . '" height="' . $height . '"></iframe>';
         } elseif ($detail->type == Material::TYPE_MOVIE) {
             $data['content'] = '<div id="player_' . $item_count . '"></div>';
             $material_youtube['no' . $item_count] = [
@@ -144,10 +170,20 @@ class ContentController extends AppController
             $data['content'] = '<video id="mp4_' . $item_count . '"';
             $data['content'] .= ' muted';
             $data['content'] .= '>';
-            $data['content'] .= '<source src="' . $detail->attaches['file']['src'] . '">';
             $data['content'] .= '</video>';
             $material_mp4['no' . $item_count] = [
+                'type' => 'mp4',
                 'no' => $item_count,
+                'source' => DS . UPLOAD_MOVIE_BASE_URL . DS . $detail->url,
+                'obj' => null,
+                'error_flg' => 0,
+            ];
+        } elseif ($detail->type == Material::TYPE_PAGE_MOVIE) {
+            $data['content'] = '<iframe src="' . $detail->url . '" width="' . $width . '" height="' . $height . '" id="iframe_page_mp4_' . $item_count . '"></iframe>';
+            $material_mp4['no' . $item_count] = [
+                'type' => 'page_mp4',
+                'no' => $detail->id,
+                'count' => $item_count,
                 'obj' => null,
                 'error_flg' => 0,
             ];

@@ -111,6 +111,18 @@ class MaterialsController extends AppController
 
         }
 
+        $callback = function($id) {
+            $entity = $this->Materials->find()->where(['Materials.id' => $id])->first();
+            if ($entity->type == Material::TYPE_PAGE_MOVIE) {
+                $material = $this->Materials->patchEntity($entity, ['url' => '/material/detail/' . $id]);
+                $this->Materials->save($material);
+            }
+            // MP4の変換
+            if ($entity->type == Material::TYPE_MOVIE_MP4 && empty($entity->url)) {
+                $this->Materials->setMp4($entity->toArray());
+            }
+        };
+
         $associated = [];
 
         $options = [

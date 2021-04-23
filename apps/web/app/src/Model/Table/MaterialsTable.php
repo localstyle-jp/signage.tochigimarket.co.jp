@@ -4,6 +4,7 @@ namespace App\Model\Table;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\Utility\Inflector;
+use Cake\Filesystem\Folder;
 
 class MaterialsTable extends AppTable {
 
@@ -92,8 +93,8 @@ class MaterialsTable extends AppTable {
 
         $validator
             ->notEmpty('movie_tag', '入力してください')
-            ->notEmpty('view_second', '情報取得してください')
-            ->add('view_second', 'comaprison', ['rule' => ['comparison', '>', 0], 'message' => '情報取得してください'])
+            // ->notEmpty('view_second', '情報取得してください')
+            // ->add('view_second', 'comaprison', ['rule' => ['comparison', '>', 0], 'message' => '情報取得してください'])
         ;
 
         return $validator;
@@ -144,9 +145,9 @@ class MaterialsTable extends AppTable {
     public function validationMp4New(Validator $validator) {
         $validator = $this->validationDefault($validator);
 
-        $validator
-            ->notEmpty('file', '選択してください')
-        ;
+        // $validator
+        //     ->notEmpty('file', '選択してください')
+        // ;
 
         return $validator;
     }
@@ -155,5 +156,18 @@ class MaterialsTable extends AppTable {
         $validator = $this->validationDefault($validator);
 
         return $validator;
+    }
+
+    public function setMp4($data) {
+        $dir = UPLOAD_MOVIE_BASE_URL . DS . 'm' . $data['id'];
+        if (!is_dir($dir)) {
+            $Folder = new Folder();
+
+            if (!$Folder->create(WWW_ROOT . $dir, 0777)) {
+
+            }
+        }
+
+        return;
     }
 }

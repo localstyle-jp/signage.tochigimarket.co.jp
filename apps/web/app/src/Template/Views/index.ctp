@@ -20,14 +20,14 @@ body::-webkit-scrollbar {
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
 <script>
 $(function () {
-  var zoom = 1920 / $('iframe').width();
+  var zoom = <?= $width; ?> / $('iframe').width();
   var scale = 'scale(' + zoom + ')';
   $('iframe').css('transform', scale).css('-webkit-transform', scale).css('-ms-transform', scale).css('-o-transform', scale).css('-moz-transform', scale);
 });
 </script>
 </head>
-<body style="margin: 0; height:1080px;">
-  <iframe src="<?= $this->Url->build(['controller' => 'content', 'action' => 'machine', $machine->machine_content_id, '?' => $query]); ?>" width="1920" height="1080"></iframe>
+<body style="margin: 0; height:<?= $height; ?>px;">
+  <iframe src="<?= $this->Url->build(['controller' => 'content', 'action' => 'machine', $machine->machine_content_id, '?' => $query]); ?>" width="<?= $width; ?>" height="<?= $height; ?>"></iframe>
 
 <script src="/user/common/js/cms-slim.js"></script>
 <script>

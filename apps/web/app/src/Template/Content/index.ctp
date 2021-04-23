@@ -8,17 +8,18 @@
 <link rel="stylesheet" media="all" href="/content/css/reset.css">
 <link rel="stylesheet" media="all" href="/content/css/master.css">
 <link rel="stylesheet" media="all" href="/content/css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
 
 </head>
 <body>
 <div id="wrapper">
-  <div id="cont_inner">
+  <div id="cont_inner" style="width: <?= $width; ?>px; height: <?= $height; ?>px;">
 
   <?php foreach ($materials as $material): ?>
 
-    <div class="<?= h($material['class']); ?>"><?= $material['content']; ?></div>
+    <div class="<?= h($material['class']); ?>" style="display: none;"><?= $material['content']; ?></div>
 
   <?php endforeach; ?>
 
@@ -94,7 +95,7 @@ function onYouTubeIframeAPIReady() {
       },
       events: {
         'onReady': function (event) {
-          event.target.mute();
+          // event.target.mute();
         },
         'onStateChange': function (event) {
           if (event.data == 0) {
@@ -113,11 +114,9 @@ function onYouTubeIframeAPIReady() {
 
 function playMp4(i) {
 
+  mp4[i].obj.currentTime = 0;
   mp4[i].obj.play();
 
-  mp4[i].obj.addEventListener("ended", function(){
-    scene_manager();
-  }, false);
 }
 
 var scene_manager = function () {
@@ -156,22 +155,21 @@ var scene_manager = function () {
           if (flg == 0 && player[i].error_flg == 0 && items[scene_list[index]].action == 'play_video_' + val.no) {
             player[i].obj.mute();
             player[i].obj.playVideo();
+
             __next();
             flg = 1;
             return false;
           }
         });
 
-        if (flg == 0) {
-          $.each(mp4, function(i, val) {
-            if (items[scene_list[index]].action == 'play_mp4_' + val.no) {
-              playMp4(i);
-              __next();
-              flg = 1;
-              return false;
-            }
-          });
-        }
+        
+        $.each(mp4, function(i, val) {
+          if (items[scene_list[index]].action == 'play_mp4_' + val.no || items[scene_list[index]].action == 'play_page_mp4_' + val.no) {
+            playMp4(i);
+            return false;
+          }
+        });
+
         if (flg == 0) {
           setTimeout(function(){
               next();
@@ -181,12 +179,16 @@ var scene_manager = function () {
     };
     var __next = function () {
         // videoスキップしないとき
+        <?php if(!empty($material_youtube)): ?>
         $.each (player, function(i, val) {
           if (!(player[i].error_flg == 1 && items[scene_list[index]].action == 'play_video_' + val.no)) {
             prev = index;
             return false;
           }
         });
+        <?php else: ?>
+          prev = index;
+        <?php endif; ?>
 
         index++;
         if(index > END_INDEX) {
@@ -236,8 +238,22 @@ var clock = function () {
 $(function () {
 
   $.each(mp4, function(i, val) {
-    mp4[i].obj = document.getElementById('mp4_' + val.no);
-  })
+    if (val.type == 'mp4') {
+      mp4[i].obj = document.getElementById('mp4_' + val.no);
+      if (Hls.isSupported()) {
+        var hls = new Hls();
+        hls.loadSource(mp4[i].source);
+        hls.attachMedia(mp4[i].obj);
+      } else if (mp4[i].obj.canPlayType('application/vnd.apple.mpegurl')) {
+        mp4[i].obj.src = mp4[i].source;
+      }
+    } else if (val.type == 'page_mp4') {
+      var elem = document.getElementById('iframe_page_mp4_' + val.count);
+      console.log(elem);
+      mp4[i].obj = elem.contentWindow.document.getElementById('page_mp4_' + val.no);
+      console.log(mp4[i].obj);
+    }
+  });
   scene_manager();
 });
 </script>

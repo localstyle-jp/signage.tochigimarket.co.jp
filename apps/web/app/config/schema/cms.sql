@@ -90,6 +90,7 @@ CREATE TABLE machine_boxes
   height int DEFAULT 0 NOT NULL,
   memo text NOT NULL,
   reload_flag decimal(1) NOT NULL DEFAULT 0,
+  is_vertical decimal(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 

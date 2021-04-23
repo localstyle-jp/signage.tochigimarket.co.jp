@@ -49,6 +49,27 @@
             </tr>
 
             <tr>
+              <td>解像度</td>
+              <td>
+                <?= $this->Form->input('resolution', ['type' => 'select', 'options' => $resolution_list, 'onchange' => 'changeResolution();']); ?>
+                <span id="resolution_wh">
+                  <?= $this->Form->input('width', ['type' => 'text', 'style' => 'width: 100px;']); ?> x 
+                  <?= $this->Form->input('height', ['type' => 'text', 'style' => 'width: 100px;']); ?>
+                </span>
+                <div>
+                  ※モニター横位置での解像度を設定してください
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td>モニター位置</td>
+              <td>
+                <?= $this->Form->input('is_vertical', ['type' => 'checkbox', 'hiddenField' => true, 'value' => 1, 'label' => '縦表示']); ?>
+              </td>
+            </tr>
+
+            <tr>
               <td>メモ</td>
               <td>
                 <?= $this->Form->input('memo', ['type' => 'textarea', 'style' => 'height:80px;']); ?>
@@ -117,7 +138,19 @@
 <?= $this->Html->script('/user/common/js/system/pop_box'); ?>
 <script>
 
+function changeResolution() {
+  var type = $("#resolution").val();
 
+  if (type > 0) {
+    $("#resolution_wh").hide();
+  } else {
+    $("#resolution_wh").show();
+  }
+}
+
+$(function() {
+  changeResolution();
+})
 
 </script>
 

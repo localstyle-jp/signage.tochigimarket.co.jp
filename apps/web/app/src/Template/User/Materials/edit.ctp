@@ -105,7 +105,7 @@
             </tr>
             
 
-            <tr class="changeArea urlArea">
+            <tr class="changeArea urlArea mp4Area">
               <td>URL<span class="attent">※必須</span></td>
               <td>
                 <?= $this->Form->input('url', array('type' => 'text', 'maxlength' => 255,));?>
@@ -200,6 +200,9 @@ function select(){
     $('.contentArea').show();
   }else if (type == '5') {
     $('.mp4Area').show();
+  }else if (type == '6') {
+    $('.mp4Area').show();
+    $('.imageArea').show();
   }
 }
 

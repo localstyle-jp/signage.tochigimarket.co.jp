@@ -67,6 +67,10 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/content/machine/:id', ['controller' => 'content', 'action' => 'machine'])
            ->setPass(['id']);
 
+    $routes->connect('/material/:action', ['controller' => 'material']);
+    $routes->connect('/material/:action/:id', ['controller' => 'material'])
+            ->setPass(['id']);
+
     $routes->connect('/:controller/', ['action' => 'index', 'prefix' => 'user']);
     $routes->connect('/:controller/:action', ['prefix' => 'user']);
     $routes->connect('/:controller/:action/*', ['prefix' => 'user']);

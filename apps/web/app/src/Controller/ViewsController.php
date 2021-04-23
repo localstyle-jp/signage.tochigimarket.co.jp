@@ -78,7 +78,14 @@ class ViewsController extends AppController
         $query = $this->_getQuery();
         $query['t'] = microtime(true);
 
-        $this->set(compact('site_config', 'machine', 'content', 'query'));
+        $width = $machine->width;
+        $height = $machine->height;
+        if ($machine->is_vertical == 1) {
+            $width = $machine->height;
+            $height = $machine->width;
+        }
+
+        $this->set(compact('site_config', 'machine', 'content', 'query', 'width', 'height'));
 
 
         

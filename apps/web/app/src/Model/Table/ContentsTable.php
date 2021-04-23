@@ -26,7 +26,7 @@ class ContentsTable extends AppTable {
             ]);
 
         $this->hasMany('ContentMaterials')->setDependent(true);
-        $this->hasMany('MachineBoxes')->setDependent(true);
+        $this->hasMany('MachineBoxes')->setDependent(false);
 
         $this->belongsTo('SiteConfigs');
 

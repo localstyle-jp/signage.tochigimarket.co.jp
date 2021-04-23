@@ -26,6 +26,8 @@ define('USER_JSON_URL', 'jsdata'); // USER_PAGES_DIR . [username] . DS . USER_JS
 define('HOME_DATA_NAME', '');
 define('SITE_DATA_NAME', 'sitehome');
 
+define('UPLOAD_MOVIE_BASE_URL', 'upload/movies');
+
 define('SITE_PAGES', 'sitepages');
 define('SITE_PAGES_DIR', WWW_ROOT . SITE_PAGES . DS);
 
