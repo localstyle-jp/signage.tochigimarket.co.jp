@@ -71,7 +71,7 @@ function onYouTubeIframeAPIReady() {
     $.each(player, function(i, val) {
       if (player[i].error_flg == 0) {
         player[i].obj.pauseVideo();
-        player[i].obj.mute();
+        // player[i].obj.mute();
         player[i].obj.seekTo(0, true);
       }
     });
@@ -153,11 +153,15 @@ var scene_manager = function () {
         var flg = 0;
         $.each(player, function(i, val) {
           if (flg == 0 && player[i].error_flg == 0 && items[scene_list[index]].action == 'play_video_' + val.no) {
-            player[i].obj.mute();
+            if (player[i].obj === null) {
+              return false;
+            }
+            // player[i].obj.mute();
             player[i].obj.playVideo();
 
-            __next();
-            flg = 1;
+            // 時間が来たら次に進むため下記コメントアウト
+            // __next();
+            // flg = 1;
             return false;
           }
         });
@@ -183,6 +187,9 @@ var scene_manager = function () {
         $.each (player, function(i, val) {
           if (!(player[i].error_flg == 1 && items[scene_list[index]].action == 'play_video_' + val.no)) {
             prev = index;
+            player[i].obj.pauseVideo();
+            // player[i].obj.mute();
+            player[i].obj.seekTo(0, true);
             return false;
           }
         });
@@ -248,14 +255,17 @@ $(function () {
         mp4[i].obj.src = mp4[i].source;
       }
     } else if (val.type == 'page_mp4') {
-      var elem = document.getElementById('iframe_page_mp4_' + val.count);
-      console.log(elem);
-      mp4[i].obj = elem.contentWindow.document.getElementById('page_mp4_' + val.no);
-      console.log(mp4[i].obj);
+      // var elem = document.getElementById('iframe_page_mp4_' + val.count);
+      // console.log(elem);
+      // mp4[i].obj = elem.contentWindow.document.getElementById('page_mp4_' + val.no);
+      // console.log(mp4[i].obj);
     }
   });
-  scene_manager();
 });
+
+window.onload = function() {
+  scene_manager();  
+}
 </script>
 
 </body>

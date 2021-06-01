@@ -22,6 +22,31 @@ $count['total'] = $data_query->count();
     
     <div class="content_inr">
 
+      <div class="box">
+          <h3>検索条件</h3>
+          <div class="table_area form_area">
+<?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'url' => array('action' => 'index'), 'class' => '')); ?>
+              <table class=" table border-0">
+                  <tr>
+                    <td class="border-0" style="width: 120px;text-align: center;vertical-align: middle;">タイプ</td>
+                    <td class="border-0" colspan="3">
+                      <?= $this->Form->input('sch_type', ['type' => 'select',
+                                                             'value' => $query['sch_type'],
+                                                             'options' => $type_list,
+                                                             'empty' => ['0' => '全て']
+                                                           ]); ?>
+                    </td>
+                  </tr>
+              </table>
+
+              <div class="btn_area">
+                <a class="btn btn-secondary" href="<?= $this->Url->build(['action' => 'index']); ?>"><i class="fas fa-eraser"></i> クリア</a>
+                <button class="btn btn-primary" onclick="document.fm_search.submit();"><i class="fas fa-search"></i> 検索開始</button>
+              </div>
+<?= $this->Form->end(); ?>
+          </div>
+      </div>
+
 
       <div class="box">
         <h3 class="box__caption--count"><span>登録一覧</span><span class="count"><?php echo $count['total']; ?>件の登録</span></h3>

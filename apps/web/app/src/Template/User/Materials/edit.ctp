@@ -70,7 +70,7 @@
                 <br><span class="text-danger">※Youtubeの動画コードを入力してください</span><br>
                 <div id="player"></div>
                 <div>
-                  <?= $this->Form->input('view_second', ['type' => 'text', 'readonly' => true, 'style' => 'width: 60px;', 'id' => 'idViewSecond', 'class' => 'text-right']); ?>秒
+                  <?= $this->Form->input('view_second', ['type' => 'text', 'readonly' => false, 'style' => 'width: 60px;', 'id' => 'idViewSecond', 'class' => 'text-right']); ?>秒
                   
                 </div>
               </td>

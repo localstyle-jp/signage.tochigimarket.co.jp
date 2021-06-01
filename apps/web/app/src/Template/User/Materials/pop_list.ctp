@@ -1,3 +1,4 @@
+<?php use App\Model\Entity\Material; ?>
 <div class="title_area">
   <h1>素材リスト</h1>
 </div>
@@ -21,9 +22,13 @@
                                                            ]); ?>
                     </td>
 
-                    <td class="border-0" style="width: 120px;text-align: center;"></td>
+                    <td class="border-0 head" style="width: 120px;text-align: center;">タイプ</td>
                     <td class="border-0">
-
+                      <?= $this->Form->input('sch_type', ['type' => 'select',
+                                                          'options' => $type_list,
+                                                          'empty' => ['0' => '全て'],
+                                                          'value' => $query['sch_type']
+                                                        ]); ?>
                     </td>
                   </tr>
               </table>
@@ -45,15 +50,16 @@
           <table class="table__list table-hover" style="table-layout: fixed;">
           <colgroup>
             <col style="width: 70px;">
-            <col style="width: 100px;">
+            <col style="width: 70px;">
             <col>
-
+            <col style="width: 100px;">
           </colgroup>
 
             <tr>
               <th >選択</th>
               <th >ID</th>
               <th style="text-align:left;">素材名</th>
+              <th >タイプ</th>
             </tr>
 
 <?php
@@ -77,6 +83,10 @@ $id = $data->id;
 
               <td style="padding: 0;padding-left: 10px;">
                 <?= $data->name; ?>
+              </td>
+
+              <td>
+                <?= Material::$type_list[$data->type]; ?>
               </td>
 
             </tr>

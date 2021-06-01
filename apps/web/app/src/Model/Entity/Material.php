@@ -14,8 +14,8 @@ class Material extends AppEntity
 
     static $type_list = [
         self::TYPE_IMAGE => '画像',
-        self::TYPE_MOVIE => '動画（YouTube）',
-        self::TYPE_MOVIE_MP4 => '動画（mp4）',
+        self::TYPE_MOVIE => 'YouTube',
+        self::TYPE_MOVIE_MP4 => 'mp4',
         self::TYPE_URL => 'URL',
         self::TYPE_PAGE_MOVIE => '背景画像入り動画',
         // self::TYPE_PAGE => 'ページ',

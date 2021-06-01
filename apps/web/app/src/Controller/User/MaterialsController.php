@@ -47,6 +47,7 @@ class MaterialsController extends AppController
         $query = [];
 
         $query['sch_name'] = $this->request->getQuery('sch_name');
+        $query['sch_type'] = $this->request->getQuery('sch_type');
 
 
         return $query;
@@ -64,6 +65,10 @@ class MaterialsController extends AppController
             $cond[$cnt++]['Materials.name like'] = "%{$query['sch_name']}%";
         }
 
+        if (!empty($query['sch_type'])) {
+            $cond[$cnt++]['Materials.type'] = $query['sch_type'];
+        }
+
         return $cond;
     }
 
@@ -79,8 +84,8 @@ class MaterialsController extends AppController
 
         $this->set(compact('query', 'is_search'));
 
-        $this->_lists($cond, ['order' => 'position ASC',
-                              'limit' => null]);
+        $this->_lists($cond, ['order' => ['position' => 'ASC'],
+                              'limit' => 20]);
     }
 
     public function edit($id=0) {
@@ -182,6 +187,8 @@ class MaterialsController extends AppController
 
     public function popList() {
         $this->viewBuilder()->setLayout("pop");
+
+        $this->setList();
 
         $query = $this->_getQueryPop();
         $cond = $this->_getConditionsPop($query);

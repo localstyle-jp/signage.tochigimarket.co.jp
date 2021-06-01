@@ -168,7 +168,7 @@ class ContentController extends AppController
             ];
         } elseif ($detail->type == Material::TYPE_MOVIE_MP4) {
             $data['content'] = '<video id="mp4_' . $item_count . '"';
-            $data['content'] .= ' muted';
+            // $data['content'] .= ' muted';
             $data['content'] .= '>';
             $data['content'] .= '</video>';
             $material_mp4['no' . $item_count] = [
