@@ -57,12 +57,17 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 var player;
 var mp4;
+var webm;
 <?php if(!empty($material_youtube)): ?>
 player = <?= json_encode($material_youtube); ?>;
 <?php endif; ?>
 
 <?php if (!empty($material_mp4)): ?>
 mp4 = <?= json_encode(($material_mp4)); ?>;
+<?php endif; ?>
+
+<?php if (!empty($material_webm)): ?>
+webm = <?= json_encode(($material_webm)); ?>;
 <?php endif; ?>
 
 function onYouTubeIframeAPIReady() {
@@ -119,6 +124,13 @@ function playMp4(i) {
 
 }
 
+function playWebm(i) {
+
+  webm[i].obj.currentTime = 0;
+  webm[i].obj.play();
+
+}
+
 var scene_manager = function () {
     var items = <?= json_encode($items); ?>;
 
@@ -170,6 +182,13 @@ var scene_manager = function () {
         $.each(mp4, function(i, val) {
           if (items[scene_list[index]].action == 'play_mp4_' + val.no || items[scene_list[index]].action == 'play_page_mp4_' + val.no) {
             playMp4(i);
+            return false;
+          }
+        });
+
+        $.each(webm, function(i, val) {
+          if (items[scene_list[index]].action == 'play_webm_' + val.no) {
+            playWebm(i);
             return false;
           }
         });
@@ -260,6 +279,12 @@ $(function () {
       // mp4[i].obj = elem.contentWindow.document.getElementById('page_mp4_' + val.no);
       // console.log(mp4[i].obj);
     }
+  });
+  $.each(webm, function(i, val) {
+    // if (val.type == 'webm') {
+    webm[i].obj = document.getElementById('webm_' + val.no);
+    webm[i].obj.src = webm[i].source;
+    // }
   });
 });
 

@@ -73,12 +73,13 @@ class ContentController extends AppController
         $materials = [];
         $material_youtube = [];
         $material_mp4 = [];
+        $material_webm = [];
         $item_count = 0;
         foreach ($content->content_materials as $material) {
-            $this->setContents($material, $material->material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $item_count);
+            $this->setContents($material, $material->material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $material_webm, $item_count);
         }
-
-        $this->set(compact('content', 'query', 'items', 'scene_list', 'materials', 'material_youtube', 'material_mp4'));
+        
+        $this->set(compact('content', 'query', 'items', 'scene_list', 'materials', 'material_youtube', 'material_mp4', 'material_webm'));
         $this->set(compact('width', 'height'));
 
 
@@ -112,17 +113,17 @@ class ContentController extends AppController
         $material_youtube = [];
         $item_count = 0;
         foreach ($content->machine_materials as $material) {
-            $this->setContents($material, $material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $item_count, $content->machine_box);
+            $this->setContents($material, $material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $material_webm, $item_count, $content->machine_box);
         }
 
-        $this->set(compact('content', 'query', 'items', 'scene_list', 'materials', 'material_youtube', 'material_mp4'));
+        $this->set(compact('content', 'query', 'items', 'scene_list', 'materials', 'material_youtube', 'material_mp4', 'material_webm'));
         $this->set(compact('width', 'height'));
 
         $this->render('index');
         
     }
 
-    private function setContents($material, $detail, &$items, &$scene_list, &$materials, &$material_youtube, &$material_mp4, &$item_count, $machine = null) {
+    private function setContents($material, $detail, &$items, &$scene_list, &$materials, &$material_youtube, &$material_mp4, &$material_webm, &$item_count, $machine = null) {
         $item_count++;
 
         $item = [];
@@ -131,6 +132,8 @@ class ContentController extends AppController
             $item['action'] = 'play_video_' . $item_count;
         } elseif ($detail->type == Material::TYPE_MOVIE_MP4) {
             $item['action'] = 'play_mp4_' . $item_count;
+        } elseif ($detail->type == Material::TYPE_MOVIE_WEBM) {
+            $item['action'] = 'play_webm_' . $item_count;
         } elseif ($detail->type == Material::TYPE_PAGE_MOVIE) {
             $item['action'] = 'play_page_mp4_' . $detail->id;
         } else {
@@ -175,6 +178,18 @@ class ContentController extends AppController
                 'type' => 'mp4',
                 'no' => $item_count,
                 'source' => DS . UPLOAD_MOVIE_BASE_URL . DS . $detail->url,
+                'obj' => null,
+                'error_flg' => 0,
+            ];
+        } elseif ($detail->type == Material::TYPE_MOVIE_WEBM) {
+            $data['content'] = '<video id="webm_' . $item_count . '"';
+            // $data['content'] .= ' muted';
+            $data['content'] .= '>';
+            $data['content'] .= '</video>';
+            $material_webm['no' . $item_count] = [
+                'type' => 'webm',
+                'no' => $item_count,
+                'source' => $detail->attaches['file']['src'],
                 'obj' => null,
                 'error_flg' => 0,
             ];
