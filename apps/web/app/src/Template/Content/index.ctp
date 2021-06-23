@@ -131,6 +131,14 @@ function playWebm(i) {
 
 }
 
+function pauseMp4(i) {
+  mp4[i].obj.pause();
+}
+
+function pauseWebm(i) {
+  webm[i].obj.pause();
+}
+
 var scene_manager = function () {
     var items = <?= json_encode($items); ?>;
 
@@ -195,11 +203,33 @@ var scene_manager = function () {
 
         if (flg == 0) {
           setTimeout(function(){
+              videosPause();
               next();
           }, items[scene_list[index]].time);
         }
 
     };
+
+    var videosPause = function() {
+        // 再生中の動画の停止
+        <?php if(!empty($material_mp4)): ?>
+        $.each (mp4, function(i, val) {
+          if (items[scene_list[index]].action == 'play_mp4_' + val.no) {
+            pauseMp4(i);
+            return false;
+          }
+        });
+        <?php endif; ?>
+        <?php if(!empty($material_webm)): ?>
+        $.each (webm, function(i, val) {
+          if (items[scene_list[index]].action == 'play_webm_' + val.no) {
+            pauseWebm(i);
+            return false;
+          }
+        });
+        <?php endif; ?>
+    }
+
     var __next = function () {
         // videoスキップしないとき
         <?php if(!empty($material_youtube)): ?>
@@ -212,6 +242,7 @@ var scene_manager = function () {
             return false;
           }
         });
+        
         <?php else: ?>
           prev = index;
         <?php endif; ?>
