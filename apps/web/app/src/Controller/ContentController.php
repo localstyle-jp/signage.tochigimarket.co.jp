@@ -163,7 +163,10 @@ class ContentController extends AppController
         if ($detail->type == Material::TYPE_IMAGE) {
             $data['content'] = '<img src="' . $detail->attaches['image']['0'] . '" alt="">';
         } elseif ($detail->type == Material::TYPE_URL) {
-            $data['content'] = '<iframe src="" id="webpage_' . $item_count . '" width="' . $width . '" height="' . $height . '"></iframe>';
+            $data['content'] = '<iframe ';
+            $data['content'] .= 'src=""';
+            // $date['content'] .= 'src="'.$detail->url.'" sandbox=""';
+            $data['content'] .= ' id="webpage_' . $item_count . '" width="' . $width . '" height="' . $height . '"></iframe>';
             $material_webpage['no' . $item_count] = [
                 'type' => 'webpage',
                 'no' => $item_count,

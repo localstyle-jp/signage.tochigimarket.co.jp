@@ -145,13 +145,13 @@ function pauseWebm(i) {
 }
 
 function loadWebpage(i) {
-  // console.log('load_webpage : ' + i);
+  console.log('load_webpage : ' + i);
   webpage[i].obj.src = webpage[i].source;
   // webpage[i].obj.removeAttribute('sandbox');
 }
 
-function unloadWebpage(i) {
-  // console.log('unload_webpage : ' + i);
+function removeWebpage(i) {
+  console.log('remove_webpage : ' + i);
   webpage[i].obj.src = '';
   // webpage[i].obj.setAttribute('sandbox', '');
 }
@@ -184,6 +184,9 @@ var scene_manager = function () {
 
         var now = index; // indexのままfadeIn()で利用すると,fadeOut(1000)の間にindexが進んでしまう
         $('.type_' + scene_list[prev]).fadeOut(1000, function () {
+            if (index!=prev) {       // 最初にこの関数を回したくなかったので...
+              removeWebpages(prev);
+            }
             $('.type_' + scene_list[now]).fadeIn(1000);
         });
 
@@ -220,23 +223,22 @@ var scene_manager = function () {
 
         $.each(webpage, function(i, val){
           if (items[scene_list[index]].action == 'load_webpage_' + val.no) {
-            if (val.obj.src!='') {
-              loadWebpage(i);
-            }
+            loadWebpage(i);
             return false;
           }
         });
 
         if (flg == 0) {
           setTimeout(function(){
-              PauseBackground();
-              next();
+            pauseVideos();
+            // removeWebpages();
+            next();
           }, items[scene_list[index]].time);
         }
 
     };
 
-    var PauseBackground = function() {
+    var pauseVideos = function() {
         // 再生中の動画の停止
         <?php if(!empty($material_mp4)): ?>
         $.each (mp4, function(i, val) {
@@ -254,11 +256,15 @@ var scene_manager = function () {
           }
         });
         <?php endif; ?>
+    }
+
+    var removeWebpages = function(prev) {
         // WEBページのソース削除
         <?php if(!empty($material_webpage)): ?>
         $.each (webpage, function(i, val) {
-          if (items[scene_list[index]].action == 'load_webpage_' + val.no) {
-            unloadWebpage(i);
+          // console.log(items[scene_list[now]].action);
+          if (items[scene_list[prev]].action == 'load_webpage_' + val.no) {
+            removeWebpage(i);
             return false;
           }
         });
