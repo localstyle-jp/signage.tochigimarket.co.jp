@@ -58,6 +58,7 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 var player;
 var mp4;
 var webm;
+var webpage;
 <?php if(!empty($material_youtube)): ?>
 player = <?= json_encode($material_youtube); ?>;
 <?php endif; ?>
@@ -68,6 +69,10 @@ mp4 = <?= json_encode(($material_mp4)); ?>;
 
 <?php if (!empty($material_webm)): ?>
 webm = <?= json_encode(($material_webm)); ?>;
+<?php endif; ?>
+
+<?php if (!empty($material_webpage)): ?>
+webpage = <?= json_encode(($material_webpage)); ?>;
 <?php endif; ?>
 
 function onYouTubeIframeAPIReady() {
@@ -139,6 +144,18 @@ function pauseWebm(i) {
   webm[i].obj.pause();
 }
 
+function loadWebpage(i) {
+  // console.log('load_webpage : ' + i);
+  webpage[i].obj.src = webpage[i].source;
+  // webpage[i].obj.removeAttribute('sandbox');
+}
+
+function unloadWebpage(i) {
+  // console.log('unload_webpage : ' + i);
+  webpage[i].obj.src = '';
+  // webpage[i].obj.setAttribute('sandbox', '');
+}
+
 var scene_manager = function () {
     var items = <?= json_encode($items); ?>;
 
@@ -201,16 +218,25 @@ var scene_manager = function () {
           }
         });
 
+        $.each(webpage, function(i, val){
+          if (items[scene_list[index]].action == 'load_webpage_' + val.no) {
+            if (val.obj.src!='') {
+              loadWebpage(i);
+            }
+            return false;
+          }
+        });
+
         if (flg == 0) {
           setTimeout(function(){
-              videosPause();
+              PauseBackground();
               next();
           }, items[scene_list[index]].time);
         }
 
     };
 
-    var videosPause = function() {
+    var PauseBackground = function() {
         // 再生中の動画の停止
         <?php if(!empty($material_mp4)): ?>
         $.each (mp4, function(i, val) {
@@ -224,6 +250,15 @@ var scene_manager = function () {
         $.each (webm, function(i, val) {
           if (items[scene_list[index]].action == 'play_webm_' + val.no) {
             pauseWebm(i);
+            return false;
+          }
+        });
+        <?php endif; ?>
+        // WEBページのソース削除
+        <?php if(!empty($material_webpage)): ?>
+        $.each (webpage, function(i, val) {
+          if (items[scene_list[index]].action == 'load_webpage_' + val.no) {
+            unloadWebpage(i);
             return false;
           }
         });
@@ -316,6 +351,12 @@ $(function () {
     webm[i].obj = document.getElementById('webm_' + val.no);
     webm[i].obj.src = webm[i].source;
     // }
+  });
+  $.each(webpage, function(i, val) {
+    webpage[i].obj = document.getElementById('webpage_' + val.no);
+    if (val.no==1) {
+      webpage[i].obj.src = webpage[i].source;
+    }
   });
 });
 
