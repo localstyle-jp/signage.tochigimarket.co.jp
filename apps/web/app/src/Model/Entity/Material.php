@@ -11,11 +11,13 @@ class Material extends AppEntity
     const TYPE_PAGE = 4;
     const TYPE_MOVIE_MP4 = 5;
     const TYPE_PAGE_MOVIE = 6;
+    const TYPE_MOVIE_WEBM = 7;
 
     static $type_list = [
         self::TYPE_IMAGE => '画像',
         self::TYPE_MOVIE => 'YouTube',
         self::TYPE_MOVIE_MP4 => 'mp4',
+        self::TYPE_MOVIE_WEBM => 'webm',
         self::TYPE_URL => 'URL',
         self::TYPE_PAGE_MOVIE => '背景画像入り動画',
         // self::TYPE_PAGE => 'ページ',
@@ -24,6 +26,7 @@ class Material extends AppEntity
         self::TYPE_IMAGE => 'image',
         self::TYPE_MOVIE => 'movie',
         self::TYPE_URL => 'mp4',
+        self::TYPE_URL => 'webm',
         self::TYPE_URL => 'url',
         // self::TYPE_PAGE => 'page'
     ];

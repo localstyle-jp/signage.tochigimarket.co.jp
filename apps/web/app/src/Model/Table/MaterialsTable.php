@@ -31,10 +31,16 @@ class MaterialsTable extends AppTable {
                                 ),
                             'files' => array(
                                 'file' => array(
-                                    'extensions' => array('mp4'),
+                                    'extensions' => array('mp4', 'webm'),
                                     'file_name' => 'e_f_%d_%s'
                                     )
                                 // file_1
+                                // 'file_webm' => array(
+                                //     'extensions' => array('webm'),
+                                //     'file_name' => 'e_f_%d_%s'
+                                //     )
+                                // // file_2
+                                
                                 ),
                             );
                 // 
@@ -158,7 +164,36 @@ class MaterialsTable extends AppTable {
         return $validator;
     }
 
+    public function validationWebmNew(Validator $validator) {
+        $validator = $this->validationDefault($validator);
+
+        // $validator
+        //     ->notEmpty('file', '選択してください')
+        // ;
+
+        return $validator;
+    }
+
+    public function validationWebmUpdate(Validator $validator) {
+        $validator = $this->validationDefault($validator);
+
+        return $validator;
+    }
+
     public function setMp4($data) {
+        $dir = UPLOAD_MOVIE_BASE_URL . DS . 'm' . $data['id'];
+        if (!is_dir($dir)) {
+            $Folder = new Folder();
+
+            if (!$Folder->create(WWW_ROOT . $dir, 0777)) {
+
+            }
+        }
+
+        return;
+    }
+
+    public function setWebm($data) {
         $dir = UPLOAD_MOVIE_BASE_URL . DS . 'm' . $data['id'];
         if (!is_dir($dir)) {
             $Folder = new Folder();

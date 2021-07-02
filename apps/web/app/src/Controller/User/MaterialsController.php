@@ -126,6 +126,10 @@ class MaterialsController extends AppController
             if ($entity->type == Material::TYPE_MOVIE_MP4 && empty($entity->url)) {
                 $this->Materials->setMp4($entity->toArray());
             }
+            // Webmの変換
+            if ($entity->type == Material::TYPE_MOVIE_WEBM && empty($entity->url)) {
+                $this->Materials->setWebm($entity->toArray());
+            }
         };
 
         $associated = [];

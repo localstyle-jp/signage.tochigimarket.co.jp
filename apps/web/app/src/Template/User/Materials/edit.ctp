@@ -76,7 +76,7 @@
               </td>
             </tr>
 
-            <tr class="changeArea mp4Area">
+            <tr class="changeArea mp4Area webmArea">
               <?php $_column = 'file'; ?>
               <td>動画ファイル<span class="attent">※必須</span></td>
               <td>
@@ -92,7 +92,7 @@
 
                   <li>
                     <?= $this->Form->input("file", array('type' => 'file', 'class' => 'attaches'));?>
-                    <div class="remark">※MP4(.mp4)ファイルのみ</div>
+                    <div class="remark">※MP4(.mp4),WEBM(.webm)ファイルのみ</div>
                     <div>※ファイルサイズxxxMB以内</div>
                   </li>
 
@@ -105,7 +105,7 @@
             </tr>
             
 
-            <tr class="changeArea urlArea mp4Area">
+            <tr class="changeArea urlArea mp4Area webmArea">
               <td>URL<span class="attent">※必須</span></td>
               <td>
                 <?= $this->Form->input('url', array('type' => 'text', 'maxlength' => 255,));?>
@@ -203,6 +203,8 @@ function select(){
   }else if (type == '6') {
     $('.mp4Area').show();
     $('.imageArea').show();
+  }else if (type == '7') {
+    $('.webmArea').show();
   }
 }
 

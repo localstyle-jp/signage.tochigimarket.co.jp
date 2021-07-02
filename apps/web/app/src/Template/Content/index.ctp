@@ -57,12 +57,22 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 var player;
 var mp4;
+var webm;
+var webpage;
 <?php if(!empty($material_youtube)): ?>
 player = <?= json_encode($material_youtube); ?>;
 <?php endif; ?>
 
 <?php if (!empty($material_mp4)): ?>
 mp4 = <?= json_encode(($material_mp4)); ?>;
+<?php endif; ?>
+
+<?php if (!empty($material_webm)): ?>
+webm = <?= json_encode(($material_webm)); ?>;
+<?php endif; ?>
+
+<?php if (!empty($material_webpage)): ?>
+webpage = <?= json_encode(($material_webpage)); ?>;
 <?php endif; ?>
 
 function onYouTubeIframeAPIReady() {
@@ -119,6 +129,33 @@ function playMp4(i) {
 
 }
 
+function playWebm(i) {
+
+  webm[i].obj.currentTime = 0;
+  webm[i].obj.play();
+
+}
+
+function pauseMp4(i) {
+  mp4[i].obj.pause();
+}
+
+function pauseWebm(i) {
+  webm[i].obj.pause();
+}
+
+function loadWebpage(i) {
+  console.log('load_webpage : ' + i);
+  webpage[i].obj.src = webpage[i].source;
+  // webpage[i].obj.removeAttribute('sandbox');
+}
+
+function removeWebpage(i) {
+  console.log('remove_webpage : ' + i);
+  webpage[i].obj.src = '';
+  // webpage[i].obj.setAttribute('sandbox', '');
+}
+
 var scene_manager = function () {
     var items = <?= json_encode($items); ?>;
 
@@ -147,6 +184,9 @@ var scene_manager = function () {
 
         var now = index; // indexのままfadeIn()で利用すると,fadeOut(1000)の間にindexが進んでしまう
         $('.type_' + scene_list[prev]).fadeOut(1000, function () {
+            if (index!=prev) {       // 最初にこの関数を回したくなかったので...
+              removeWebpages(prev);
+            }
             $('.type_' + scene_list[now]).fadeIn(1000);
         });
 
@@ -174,13 +214,63 @@ var scene_manager = function () {
           }
         });
 
+        $.each(webm, function(i, val) {
+          if (items[scene_list[index]].action == 'play_webm_' + val.no) {
+            playWebm(i);
+            return false;
+          }
+        });
+
+        $.each(webpage, function(i, val){
+          if (items[scene_list[index]].action == 'load_webpage_' + val.no) {
+            loadWebpage(i);
+            return false;
+          }
+        });
+
         if (flg == 0) {
           setTimeout(function(){
-              next();
+            pauseVideos();
+            // removeWebpages();
+            next();
           }, items[scene_list[index]].time);
         }
 
     };
+
+    var pauseVideos = function() {
+        // 再生中の動画の停止
+        <?php if(!empty($material_mp4)): ?>
+        $.each (mp4, function(i, val) {
+          if (items[scene_list[index]].action == 'play_mp4_' + val.no) {
+            pauseMp4(i);
+            return false;
+          }
+        });
+        <?php endif; ?>
+        <?php if(!empty($material_webm)): ?>
+        $.each (webm, function(i, val) {
+          if (items[scene_list[index]].action == 'play_webm_' + val.no) {
+            pauseWebm(i);
+            return false;
+          }
+        });
+        <?php endif; ?>
+    }
+
+    var removeWebpages = function(prev) {
+        // WEBページのソース削除
+        <?php if(!empty($material_webpage)): ?>
+        $.each (webpage, function(i, val) {
+          // console.log(items[scene_list[now]].action);
+          if (items[scene_list[prev]].action == 'load_webpage_' + val.no) {
+            removeWebpage(i);
+            return false;
+          }
+        });
+        <?php endif; ?>
+    }
+
     var __next = function () {
         // videoスキップしないとき
         <?php if(!empty($material_youtube)): ?>
@@ -193,6 +283,7 @@ var scene_manager = function () {
             return false;
           }
         });
+        
         <?php else: ?>
           prev = index;
         <?php endif; ?>
@@ -259,6 +350,18 @@ $(function () {
       // console.log(elem);
       // mp4[i].obj = elem.contentWindow.document.getElementById('page_mp4_' + val.no);
       // console.log(mp4[i].obj);
+    }
+  });
+  $.each(webm, function(i, val) {
+    // if (val.type == 'webm') {
+    webm[i].obj = document.getElementById('webm_' + val.no);
+    webm[i].obj.src = webm[i].source;
+    // }
+  });
+  $.each(webpage, function(i, val) {
+    webpage[i].obj = document.getElementById('webpage_' + val.no);
+    if (val.no==1) {
+      webpage[i].obj.src = webpage[i].source;
     }
   });
 });
