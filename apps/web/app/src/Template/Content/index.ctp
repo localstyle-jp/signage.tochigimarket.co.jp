@@ -138,20 +138,20 @@ function playWebm(i) {
 
 function pauseMp4(i) {
   mp4[i].obj.pause();
+  mp4[i].obj.currentTime = 0;
 }
 
 function pauseWebm(i) {
   webm[i].obj.pause();
+  webm[i].obj.currentTime = 0;
 }
 
 function loadWebpage(i) {
-  console.log('load_webpage : ' + i);
   webpage[i].obj.src = webpage[i].source;
   // webpage[i].obj.removeAttribute('sandbox');
 }
 
 function removeWebpage(i) {
-  console.log('remove_webpage : ' + i);
   webpage[i].obj.src = '';
   // webpage[i].obj.setAttribute('sandbox', '');
 }
@@ -183,11 +183,11 @@ var scene_manager = function () {
         });
 
         var now = index; // indexのままfadeIn()で利用すると,fadeOut(1000)の間にindexが進んでしまう
-        $('.type_' + scene_list[prev]).fadeOut(1000, function () {
+        $('.type_' + scene_list[prev]).fadeOut(0, function () {
             if (index!=prev) {       // 最初にこの関数を回したくなかったので...
               removeWebpages(prev);
             }
-            $('.type_' + scene_list[now]).fadeIn(1000);
+            $('.type_' + scene_list[now]).fadeIn(0);
         });
 
         var flg = 0;
@@ -338,6 +338,7 @@ $(function () {
   $.each(mp4, function(i, val) {
     if (val.type == 'mp4') {
       mp4[i].obj = document.getElementById('mp4_' + val.no);
+      console.log(mp4[i].obj.volume);
       if (Hls.isSupported()) {
         var hls = new Hls();
         hls.loadSource(mp4[i].source);
