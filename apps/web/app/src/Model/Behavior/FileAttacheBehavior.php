@@ -21,6 +21,9 @@ class FileAttacheBehavior extends Behavior
     public $convertPath = '/usr/bin/convert';
     public $convertParams = '-thumbnail';
 
+    //ffmpeg configure
+    public $convertPath_mp4 = 'ffmpeg';
+
     public function initialize(array $config)
     {
         $entity = $this->getTable()->newEntity();
@@ -97,6 +100,19 @@ class FileAttacheBehavior extends Behavior
 
             $dir = UPLOAD_DIR . $table->getAlias() . DS .'files';
             if (!is_dir($dir) && !empty($table->attaches['files'])) {
+                if (!$Folder->create($dir, $this->uploadDirMask)) {
+
+                }
+            }
+        }
+    }
+
+    public function checkConvertDirectoryMp4($dir) 
+    {
+        $Folder = new Folder();
+
+        if ($this->uploadDirCreate) {
+            if (!is_dir($dir)) {
                 if (!$Folder->create($dir, $this->uploadDirMask)) {
 
                 }
@@ -266,6 +282,16 @@ class FileAttacheBehavior extends Behavior
                             $newname = sprintf($filepattern, $id, $uuid) . '.' . $ext;
                             move_uploaded_file($file['tmp_name'], $basedir . $newname);
                             chmod($basedir . $newname, $this->uploadFileMask);
+                            
+                            if ($ext=='mp4') {
+                                // tsファイルへの分割
+                                $newdist = WWW_ROOT . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS;
+                                $filenameM3u8 = 'm' . $id . '.m3u8';
+                                $this->convert_mp4($basedir.$newname, $newdist, $filenameM3u8);
+                                // DBへの記録準備
+                                $newname = '';
+                                $old_entity->set('url', 'm'.$id.DS.$filenameM3u8);
+                            }
 
                             // $_data[$columns] = $newname;
                             // $_data[$columns.'_name'] = $file_name['name'];
@@ -286,6 +312,10 @@ class FileAttacheBehavior extends Behavior
                                         @unlink(WWW_ROOT . $file_path);
                                     }
                                 }
+                            }
+                            // 分割前mp4ファイルの削除
+                            if ($ext=='mp4') {
+                                @unlink($basedir.$newname);
                             }
                         }
 
@@ -308,7 +338,7 @@ class FileAttacheBehavior extends Behavior
     }
 
     /**
-     * ファイルアップロード
+     * 画像アップロード
      * @param $size [width]x[height]
      * @param $source アップロード元ファイル(フルパス)
      * @param $dist 変換後のファイルパス（フルパス）
@@ -359,6 +389,33 @@ class FileAttacheBehavior extends Behavior
         }
         $a = system(escapeshellcmd($cmdline . ' ' . $option . ' ' . $source . ' ' . $dist));
         @chmod($dist, $this->uploadFileMask);
+        return $a;
+    }
+
+    /**
+     * mp4ファイルアップロード
+     * @param $source 変換前のファイルパス(フルパス)
+     * @param $dist_dir 変換後の格納先（フォルダパス）
+     * @param $filenameM3u8 変換後のm3u8ファイル名
+     * */
+    public function convert_mp4($source, $dist_dir, $filenameM3u8) {
+        // ディレクトリの存在をチェック(なければ作成)
+        $this->checkConvertDirectoryMp4($dist_dir);
+        // ffmpegコマンドの要素作成
+        $cmdline = $this->convertPath_mp4;
+        $src = '-i ' . $source;
+        $codec = '-c:v copy -c:a copy';
+        $format = '-f hls -hls_time 1 -hls_playlist_type vod';
+        $dist = '-hls_segment_filename ' . $dist_dir . 'v1_%4d.ts ' . $dist_dir . $filenameM3u8;
+        // コマンド実行
+        $command = $cmdline . ' ' . $src . ' ' . $codec . ' ' . $format . ' ' . $dist;
+        $a = system(escapeshellcmd($command));
+        // パーミッション
+        @chmod($dist_dir.$filenameM3u8, $this->uploadFileMask);
+        $idFile = 0;
+        while ( @chmod($dist_dir.sprintf('v1_%s.ts', sprintf('%04d', $idFile)), $this->uploadFileMask) ) {
+            $idFile += 1;
+        }
         return $a;
     }
 }
