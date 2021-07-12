@@ -27,8 +27,29 @@ $(function () {
 </script>
 </head>
 <body style="margin: 0; height:<?= $height; ?>px;">
-  <iframe src="<?= $this->Url->build(['controller' => 'content', 'action' => 'machine', $machine->machine_content_id, '?' => $query]); ?>" width="<?= $width; ?>" height="<?= $height; ?>"></iframe>
-
+<iframe src="<?= $this->Url->build(['controller' => 'content', 'action' => 'machine', $machine->machine_content_id, '?' => $query]); ?>" width="<?= $width; ?>" height="<?= $height; ?>"></iframe>
+<!-- marquee -->
+<div class="marquee_wrapper">
+  <p class="marquee">testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest</p>
+</div>
+  
+<style>
+  .marquee_wrapper {
+    width: <?= $width; ?>px; height: 100px; 
+    position: absolute; top: 980px;
+    background-color: white;
+  }
+  .marquee_wrapper > .marquee {
+    font-size: 100px;
+    margin:0; display:inline-block; white-space:nowrap;
+    animation-name:marquee_test; animation-timing-function:linear;
+    animation-duration:60s; animation-iteration-count:infinite;
+	}
+  @keyframes marquee_test {
+    from   { transform: translate(<?= $width; ?>px);} 
+    99%,to { transform: translate(-100%);}
+  }
+</style>
 <script src="/user/common/js/cms-slim.js"></script>
 <script>
 var reload_flag = 1;
