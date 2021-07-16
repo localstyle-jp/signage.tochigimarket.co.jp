@@ -83,6 +83,13 @@
               </td>
             </tr>
 
+            <tr>
+              <td>字幕</td>
+              <td>
+                <?= $this->Form->input('rolling_caption', ['type' => 'textarea', 'style' => 'height:80px;']); ?>
+              </td>
+            </tr>
+
         </table>
 
       <?php if ($data['id']): ?>
