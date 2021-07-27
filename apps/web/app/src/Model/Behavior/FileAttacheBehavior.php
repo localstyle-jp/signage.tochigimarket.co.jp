@@ -401,14 +401,19 @@ class FileAttacheBehavior extends Behavior
     public function convert_mp4($source, $dist_dir, $filenameM3u8) {
         // ディレクトリの存在をチェック(なければ作成)
         $this->checkConvertDirectoryMp4($dist_dir);
+
         // ffmpegコマンドの要素作成
         $cmdline = $this->convertPath_mp4;
         $src = '-i ' . $source;
-        $codec = '-c:v copy -c:a copy';
-        $format = '-f hls -hls_time 1 -hls_playlist_type vod';
-        $dist = '-hls_segment_filename ' . $dist_dir . 'v1_%4d.ts ' . $dist_dir . $filenameM3u8;
+        $codec = '-c:v libx264 -c:a aac';
+        $bitrate = '-b:v 4000k -minrate 4000k -maxrate 4000k -bufsize 8000k -b:a 128k';
+        $scale = '-s 1920x1080';
+        $format = "-f hls -hls_time 1 -hls_playlist_type vod";
+        $dist = "-hls_segment_filename \"" . $dist_dir . "v1_%4d.ts\" " . $dist_dir . $filenameM3u8;
         // コマンド実行
-        $command = $cmdline . ' ' . $src . ' ' . $codec . ' ' . $format . ' ' . $dist;
+        $command = $cmdline . ' ' . $src . ' ' . $codec . ' ' . $bitrate . ' ' . $scale . ' ' . $format . ' ' . $dist;
+
+        // dd($command);
         $a = system(escapeshellcmd($command));
         // パーミッション
         @chmod($dist_dir.$filenameM3u8, $this->uploadFileMask);
