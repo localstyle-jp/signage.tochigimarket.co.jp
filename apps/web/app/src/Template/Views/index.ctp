@@ -34,14 +34,15 @@ $(function () {
 <iframe src="<?= $this->Url->build(['controller' => 'content', 'action' => 'machine', $machine->machine_content_id, '?' => $query]); ?>" width="<?= $width; ?>" height="<?= $height; ?>"></iframe>
 <!-- 字幕 -->
 <?php if(!empty($machine->rolling_caption)) : ?>
-<div class="rolling_caption_wrapper" width="<?= $width; ?>">
-  <p class="rolling_caption_text"><?= h($machine->rolling_caption) ?></p>
+<div class="rolling_caption_wrapper">
+  <!-- <marquee class="test_marquee" id="test_marquee" scrollamount="15"><-?= h($machine->rolling_caption) ?></marquee> -->
+  <p class="rolling_caption_text" id="rolling_caption_text"><?= h($machine->rolling_caption) ?></p>
 </div>
 <?php endif; ?>
 
 <style>
   body {
-    font-size: 140px;
+    font-size: 70px;
   }
 /* 字幕 */
  .rolling_caption_wrapper {
@@ -50,12 +51,22 @@ $(function () {
     line-height: 0;
  }
 
+ /* .test_marquee {
+   /* width: max-content;
+    width: <-?= $width; ?>px; 
+    position: fixed;
+    bottom: 0px;
+    margin:0; display:inline-block; white-space:nowrap;
+    background-color: white;
+    line-height: 1.2em;
+  } */
+
 .rolling_caption_text {
   position: fixed;
   bottom: 0px;
   margin:0; display:inline-block; white-space:nowrap;
   animation-name:marquee; animation-timing-function:linear;
-  animation-duration:calc(1s*<?= strlen($machine->rolling_caption) ?>); animation-iteration-count:infinite;
+  animation-duration:calc(0.4s*<?= strlen($machine->rolling_caption) ?>); animation-iteration-count:infinite;
   background-color: white;
   line-height: 1.2em;
 }
@@ -65,6 +76,31 @@ $(function () {
 }
 /* /字幕 */
 </style>
+
+<script>
+  // document.getElementById("test_marquee").innerHTML =  ;
+  // var defaultHTML  = document.getElementById("test_marquee").innerHTML;
+
+  // function Func() {
+
+  //   console.log('ok');
+  //   document.getElementById("test_marquee").innerHTML = "<-?= h($machine->rolling_caption) ?>";
+  // }
+
+  // function BackToFunc() {
+  //   document.body.innerHTML = defaultHTML;
+  // }
+
+  function DefaultFunc() {
+    // var defaultHTML  = document.getElementById("test_marquee").innerHTML;
+    // document.getElementById("test_marquee").innerHTML = defaultHTML;
+    
+    var defaultHTML  = document.getElementById("rolling_caption_text").innerHTML;
+    document.getElementById("rolling_caption_text").innerHTML = defaultHTML;
+  }
+
+  setInterval(DefaultFunc, 10000);
+</script>
 
 <script src="/user/common/js/cms-slim.js"></script>
 <script>

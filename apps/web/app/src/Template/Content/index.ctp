@@ -338,7 +338,7 @@ $(function () {
   $.each(mp4, function(i, val) {
     if (val.type == 'mp4') {
       mp4[i].obj = document.getElementById('mp4_' + val.no);
-      console.log(mp4[i].obj.volume);
+      // console.log(mp4[i].obj.volume);
       if (Hls.isSupported()) {
         var hls = new Hls();
         hls.loadSource(mp4[i].source);

@@ -113,6 +113,8 @@ class ContentController extends AppController
         $materials = [];
         $material_youtube = [];
         $material_mp4 = [];
+        $material_webm = [];
+        $material_webpage = [];
         $item_count = 0;
         foreach ($content->machine_materials as $material) {
             $this->setContents($material, $material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $material_webm, $material_webpage, $item_count, $content->machine_box);
