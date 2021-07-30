@@ -20,6 +20,8 @@ body::-webkit-scrollbar {
 }
 </style>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<!-- <script src="//cdn.jsdelivr.net/npm/jquery.marquee@1.6.0/jquery.marquee.min.js" type="text/javascript"></script> -->
+
 <script>
 $(function () {
   // var zoom = <-?= $width; ?> / $('iframe').width();
@@ -35,24 +37,25 @@ $(function () {
 <!-- 字幕 -->
 <?php if(!empty($machine->rolling_caption)) : ?>
 <div class="rolling_caption_wrapper">
-  <!-- <marquee class="test_marquee" id="test_marquee" scrollamount="15"><-?= h($machine->rolling_caption) ?></marquee> -->
   <p class="rolling_caption_text" id="rolling_caption_text"><?= h($machine->rolling_caption) ?></p>
+  <!-- <marquee class="test_marquee" id="test_marquee" scrollamount="15"><-?= h($machine->rolling_caption) ?></marquee> -->
+  <!-- <p class="test_marquee" id="jquery_marquee"><-?= h($machine->rolling_caption) ?></p> -->
 </div>
 <?php endif; ?>
 
 <style>
-  body {
-    font-size: 70px;
-  }
+body {
+  font-size: 70px;
+}
 /* 字幕 */
- .rolling_caption_wrapper {
-    width: 1px;
-    height: 1px;
-    line-height: 0;
- }
+.rolling_caption_wrapper {
+  width: 1px;
+  height: 1px;
+  line-height: 0;
+}
 
  /* .test_marquee {
-   /* width: max-content;
+    /* width: max-content;
     width: <-?= $width; ?>px; 
     position: fixed;
     bottom: 0px;
@@ -78,20 +81,7 @@ $(function () {
 </style>
 
 <script>
-  // document.getElementById("test_marquee").innerHTML =  ;
-  // var defaultHTML  = document.getElementById("test_marquee").innerHTML;
-
-  // function Func() {
-
-  //   console.log('ok');
-  //   document.getElementById("test_marquee").innerHTML = "<-?= h($machine->rolling_caption) ?>";
-  // }
-
-  // function BackToFunc() {
-  //   document.body.innerHTML = defaultHTML;
-  // }
-
-  function DefaultFunc() {
+  function reInputCaption() {
     // var defaultHTML  = document.getElementById("test_marquee").innerHTML;
     // document.getElementById("test_marquee").innerHTML = defaultHTML;
     
@@ -99,7 +89,13 @@ $(function () {
     document.getElementById("rolling_caption_text").innerHTML = defaultHTML;
   }
 
-  setInterval(DefaultFunc, 10000);
+  setInterval(reInputCaption, 10000);
+  // setInterval(reInputCaption, 400*<-?= strlen($machine->rolling_caption) ?>);
+  // $(document).ready(function() {
+  //   $('#jquery_marquee').marquee({
+  //     scrollSpeed: 4
+  //   });
+  // });
 </script>
 
 <script src="/user/common/js/cms-slim.js"></script>

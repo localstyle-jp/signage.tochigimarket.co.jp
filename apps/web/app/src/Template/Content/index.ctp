@@ -28,6 +28,25 @@
 
 
 </div><!-- / #wrapper -->
+
+<!-- ローディングバー -->
+<div class="loader_container" id="loader_container">
+  <div class="bar_container">
+    <div class="progress_bar" id="progress_bar">
+      <div class="progress_percentage" id="progress_percentage">
+        0%
+      </div>
+    </div>
+  </div>
+  
+  <div class="text_container">
+    Loading
+    <span>Please Wait...</span>
+  </div>
+  
+</div>
+<!-- / ローディングバー -->
+
 <script>
 var reload = function () {
   var parent = null;
@@ -63,8 +82,10 @@ var webpage;
 player = <?= json_encode($material_youtube); ?>;
 <?php endif; ?>
 
+num_mp4 = 0;
 <?php if (!empty($material_mp4)): ?>
 mp4 = <?= json_encode(($material_mp4)); ?>;
+num_mp4 = Object.keys(mp4).length;
 <?php endif; ?>
 
 <?php if (!empty($material_webm)): ?>
@@ -370,6 +391,32 @@ $(function () {
 window.onload = function() {
   scene_manager();  
 }
+
+// ローディングバー
+var bar=$('#progress_bar');
+var percentage=parseInt($('#progress_percentage').html());
+
+function stopProgress(){
+  clearInterval(progress);
+  setTimeout(function(){
+    $('#loader_container').hide();         
+  }, 5000);
+}
+
+var progress= setInterval(function(){
+  percentage++;
+  if (percentage<=100){
+    $('#progress_percentage').html(percentage+'%');
+    if (percentage>10) {
+      bar.css('width',percentage+'%');
+      // console.log(percentage);
+    }
+  }
+  else {
+    stopProgress()
+  }
+},360*num_mp4);
+// /ローディングバー
 </script>
 
 </body>
