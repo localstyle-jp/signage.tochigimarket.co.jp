@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+  <!-- <meta name="viewport" content="width=<-?=$width?>, height=<-?=$height?>, initial-scale=1"> -->
   <!-- <meta name="viewport" content="width=<-?= $width; ?>, initial-scale=1, shrink-to-fit=no"> -->
 <title>サイネージ <?= h($machine->name); ?></title>
 <style>
+:root {
+  --initial-left-pos: 0;
+  --initial-font-size: 0;
+}
 iframe {
   border: 0;
   transform-origin: 0 0;
@@ -24,11 +29,20 @@ body::-webkit-scrollbar {
 
 <script>
 $(function () {
+  console.log(window.innerWidth+"\n"+window.devicePixelRatio);
   // var zoom = <-?= $width; ?> / $('iframe').width();
-  var zoom = parseFloat(window.innerWidth) / parseFloat($('iframe').width());
+  // var zoom = parseFloat(window.innerWidth) / parseFloat($('iframe').width());
+  var zoom = <?= $width; ?> / $('iframe').width() / parseFloat(window.devicePixelRatio);
   var scale = 'scale(' + zoom + ')';
+  var height_new = <?= $height ?>/parseFloat(window.devicePixelRatio);
+  var width_new = <?= $width ?>/parseFloat(window.devicePixelRatio);
+  var bottom_pos = <?= $height ?> - height_new;
+  var caption_time = 0.002 * (<?= $width ?> + <?= $height ?>*0.08*<?= strlen($machine->rolling_caption) ?>);
 
   $('iframe').css('transform', scale).css('-webkit-transform', scale).css('-ms-transform', scale).css('-o-transform', scale).css('-moz-transform', scale);
+  $('.rolling_caption_wrapper').css('bottom', bottom_pos+'px');
+  $(':root').css('--initial-left-pos', width_new + 'px').css('--initial-font-size', height_new*0.08 + 'px');
+  $('.rolling_caption_text').css('animation-duration', caption_time + 's').css('animation-name', 'marquee');
 });
 </script>
 </head>
@@ -44,11 +58,13 @@ $(function () {
 <?php endif; ?>
 
 <style>
-body {
+/* body {
   font-size: 70px;
-}
+} */
 /* 字幕 */
 .rolling_caption_wrapper {
+  position: relative;
+  bottom: 0px;
   width: 1px;
   height: 1px;
   line-height: 0;
@@ -65,16 +81,21 @@ body {
   } */
 
 .rolling_caption_text {
-  position: fixed;
+  /* position: fixed; */
+  font-size: var(--initial-font-size);
+  position: absolute;
   bottom: 0px;
   margin:0; display:inline-block; white-space:nowrap;
-  animation-name:marquee; animation-timing-function:linear;
-  animation-duration:calc(0.4s*<?= strlen($machine->rolling_caption) ?>); animation-iteration-count:infinite;
+  /* animation-name:marquee; */
+  animation-timing-function:linear;
+  /* animation-duration:calc(0.2s*(var(--initial-left-pos)+<-?= strlen($machine->rolling_caption) ?>)); */
+  animation-iteration-count:infinite;
   background-color: white;
   line-height: 1.2em;
 }
 @keyframes marquee {
-  from   { transform: translate(<?= $width; ?>px);} 
+  /* from   { transform: translate(<-?= $width; ?>px);} */
+  from   { transform: translate(var(--initial-left-pos));}
   99%,to { transform: translate(-100%);}
 }
 /* /字幕 */
