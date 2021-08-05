@@ -144,10 +144,9 @@ function onYouTubeIframeAPIReady() {
 }
 
 function playMp4(i) {
-
   mp4[i].obj.currentTime = 0;
   mp4[i].obj.play();
-
+  // console.log('playMp4 '+i);
 }
 
 function playWebm(i) {
@@ -160,6 +159,7 @@ function playWebm(i) {
 function pauseMp4(i) {
   mp4[i].obj.pause();
   mp4[i].obj.currentTime = 0;
+  // console.log('pauseMp4 '+i);
 }
 
 function pauseWebm(i) {
@@ -261,22 +261,30 @@ var scene_manager = function () {
 
     var pauseVideos = function() {
         // 再生中の動画の停止
-        <?php if(!empty($material_mp4)): ?>
-        $.each (mp4, function(i, val) {
-          if (items[scene_list[index]].action == 'play_mp4_' + val.no) {
-            pauseMp4(i);
-            return false;
-          }
-        });
-        <?php endif; ?>
-        <?php if(!empty($material_webm)): ?>
-        $.each (webm, function(i, val) {
-          if (items[scene_list[index]].action == 'play_webm_' + val.no) {
-            pauseWebm(i);
-            return false;
-          }
-        });
-        <?php endif; ?>
+        if (items[scene_list[index]].action.indexOf('play_mp4_') == 0) {
+           pauseMp4('no'+scene_list[index]);
+        }
+        if (items[scene_list[index]].action.indexOf('play_webm_') == 0) {
+           pauseWebm('no'+scene_list[index]);
+        }
+        // pauseWebm('no'+scene_list[index]);
+        // <-?php if(!empty($material_mp4)): ?>
+        // $.each (mp4, function(i, val) {
+        //   console.log(i+' '+val.no+' '+scene_list[index]);
+        //   if (items[scene_list[index]].action == 'play_mp4_' + val.no) {
+        //     pauseMp4(i);
+        //     return false;
+        //   }
+        // });
+        // <-?php endif; ?>
+        // <-?php if(!empty($material_webm)): ?>
+        // $.each (webm, function(i, val) {
+        //   if (items[scene_list[index]].action == 'play_webm_' + val.no) {
+        //     pauseWebm(i);
+        //     return false;
+        //   }
+        // });
+        // <-?php endif; ?>
     }
 
     var removeWebpages = function(prev) {

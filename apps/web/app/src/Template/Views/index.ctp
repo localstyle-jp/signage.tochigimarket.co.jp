@@ -94,7 +94,6 @@ $(function () {
   line-height: 1.2em;
 }
 @keyframes marquee {
-  /* from   { transform: translate(<-?= $width; ?>px);} */
   from   { transform: translate(var(--initial-left-pos));}
   99%,to { transform: translate(-100%);}
 }
@@ -110,7 +109,7 @@ $(function () {
     document.getElementById("rolling_caption_text").innerHTML = defaultHTML;
   }
 
-  setInterval(reInputCaption, 10000);
+  // setInterval(reInputCaption, 10000);
   // setInterval(reInputCaption, 400*<-?= strlen($machine->rolling_caption) ?>);
   // $(document).ready(function() {
   //   $('#jquery_marquee').marquee({
