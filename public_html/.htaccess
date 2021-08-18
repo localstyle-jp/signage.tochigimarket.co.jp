@@ -1,3 +1,7 @@
+
+AddType application/vnd.apple.mpegurl .m3u8
+AddType video/mp2t .ts
+
 #RewriteEngine on
 #RewriteCond %{HTTP_HOST} ^www.cms-v5.caters.jp\.asia
 #RewriteRule ^(.*)$ http://cms-v5.caters.jp//$1 [R=301,L]

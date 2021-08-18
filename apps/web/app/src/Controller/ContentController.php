@@ -70,6 +70,7 @@ class ContentController extends AppController
         // アイテム
         $items = [];
         $scene_list = [];
+        $scene_box_list = [];
         $materials = [];
         $material_youtube = [];
         $material_mp4 = [];
@@ -77,10 +78,10 @@ class ContentController extends AppController
         $material_webpage = [];
         $item_count = 0;
         foreach ($content->content_materials as $material) {
-            $this->setContents($material, $material->material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $material_webm, $material_webpage, $item_count);
+            $this->setContents($material, $material->material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $material_webm, $material_webpage, $item_count, null, $scene_box_list);
         }
         
-        $this->set(compact('content', 'query', 'items', 'scene_list', 'materials', 'material_youtube', 'material_mp4', 'material_webm', 'material_webpage'));
+        $this->set(compact('content', 'query', 'items', 'scene_list', 'scene_box_list', 'materials', 'material_youtube', 'material_mp4', 'material_webm', 'material_webpage', 'item_count'));
         $this->set(compact('width', 'height'));
 
 
@@ -110,6 +111,7 @@ class ContentController extends AppController
         // アイテム
         $items = [];
         $scene_list = [];
+        $scene_box_list = [];
         $materials = [];
         $material_youtube = [];
         $material_mp4 = [];
@@ -117,17 +119,17 @@ class ContentController extends AppController
         $material_webpage = [];
         $item_count = 0;
         foreach ($content->machine_materials as $material) {
-            $this->setContents($material, $material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $material_webm, $material_webpage, $item_count, $content->machine_box);
+            $this->setContents($material, $material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $material_webm, $material_webpage, $item_count, $content->machine_box, $scene_box_list);
         }
 
-        $this->set(compact('content', 'query', 'items', 'scene_list', 'materials', 'material_youtube', 'material_mp4', 'material_webm', 'material_webpage'));
+        $this->set(compact('content', 'query', 'items', 'scene_list', 'scene_box_list', 'materials', 'material_youtube', 'material_mp4', 'material_webm', 'material_webpage', 'item_count'));
         $this->set(compact('width', 'height'));
 
         $this->render('index');
         
     }
 
-    private function setContents($material, $detail, &$items, &$scene_list, &$materials, &$material_youtube, &$material_mp4, &$material_webm, &$material_webpage, &$item_count, $machine = null) {
+    private function setContents($material, $detail, &$items, &$scene_list, &$materials, &$material_youtube, &$material_mp4, &$material_webm, &$material_webpage, &$item_count, $machine = null, &$scene_box_list) {
         $item_count++;
 
         $item = [];
@@ -147,7 +149,14 @@ class ContentController extends AppController
         }
 
         $items[strval($item_count)] = $item;
-        $scene_list[] = intval($item_count);
+
+        $scene_list[strval($item_count)] = intval($item_count);
+
+        if ($detail->type != Material::TYPE_MOVIE_MP4) {
+            $scene_box_list[$item_count] = intval($item_count);
+        } else {
+            $scene_box_list[$item_count] = 'mp4';
+        }
 
         $width = 1920;
         $height = 1080;
@@ -170,6 +179,7 @@ class ContentController extends AppController
             $data['content'] .= 'src=""';
             // $date['content'] .= 'src="'.$detail->url.'" sandbox=""';
             $data['content'] .= ' id="webpage_' . $item_count . '" width="' . $width . '" height="' . $height . '"></iframe>';
+            $data['type'] = 'webpage';
             $material_webpage['no' . $item_count] = [
                 'type' => 'webpage',
                 'no' => $item_count,
@@ -179,6 +189,7 @@ class ContentController extends AppController
             ];
         } elseif ($detail->type == Material::TYPE_MOVIE) {
             $data['content'] = '<div id="player_' . $item_count . '"></div>';
+            $data['type'] = 'movie';
             $material_youtube['no' . $item_count] = [
                 'no' => $item_count,
                 'obj' => null,
@@ -186,22 +197,27 @@ class ContentController extends AppController
                 'code' => $detail->movie_tag
             ];
         } elseif ($detail->type == Material::TYPE_MOVIE_MP4) {
-            $data['content'] = '<video id="mp4_' . $item_count . '"';
+            // $data['content'] = '<video id="mp4_' . $item_count . '"';
+            $data['content'] = '<video id="mp4_video"';
             // $data['content'] .= ' muted';
             $data['content'] .= '>';
             $data['content'] .= '</video>';
+            $data['type'] = 'mp4';
             $material_mp4['no' . $item_count] = [
                 'type' => 'mp4',
                 'no' => $item_count,
                 'source' => DS . UPLOAD_MOVIE_BASE_URL . DS . $detail->url,
                 'obj' => null,
+                'hls' => null,
                 'error_flg' => 0,
+                'content' => $data['content']
             ];
         } elseif ($detail->type == Material::TYPE_MOVIE_WEBM) {
             $data['content'] = '<video id="webm_' . $item_count . '"';
             // $data['content'] .= ' muted';
             $data['content'] .= '>';
             $data['content'] .= '</video>';
+            $data['type'] = 'webm';
             $material_webm['no' . $item_count] = [
                 'type' => 'webm',
                 'no' => $item_count,
@@ -211,6 +227,7 @@ class ContentController extends AppController
             ];
         } elseif ($detail->type == Material::TYPE_PAGE_MOVIE) {
             $data['content'] = '<iframe src="' . $detail->url . '" width="' . $width . '" height="' . $height . '" id="iframe_page_mp4_' . $item_count . '"></iframe>';
+            $data['type'] = 'page_mp4';
             $material_mp4['no' . $item_count] = [
                 'type' => 'page_mp4',
                 'no' => $detail->id,

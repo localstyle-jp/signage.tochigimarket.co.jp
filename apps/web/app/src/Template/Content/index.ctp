@@ -8,18 +8,25 @@
 <link rel="stylesheet" media="all" href="/content/css/reset.css">
 <link rel="stylesheet" media="all" href="/content/css/master.css">
 <link rel="stylesheet" media="all" href="/content/css/style.css">
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="/user/common/js/hls.js"></script>
 
-<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<script src="/user/common/js/jquery-3.5.1.min.js"></script>
 
 </head>
 <body>
 <div id="wrapper">
   <div id="cont_inner" style="width: <?= $width; ?>px; height: <?= $height; ?>px;">
 
+<?php $mp4_play_block = 1; ?>
   <?php foreach ($materials as $material): ?>
 
+  <?php if ($material['type'] != 'mp4'): ?>
     <div class="<?= h($material['class']); ?>" style="display: none;"><?= $material['content']; ?></div>
+  <?php else: ?>
+  <?php if ($mp4_play_block): ?>
+    <div class="box type_mp4" id="mp4_play_block" style="display: none;"><?= $material['content']; ?></div>
+  <?php $mp4_play_block = 0; endif; ?>
+  <?php endif; ?>
 
   <?php endforeach; ?>
 
@@ -47,6 +54,11 @@
 </div>
 <!-- / ローディングバー -->
 
+<!-- デバッグ用 -->
+<div id="content_no_block">
+  <div></div>
+</div>
+
 <script>
 var reload = function () {
   var parent = null;
@@ -69,13 +81,14 @@ var reload = function () {
 }();
 
 // iframe API
-var tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-var firstScriptTag = document.getElementsByTagName('script')[0];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+// var tag = document.createElement('script');
+// tag.src = "https://www.youtube.com/iframe_api";
+// var firstScriptTag = document.getElementsByTagName('script')[0];
+// firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 var player;
 var mp4;
+var mp4_obj;
 var webm;
 var webpage;
 <?php if(!empty($material_youtube)): ?>
@@ -96,54 +109,57 @@ webm = <?= json_encode(($material_webm)); ?>;
 webpage = <?= json_encode(($material_webpage)); ?>;
 <?php endif; ?>
 
-function onYouTubeIframeAPIReady() {
-  var playerStateEnded = function () {
+// function onYouTubeIframeAPIReady() {
+//   var playerStateEnded = function () {
 
-    $.each(player, function(i, val) {
-      if (player[i].error_flg == 0) {
-        player[i].obj.pauseVideo();
-        // player[i].obj.mute();
-        player[i].obj.seekTo(0, true);
-      }
-    });
-    scene_manager();
-  };
+//     $.each(player, function(i, val) {
+//       if (player[i].error_flg == 0) {
+//         player[i].obj.pauseVideo();
+//         // player[i].obj.mute();
+//         player[i].obj.seekTo(0, true);
+//       }
+//     });
+//     scene_manager();
+//   };
 
-  $.each (player, function(i, val) {
-    player[i].obj = new YT.Player('player_' + val.no, {
-      height: '100%',
-      videoId: val.code,
-      wmode: 'transparent',
-      width: '100%',
-      playerVars:{
-        'autoplay': 0,
-        'controls': 0,
-        'loop': 0,
-        'playlist': val.code,
-        'rel': 0,
-        'showinfo': 0,
-        'color': 'white'
-      },
-      events: {
-        'onReady': function (event) {
-          // event.target.mute();
-        },
-        'onStateChange': function (event) {
-          if (event.data == 0) {
-            playerStateEnded();
-          }
-        },
-        'onError': function (event) {
-          player[i].error_flg = 1;
-          playerStateEnded();
-        }
-      }
-    });
-  });
+//   $.each (player, function(i, val) {
+//     player[i].obj = new YT.Player('player_' + val.no, {
+//       height: '100%',
+//       videoId: val.code,
+//       wmode: 'transparent',
+//       width: '100%',
+//       playerVars:{
+//         'autoplay': 0,
+//         'controls': 0,
+//         'loop': 0,
+//         'playlist': val.code,
+//         'rel': 0,
+//         'showinfo': 0,
+//         'color': 'white'
+//       },
+//       events: {
+//         'onReady': function (event) {
+//           // event.target.mute();
+//         },
+//         'onStateChange': function (event) {
+//           if (event.data == 0) {
+//             playerStateEnded();
+//           }
+//         },
+//         'onError': function (event) {
+//           player[i].error_flg = 1;
+//           playerStateEnded();
+//         }
+//       }
+//     });
+//   });
   
-}
+// }
 
 function playMp4(i) {
+  $("#mp4_play_block").html(mp4[i].content);
+
+console.log(mp4);
   mp4[i].obj.currentTime = 0;
   mp4[i].obj.play();
   // console.log('playMp4 '+i);
@@ -157,6 +173,8 @@ function playWebm(i) {
 }
 
 function pauseMp4(i) {
+  $("#mp4_play_block").html(mp4[i].content);
+
   mp4[i].obj.pause();
   mp4[i].obj.currentTime = 0;
   // console.log('pauseMp4 '+i);
@@ -181,51 +199,52 @@ var scene_manager = function () {
     var items = <?= json_encode($items); ?>;
 
     var scene_list = <?= json_encode($scene_list); ?>;
-
-    var START_INDEX = 0;
-    var END_INDEX = scene_list.length -1;
-    var index = 0; // scene_listのindex
-    var prev = 0;
-
+    var scene_box_list = <?= json_encode($scene_box_list); ?>;
+    var START_INDEX = 1;
+    var END_INDEX = <?= $item_count; ?>;
+    var index = START_INDEX; // scene_listのindex
+    var prev = START_INDEX;
     var show = function () {
+        $("#content_no_block div").text(index);
 
-        $.each(player, function(i, val) {
-          if (player[i].error_flg == 1) {
-            document.body.querySelector('.type_' + val.no).style.display = "none";
-            return false;
-          }
-        });
+        // $.each(player, function(i, val) {
+        //   if (player[i].error_flg == 1) {
+        //     document.body.querySelector('.type_' + val.no).style.display = "none";
+        //     return false;
+        //   }
+        // });
 
-        $.each(player, function(i, val) {
-          if (player[i].error_flg == 1 ) {
-            reload();
-            return false;
-          }
-        });
+        // $.each(player, function(i, val) {
+        //   if (player[i].error_flg == 1 ) {
+        //     reload();
+        //     return false;
+        //   }
+        // });
 
         var now = index; // indexのままfadeIn()で利用すると,fadeOut(1000)の間にindexが進んでしまう
-        $('.type_' + scene_list[prev]).fadeOut(0, function () {
+
+        $('.type_' + scene_box_list[prev]).fadeOut(0, function () {
             if (index!=prev) {       // 最初にこの関数を回したくなかったので...
               removeWebpages(prev);
             }
-            $('.type_' + scene_list[now]).fadeIn(0);
+            $('.type_' + scene_box_list[now]).fadeIn(0);
         });
 
         var flg = 0;
-        $.each(player, function(i, val) {
-          if (flg == 0 && player[i].error_flg == 0 && items[scene_list[index]].action == 'play_video_' + val.no) {
-            if (player[i].obj === null) {
-              return false;
-            }
-            // player[i].obj.mute();
-            player[i].obj.playVideo();
+        // $.each(player, function(i, val) {
+        //   if (flg == 0 && player[i].error_flg == 0 && items[scene_list[index]].action == 'play_video_' + val.no) {
+        //     if (player[i].obj === null) {
+        //       return false;
+        //     }
+        //     // player[i].obj.mute();
+        //     player[i].obj.playVideo();
 
-            // 時間が来たら次に進むため下記コメントアウト
-            // __next();
-            // flg = 1;
-            return false;
-          }
-        });
+        //     // 時間が来たら次に進むため下記コメントアウト
+        //     // __next();
+        //     // flg = 1;
+        //     return false;
+        //   }
+        // });
 
         
         $.each(mp4, function(i, val) {
@@ -319,18 +338,18 @@ var scene_manager = function () {
 
         index++;
         if(index > END_INDEX) {
-          index = 0;
+          index = START_INDEX;
         }
     }
     var next = function () {
         __next();
 
-        $.each (player, function(i, val) {
-          if (player[i].error_flg == 1 && items[scene_list[index]].action == 'play_video_' + val.no) {
-            __next();
-            return false;
-          }
-        });
+        // $.each (player, function(i, val) {
+        //   if (player[i].error_flg == 1 && items[scene_list[index]].action == 'play_video_' + val.no) {
+        //     __next();
+        //     return false;
+        //   }
+        // });
 
         show();
     };
@@ -366,14 +385,17 @@ $(function () {
 
   $.each(mp4, function(i, val) {
     if (val.type == 'mp4') {
-      mp4[i].obj = document.getElementById('mp4_' + val.no);
+      $("#mp4_play_block").html(mp4[i].content);
+      // mp4_obj = document.getElementById('mp4_' + val.no);
+      mp4[i].obj = document.getElementById('mp4_video');
+      mp4[i].content = $("#mp4_video");
       // console.log(mp4[i].obj.volume);
       if (Hls.isSupported()) {
         var hls = new Hls();
         hls.loadSource(mp4[i].source);
         hls.attachMedia(mp4[i].obj);
       } else if (mp4[i].obj.canPlayType('application/vnd.apple.mpegurl')) {
-        mp4[i].obj.src = mp4[i].source;
+        // mp4[i].obj.src = mp4[i].source;
       }
     } else if (val.type == 'page_mp4') {
       // var elem = document.getElementById('iframe_page_mp4_' + val.count);

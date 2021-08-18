@@ -131,3 +131,21 @@ div.text_container span {
 }
 /* / ローディングバー */
 
+
+#content_no_block {
+  width: 0px;
+  height: 0px;
+  position:fixed;
+  text-align: center;
+  top: 0px;
+  z-index: 99999;
+}
+#content_no_block div {
+  display: block;
+  width: 100px;
+  height: 100px;
+  background-color: #fc8833;
+  opacity: 0.5;
+  font-size: 50px;
+  line-height: 100px;
+}
