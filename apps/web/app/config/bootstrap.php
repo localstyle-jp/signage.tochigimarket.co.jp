@@ -40,6 +40,10 @@ define('DATE_ZERO', '0000-00-00');
 define('FLAG_ON', 1);
 define('FLAG_OFF', 0);
 
+define('BITRATE_HIGH', 5000);
+define('BITRATE_MID', 2500);
+define('BITRATE_LOW', 700);
+
 /*
  * Bootstrap CakePHP.
  *
