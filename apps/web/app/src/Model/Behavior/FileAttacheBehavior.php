@@ -286,11 +286,21 @@ class FileAttacheBehavior extends Behavior
                             if ($ext=='mp4') {
                                 // tsファイルへの分割
                                 $newdist = WWW_ROOT . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS;
-                                $filenameM3u8 = 'm' . $id . '.m3u8';
-                                $this->convert_mp4($basedir.$newname, $newdist, $filenameM3u8);
+                                $bitrates = [BITRATE_LOW, BITRATE_MID, BITRATE_HIGH];
+                                for ($i=0; $i < 3; $i++) { 
+                                    $filenameM3u8 = 'm' . $id . '_' . $bitrates[$i] . 'k.m3u8';
+                                    $this->convert_mp4($basedir.$newname, $newdist, $filenameM3u8, $bitrates[$i]);
+                                }
+                                // foreach ($bitrates as $bitrate) {
+                                //     $filenameM3u8 = 'm' . $id . '_' . $bitrate . 'k.m3u8';
+                                //     $this->convert_mp4($basedir.$newname, $newdist, $filenameM3u8, $bitrate);
+                                // }
+                                // マスターファイルの作成
+                                $this->create_master_m3u8($newdist, $id, $bitrates);
                                 // DBへの記録準備
                                 $newname = '';
-                                $old_entity->set('url', 'm'.$id.DS.$filenameM3u8);
+                                $filenameMaster = $dist_dir.'m'.$id.'.m3u8';
+                                $old_entity->set('url', 'm'.$id.DS.$filenameMaster);
                             }
 
                             // $_data[$columns] = $newname;
@@ -397,8 +407,9 @@ class FileAttacheBehavior extends Behavior
      * @param $source 変換前のファイルパス(フルパス)
      * @param $dist_dir 変換後の格納先（フォルダパス）
      * @param $filenameM3u8 変換後のm3u8ファイル名
+     * @param $n_bitrate 動画のビットレート(単位：kbps)
      * */
-    public function convert_mp4($source, $dist_dir, $filenameM3u8) {
+    public function convert_mp4($source, $dist_dir, $filenameM3u8, $n_bitrate) {
         // ディレクトリの存在をチェック(なければ作成)
         $this->checkConvertDirectoryMp4($dist_dir);
 
@@ -406,21 +417,49 @@ class FileAttacheBehavior extends Behavior
         $cmdline = $this->convertPath_mp4;
         $src = '-i ' . $source;
         $codec = '-c:v libx264 -c:a aac';
-        $bitrate = '-b:v 4000k -minrate 4000k -maxrate 4000k -bufsize 8000k -b:a 128k';
+        $bitrate = '-b:v '. $n_bitrate .'k -minrate '. $n_bitrate .'k -maxrate '. $n_bitrate .'k -bufsize '. $n_bitrate*2 .'k -b:a 128k';
         $scale = '-s 1920x1080';
-        $format = "-f hls -hls_time 1 -hls_playlist_type vod";
-        $dist = "-hls_segment_filename \"" . $dist_dir . "v1_%4d.ts\" " . $dist_dir . $filenameM3u8;
+        // $format = "-f hls -hls_time 1 -hls_playlist_type vod";
+        $format = "-f hls -hls_time 10 -hls_playlist_type vod -hls_flags split_by_time";
+        $dist = "-hls_segment_filename \"" . $dist_dir . "v1_".$n_bitrate."k_%4d.ts\" " . $dist_dir . $filenameM3u8;
+
         // コマンド実行
         $command = $cmdline . ' ' . $src . ' ' . $codec . ' ' . $bitrate . ' ' . $scale . ' ' . $format . ' ' . $dist;
-
         // dd($command);
         $a = system(escapeshellcmd($command));
         // パーミッション
         @chmod($dist_dir.$filenameM3u8, $this->uploadFileMask);
         $idFile = 0;
-        while ( @chmod($dist_dir.sprintf('v1_%s.ts', sprintf('%04d', $idFile)), $this->uploadFileMask) ) {
+        while ( @chmod($dist_dir.sprintf('v1_'.$n_bitrate.'k_%s.ts', sprintf('%04d', $idFile)), $this->uploadFileMask) ) {
             $idFile += 1;
         }
+
         return $a;
     }
+
+    /**
+     * マスターm3u8ファイルの作成
+     * @param $dist_dir 変換後の格納先（フォルダパス）
+
+     * */
+
+    public function create_master_m3u8($dist_dir, $id, $bitrates) {
+        // ディレクトリの存在をチェック(なければ作成)
+        $this->checkConvertDirectoryMp4($dist_dir);
+
+        // マスターファイルの文面作成
+        $contents = "#EXTM3U\n";
+        foreach ($bitrates as $bitrate) {
+            $filenameM3u8 = 'm' . $id . '_' . $bitrate . 'k.m3u8';
+            $contents .= '#EXT-X-STREAM-INF:BANDWIDTH='.$bitrate*1000*1..',RESOLUTION=1920x1080,CODECS="avc1.42e00a,mp4a.40.2"'."\n";
+            $contents .= DS . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS.$filenameM3u8."\n";
+        }
+        
+        // マスターファイル作成
+        $filenameMaster = $dist_dir.'m'.$id.'.m3u8';
+        file_put_contents($filenameMaster, $contents);
+        // パーミッション
+        @chmod($dist_dir.'m'.$id.'.m3u8', $this->uploadFileMask);
+    }
+
 }

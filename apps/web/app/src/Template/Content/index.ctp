@@ -369,7 +369,11 @@ $(function () {
       mp4[i].obj = document.getElementById('mp4_' + val.no);
       // console.log(mp4[i].obj.volume);
       if (Hls.isSupported()) {
-        var hls = new Hls();
+        var hls_config = {
+          maxMaxBufferLength: 10,            // [s]
+          // maxBufferSize: 5 * 1000 * 1000,    // [Byte]
+        };
+        var hls = new Hls(hls_config);
         hls.loadSource(mp4[i].source);
         hls.attachMedia(mp4[i].obj);
       } else if (mp4[i].obj.canPlayType('application/vnd.apple.mpegurl')) {
