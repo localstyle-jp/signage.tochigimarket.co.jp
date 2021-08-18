@@ -420,12 +420,11 @@ class FileAttacheBehavior extends Behavior
         $bitrate = '-b:v '. $n_bitrate .'k -minrate '. $n_bitrate .'k -maxrate '. $n_bitrate .'k -bufsize '. $n_bitrate*2 .'k -b:a 128k';
         $scale = '-s 1920x1080';
         // $format = "-f hls -hls_time 1 -hls_playlist_type vod";
-        $format = "-f hls -hls_time 10 -hls_playlist_type vod -hls_flags split_by_time";
+        $format = "-f hls -hls_time 10 -hls_playlist_type vod -g 30 -keyint_min 30 -sc_threshold 0";
         $dist = "-hls_segment_filename \"" . $dist_dir . "v1_".$n_bitrate."k_%4d.ts\" " . $dist_dir . $filenameM3u8;
 
         // コマンド実行
         $command = $cmdline . ' ' . $src . ' ' . $codec . ' ' . $bitrate . ' ' . $scale . ' ' . $format . ' ' . $dist;
-        // dd($command);
         $a = system(escapeshellcmd($command));
         // パーミッション
         @chmod($dist_dir.$filenameM3u8, $this->uploadFileMask);
@@ -440,9 +439,9 @@ class FileAttacheBehavior extends Behavior
     /**
      * マスターm3u8ファイルの作成
      * @param $dist_dir 変換後の格納先（フォルダパス）
-
+     * @param $id データベース保存時の動画のid
+     * @param $bitrates 動画のビットレートの配列(単位：kbps)
      * */
-
     public function create_master_m3u8($dist_dir, $id, $bitrates) {
         // ディレクトリの存在をチェック(なければ作成)
         $this->checkConvertDirectoryMp4($dist_dir);
@@ -451,7 +450,7 @@ class FileAttacheBehavior extends Behavior
         $contents = "#EXTM3U\n";
         foreach ($bitrates as $bitrate) {
             $filenameM3u8 = 'm' . $id . '_' . $bitrate . 'k.m3u8';
-            $contents .= '#EXT-X-STREAM-INF:BANDWIDTH='.$bitrate*1000*1..',RESOLUTION=1920x1080,CODECS="avc1.42e00a,mp4a.40.2"'."\n";
+            $contents .= '#EXT-X-STREAM-INF:BANDWIDTH='.$bitrate*1000*1.2.',RESOLUTION=1920x1080,CODECS="avc1.42e00a,mp4a.40.2"'."\n";
             $contents .= DS . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS.$filenameM3u8."\n";
         }
         

@@ -370,7 +370,7 @@ $(function () {
       // console.log(mp4[i].obj.volume);
       if (Hls.isSupported()) {
         var hls_config = {
-          maxMaxBufferLength: 10,            // [s]
+          maxMaxBufferLength: 20,            // [s]
           // maxBufferSize: 5 * 1000 * 1000,    // [Byte]
         };
         var hls = new Hls(hls_config);
