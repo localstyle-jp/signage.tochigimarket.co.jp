@@ -156,13 +156,36 @@ webpage = <?= json_encode(($material_webpage)); ?>;
   
 // }
 
+function createHls (i) {
+  if (Hls.isSupported()) {
+    var hls_config = {
+      maxMaxBufferLength: 10,            // [s]
+      // maxBufferSize: 5 * 1000 * 1000,    // [Byte]
+    };
+    var hls = new Hls(hls_config);
+    hls.loadSource(mp4[i].source);
+    hls.attachMedia(mp4[i].obj);
+    mp4[i].hls = hls;
+  } else if (mp4[i].obj.canPlayType('application/vnd.apple.mpegurl')) {
+    // mp4[i].obj.src = mp4[i].source;
+  }
+}
+
+function destroyHls (i) {
+  if (Hls.isSupported()) {
+    mp4[i].hls.destroy();
+  } else if (mp4[i].obj.canPlayType('application/vnd.apple.mpegurl')) {
+    // mp4[i].obj.src = '';
+  }
+}
+
 function playMp4(i) {
   $("#mp4_play_block").html(mp4[i].content);
 
 console.log(mp4);
   mp4[i].obj.currentTime = 0;
   mp4[i].obj.play();
-  // console.log('playMp4 '+i);
+  // console.log('playMp4 '+i+' '+mp4[i].obj.currentTime);
 }
 
 function playWebm(i) {
@@ -174,10 +197,9 @@ function playWebm(i) {
 
 function pauseMp4(i) {
   $("#mp4_play_block").html(mp4[i].content);
-
   mp4[i].obj.pause();
   mp4[i].obj.currentTime = 0;
-  // console.log('pauseMp4 '+i);
+  // console.log('pauseMp4 '+i+' '+mp4[i].obj.currentTime);
 }
 
 function pauseWebm(i) {
@@ -204,6 +226,7 @@ var scene_manager = function () {
     var END_INDEX = <?= $item_count; ?>;
     var index = START_INDEX; // scene_listのindex
     var prev = START_INDEX;
+    var index_next = START_INDEX+1;
     var show = function () {
         $("#content_no_block div").text(index);
 
@@ -270,6 +293,10 @@ var scene_manager = function () {
 
         if (flg == 0) {
           setTimeout(function(){
+            createHlsPlayer();
+          }, items[scene_list[index]].time-3000);
+
+          setTimeout(function(){
             pauseVideos();
             // removeWebpages();
             next();
@@ -278,39 +305,29 @@ var scene_manager = function () {
 
     };
 
+    var createHlsPlayer = function() {
+        if (items[scene_list[index_next]].action.indexOf('play_mp4_') == 0 && END_INDEX>1) {
+          createHls('no'+scene_list[index_next]);
+        }
+    }
+
     var pauseVideos = function() {
         // 再生中の動画の停止
         if (items[scene_list[index]].action.indexOf('play_mp4_') == 0) {
-           pauseMp4('no'+scene_list[index]);
+          pauseMp4('no'+scene_list[index]);
+          if (END_INDEX>1) {
+            destroyHls('no'+scene_list[index]);
+          }
         }
         if (items[scene_list[index]].action.indexOf('play_webm_') == 0) {
            pauseWebm('no'+scene_list[index]);
         }
-        // pauseWebm('no'+scene_list[index]);
-        // <-?php if(!empty($material_mp4)): ?>
-        // $.each (mp4, function(i, val) {
-        //   console.log(i+' '+val.no+' '+scene_list[index]);
-        //   if (items[scene_list[index]].action == 'play_mp4_' + val.no) {
-        //     pauseMp4(i);
-        //     return false;
-        //   }
-        // });
-        // <-?php endif; ?>
-        // <-?php if(!empty($material_webm)): ?>
-        // $.each (webm, function(i, val) {
-        //   if (items[scene_list[index]].action == 'play_webm_' + val.no) {
-        //     pauseWebm(i);
-        //     return false;
-        //   }
-        // });
-        // <-?php endif; ?>
     }
 
     var removeWebpages = function(prev) {
         // WEBページのソース削除
         <?php if(!empty($material_webpage)): ?>
         $.each (webpage, function(i, val) {
-          // console.log(items[scene_list[now]].action);
           if (items[scene_list[prev]].action == 'load_webpage_' + val.no) {
             removeWebpage(i);
             return false;
@@ -340,6 +357,12 @@ var scene_manager = function () {
         if(index > END_INDEX) {
           index = START_INDEX;
         }
+
+        index_next++;
+        if(index_next > END_INDEX) {
+          index_next = START_INDEX;
+        }
+
     }
     var next = function () {
         __next();
@@ -389,18 +412,22 @@ $(function () {
       // mp4_obj = document.getElementById('mp4_' + val.no);
       mp4[i].obj = document.getElementById('mp4_video');
       mp4[i].content = $("#mp4_video");
-      // console.log(mp4[i].obj.volume);
-      if (Hls.isSupported()) {
-        var hls_config = {
-          maxMaxBufferLength: 20,            // [s]
-          // maxBufferSize: 5 * 1000 * 1000,    // [Byte]
-        };
-        var hls = new Hls(hls_config);
-        hls.loadSource(mp4[i].source);
-        hls.attachMedia(mp4[i].obj);
-      } else if (mp4[i].obj.canPlayType('application/vnd.apple.mpegurl')) {
-        // mp4[i].obj.src = mp4[i].source;
+      if (val.no==1) {
+        createHls(i);
       }
+      // console.log(mp4[i].obj.volume);
+      // if (Hls.isSupported()) {
+      //   var hls_config = {
+      //     maxMaxBufferLength: 20,            // [s]
+      //     // maxBufferSize: 5 * 1000 * 1000,    // [Byte]
+      //   };
+      //   var hls = new Hls(hls_config);
+      //   hls.loadSource(mp4[i].source);
+      //   // hls.attachMedia(mp4[i].obj);
+      //   mp4[i].hls = hls;
+      // } else if (mp4[i].obj.canPlayType('application/vnd.apple.mpegurl')) {
+      //   // mp4[i].obj.src = mp4[i].source;
+      // }
     } else if (val.type == 'page_mp4') {
       // var elem = document.getElementById('iframe_page_mp4_' + val.count);
       // console.log(elem);
