@@ -179,12 +179,19 @@ function destroyHls (i) {
   }
 }
 
-function playMp4(i) {
+function playMp4(i, n) {        // n : play()を実行しようとした回数
   $("#mp4_play_block").html(mp4[i].content);
 
-console.log(mp4);
-  mp4[i].obj.currentTime = 0;
-  mp4[i].obj.play();
+// console.log(mp4);
+  if (mp4[i].obj!=null) {
+    mp4[i].obj.currentTime = 0;
+    mp4[i].obj.play();
+  }
+  else if(n<3) {
+    setTimeout(function(){
+      playMp4(i, n+1);
+    }, 1000);
+  }
   // console.log('playMp4 '+i+' '+mp4[i].obj.currentTime);
 }
 
@@ -207,8 +214,15 @@ function pauseWebm(i) {
   webm[i].obj.currentTime = 0;
 }
 
-function loadWebpage(i) {
-  webpage[i].obj.src = webpage[i].source;
+function loadWebpage(i, n) {      // n : play()を実行しようとした回数
+  if (webpage[i].obj!=null) {
+    webpage[i].obj.src = webpage[i].source;
+  }
+  else if(n<3) {
+    setTimeout(function(){
+      loadWebpage(i, n+1);
+    }, 1000);
+  }
   // webpage[i].obj.removeAttribute('sandbox');
 }
 
@@ -272,7 +286,7 @@ var scene_manager = function () {
         
         $.each(mp4, function(i, val) {
           if (items[scene_list[index]].action == 'play_mp4_' + val.no || items[scene_list[index]].action == 'play_page_mp4_' + val.no) {
-            playMp4(i);
+            playMp4(i, 0);
             return false;
           }
         });
@@ -286,7 +300,7 @@ var scene_manager = function () {
 
         $.each(webpage, function(i, val){
           if (items[scene_list[index]].action == 'load_webpage_' + val.no) {
-            loadWebpage(i);
+            loadWebpage(i, 0);
             return false;
           }
         });
