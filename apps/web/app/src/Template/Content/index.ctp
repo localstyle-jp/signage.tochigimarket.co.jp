@@ -184,15 +184,26 @@ function playMp4(i, n) {        // n : play()を実行しようとした回数
 
 // console.log(mp4);
   if (mp4[i].obj!=null) {
+    // console.log(mp4[i].obj);
     mp4[i].obj.currentTime = 0;
     mp4[i].obj.play();
+    // promise = mp4[i].obj.play();
+    // promise.then(
+    //   function(resolve) {
+    //     console.log('playMp4 '+i+' '+n);
+    //   },
+    //   function(reject){
+    //     console.log('rejectMp4 '+i+' '+n);
+    //   }
+    // );
+    // console.log(promise);
+    // console.log('playMp4 '+i+' '+n);
   }
   else if(n<3) {
     setTimeout(function(){
       playMp4(i, n+1);
     }, 1000);
   }
-  // console.log('playMp4 '+i+' '+mp4[i].obj.currentTime);
 }
 
 function playWebm(i) {
@@ -206,7 +217,7 @@ function pauseMp4(i) {
   $("#mp4_play_block").html(mp4[i].content);
   mp4[i].obj.pause();
   mp4[i].obj.currentTime = 0;
-  // console.log('pauseMp4 '+i+' '+mp4[i].obj.currentTime);
+  // console.log('pauseMp4 '+i);
 }
 
 function pauseWebm(i) {
@@ -308,7 +319,7 @@ var scene_manager = function () {
         if (flg == 0) {
           setTimeout(function(){
             createHlsPlayer();
-          }, items[scene_list[index]].time-3000);
+          }, items[scene_list[index]].time-5000);
 
           setTimeout(function(){
             pauseVideos();

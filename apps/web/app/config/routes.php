@@ -58,6 +58,12 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/admin', ['controller' => 'Admin', 'action' => 'index', 'prefix' => 'admin']);
     $routes->connect('/admin/logout', ['controller' => 'Admin', 'action' => 'logout', 'prefix' => 'admin']);
 
+    $routes->connect('/view-reacts/:slug/**', ['controller' => 'ViewReacts', 'action' => 'index'])
+           ->setPass(['slug']);
+
+    $routes->connect('/view-tests/:slug/**', ['controller' => 'viewTests', 'action' => 'index'])
+           ->setPass(['slug']);
+
     $routes->connect('/view/:slug/**', ['controller' => 'views', 'action' => 'index'])
            ->setPass(['slug']);
 
