@@ -449,6 +449,9 @@ class FileAttacheBehavior extends Behavior
         // マスターファイルの文面作成
         $contents = "#EXTM3U\n";
         foreach ($bitrates as $bitrate) {
+            if ($bitrate < 4000) {
+                continue;
+            }
             $filenameM3u8 = 'm' . $id . '_' . $bitrate . 'k.m3u8';
             $contents .= '#EXT-X-STREAM-INF:BANDWIDTH='.$bitrate*1000*1.2.',RESOLUTION=1920x1080,CODECS="avc1.42e00a,mp4a.40.2"'."\n";
             $contents .= DS . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS.$filenameM3u8."\n";

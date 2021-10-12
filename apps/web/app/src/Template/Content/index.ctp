@@ -156,6 +156,16 @@ webpage = <?= json_encode(($material_webpage)); ?>;
   
 // }
 
+function checkOnline () {
+  fetch("<?= $this->Url->build('/phpinfo.php', true); ?>")
+    .then(res => {
+      $('.offline_alert_container').remove();
+    })
+    .catch(error => {
+      $('body').append('<div class="offline_alert_container" style="position: fixed; top: 0px; left: 0px;"><p style="font-size: 30px;">サーバに接続できません。</p></div>');
+    });
+}
+
 function createHls (i) {
   if (Hls.isSupported()) {
     var hls_config = {
@@ -186,20 +196,22 @@ function playMp4(i, n) {        // n : play()を実行しようとした回数
   if (mp4[i].obj!=null) {
     // console.log(mp4[i].obj);
     mp4[i].obj.currentTime = 0;
-    mp4[i].obj.play();
-    // promise = mp4[i].obj.play();
-    // promise.then(
-    //   function(resolve) {
-    //     console.log('playMp4 '+i+' '+n);
-    //   },
-    //   function(reject){
-    //     console.log('rejectMp4 '+i+' '+n);
-    //   }
-    // );
+    // mp4[i].obj.play();
+    promise = mp4[i].obj.play();
+    promise.then(
+      function(resolve) {
+        // var now = new Date();
+        // console.log(now+' playMp4 '+i+' '+n);
+      },
+      function(reject){
+        var now = new Date();
+        console.log(now+'rejectMp4 '+i+' '+n);
+      }
+    );
     // console.log(promise);
     // console.log('playMp4 '+i+' '+n);
   }
-  else if(n<3) {
+  else if (n<3) {
     setTimeout(function(){
       playMp4(i, n+1);
     }, 1000);
@@ -270,13 +282,19 @@ var scene_manager = function () {
         // });
 
         var now = index; // indexのままfadeIn()で利用すると,fadeOut(1000)の間にindexが進んでしまう
-
-        $('.type_' + scene_box_list[prev]).fadeOut(0, function () {
+        
+        $('.type_' + scene_box_list[prev]).hide(0, function () {
+            $('.type_' + scene_box_list[now]).show(0)
             if (index!=prev) {       // 最初にこの関数を回したくなかったので...
               removeWebpages(prev);
             }
-            $('.type_' + scene_box_list[now]).fadeIn(0);
         });
+        // $('.type_' + scene_box_list[prev]).fadeOut(0, function () {
+        //     if (index!=prev) {       // 最初にこの関数を回したくなかったので...
+        //       removeWebpages(prev);
+        //     }
+        //     $('.type_' + scene_box_list[now]).fadeIn(0);
+        // });
 
         var flg = 0;
         // $.each(player, function(i, val) {
@@ -317,9 +335,10 @@ var scene_manager = function () {
         });
 
         if (flg == 0) {
-          setTimeout(function(){
-            createHlsPlayer();
-          }, items[scene_list[index]].time-5000);
+          createHlsPlayer();
+          // setTimeout(function(){
+          //   createHlsPlayer();
+          // }, items[scene_list[index]].time-5000);
 
           setTimeout(function(){
             pauseVideos();
@@ -341,7 +360,7 @@ var scene_manager = function () {
         if (items[scene_list[index]].action.indexOf('play_mp4_') == 0) {
           pauseMp4('no'+scene_list[index]);
           if (END_INDEX>1) {
-            destroyHls('no'+scene_list[index]);
+            destroyHls('no'+scene_list[index]);     // タイミング違う？
           }
         }
         if (items[scene_list[index]].action.indexOf('play_webm_') == 0) {
@@ -475,7 +494,8 @@ $(function () {
 });
 
 window.onload = function() {
-  scene_manager();  
+  scene_manager();
+  setInterval(checkOnline, 20000);
 }
 
 // ローディングバー

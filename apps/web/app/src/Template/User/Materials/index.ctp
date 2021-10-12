@@ -52,8 +52,8 @@ $count['total'] = $data_query->count();
         <h3 class="box__caption--count"><span>登録一覧</span><span class="count"><?php echo $count['total']; ?>件の登録</span></h3>
 
         <div class="btn_area" style="margin-top:10px;"><a href="<?= $this->Url->build(array('action' => 'edit', '?' => [])); ?>" class="btn btn-primary w-20 rounded-pill"><i class="far fa-plus-square"></i> 新規登録</a></div>
-
         
+        <div style="text-align: center; margin-top: 10px;"><?= $this->Paginator->numbers();?></div>
 
         <div class="table_area">
           <table class="table__list table-hover" style="table-layout: fixed;">
@@ -144,7 +144,7 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
           </table>
 
         </div>
-
+        <div style="text-align: center; margin-top: 10px;"><?= $this->Paginator->numbers();?></div>
         <div class="btn_area" style="margin-top:10px;"><a href="<?= $this->Url->build(array('action' => 'edit', '?' => [])); ?>" class="btn btn-primary w-20 rounded-pill"><i class="far fa-plus-square"></i> 新規登録</a></div>
 
 

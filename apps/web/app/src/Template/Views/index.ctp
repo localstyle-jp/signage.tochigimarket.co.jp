@@ -29,7 +29,7 @@ body::-webkit-scrollbar {
 
 <script>
 $(function () {
-  console.log(window.innerWidth+"\n"+window.devicePixelRatio);
+  // console.log(window.innerWidth+"\n"+window.devicePixelRatio);
   // var zoom = <-?= $width; ?> / $('iframe').width();
   // var zoom = parseFloat(window.innerWidth) / parseFloat($('iframe').width());
   var zoom = <?= $width; ?> / $('iframe').width() / parseFloat(window.devicePixelRatio);
