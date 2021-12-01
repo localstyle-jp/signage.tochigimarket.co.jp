@@ -54,7 +54,7 @@ class ViewsController extends AppController
         // 表示端末
         $machine_box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $machine_id])->first();
         if (empty($machine_box) || empty($machine_box->content_id)) {
-            $this->rest_error(404, 'machine is not exist');
+            $this->rest_error(1000);
         }
 
         // コンテンツ
@@ -64,7 +64,7 @@ class ViewsController extends AppController
                                     }])
                                     ->first();
         if (empty($content) || empty($content->content_materials)) {
-            $this->rest_error(404, 'content is not exist');
+            $this->rest_error(1000);
         }
 
         // 返却情報配列
@@ -91,19 +91,40 @@ class ViewsController extends AppController
     }
 
     public function isReload() {
-        $id = $this->request->getData('id');
+        $machine_id = ( empty($this->request->getData('id')) ? 0 : $this->request->getData('id') );
+        $content_id = ( empty($this->request->getData('content_id')) ? 0 : $this->request->getData('content_id') );
+        $content_serial_no = ( empty($this->request->getData('serial_no')) ? 0 : $this->request->getData('serial_no') );
+        $this->rest_success($this->request->getData());
 
-        $machine_box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $id])->first();
+        // 表示端末
+        $machine_box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $machine_id])->first();
         if (empty($machine_box)) {
-            return $this->rest_error(404, 'machine is not exist');
+            return $this->rest_error(1000);
         }
 
-        $reload_flag = $machine_box->reload_flag;
+        // コンテンツ
+        $content = $this->Contents->find()->where(['Contents.id' => $content_id])
+                                    ->contain(['ContentMaterials' => function($q) {
+                                        return $q->contain(['Materials'])->order(['ContentMaterials.position' => 'ASC']);
+                                    }])
+                                    ->first();
+        if (empty($content) || empty($content->content_materials)) {
+            $this->rest_error(1000);
+        }
 
-        $result = [
-            'reload_flag' => $reload_flag
+        // 返却情報配列
+        $item = [
+            'content_reload_flag' => !($content_serial_no == $content->serial_no),
+            'caption' => $machine_box->rolling_caption,
+            'width' => $machine_box->width,
+            'height' => $machine_box->height,
         ];
-        $this->rest_success($result);
+        if ($machine_box->is_vertical == 1) {
+            $item['width'] = $machine_box->height;
+            $item['height'] = $machine_box->width;
+        }
+
+        $this->rest_success($item);
     }
 
     public function setMaterial($item_count, $c_material, $material) {
