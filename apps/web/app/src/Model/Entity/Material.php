@@ -30,4 +30,10 @@ class Material extends AppEntity
         self::TYPE_URL => 'url',
         // self::TYPE_PAGE => 'page'
     ];
+
+    static $type_list_api = [
+        self::TYPE_IMAGE => 'image',
+        self::TYPE_MOVIE_MP4 => 'mp4',
+        self::TYPE_URL => 'webpage',
+    ];
 }

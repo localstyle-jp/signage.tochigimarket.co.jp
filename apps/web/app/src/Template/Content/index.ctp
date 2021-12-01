@@ -95,10 +95,10 @@ var webpage;
 player = <?= json_encode($material_youtube); ?>;
 <?php endif; ?>
 
-num_mp4 = 0;
+// num_mp4 = 0;
 <?php if (!empty($material_mp4)): ?>
 mp4 = <?= json_encode(($material_mp4)); ?>;
-num_mp4 = Object.keys(mp4).length;
+// num_mp4 = Object.keys(mp4).length;
 <?php endif; ?>
 
 <?php if (!empty($material_webm)): ?>
@@ -163,6 +163,8 @@ function checkOnline () {
     })
     .catch(error => {
       $('body').append('<div class="offline_alert_container" style="position: fixed; top: 0px; left: 0px;"><p style="font-size: 30px;">サーバに接続できません。</p></div>');
+      var now = new Date();
+      console.log(now+' network error: '+error);
     });
 }
 
@@ -175,6 +177,10 @@ function createHls (i) {
     var hls = new Hls(hls_config);
     hls.loadSource(mp4[i].source);
     hls.attachMedia(mp4[i].obj);
+    // hls.once(Hls.Events.MEDIA_ATTACHED, ()=>{
+    //   var now = new Date();
+    //   console.log(now+'attached hls player: '+i);
+    // });
     mp4[i].hls = hls;
   } else if (mp4[i].obj.canPlayType('application/vnd.apple.mpegurl')) {
     // mp4[i].obj.src = mp4[i].source;
@@ -194,7 +200,8 @@ function playMp4(i, n) {        // n : play()を実行しようとした回数
 
 // console.log(mp4);
   if (mp4[i].obj!=null) {
-    // console.log(mp4[i].obj);
+    // var now = new Date();
+    // console.log('\n-----------\n'+now+' bandwidth: '+mp4[i].hls.bandwidthEstimate+' '+i);
     mp4[i].obj.currentTime = 0;
     // mp4[i].obj.play();
     promise = mp4[i].obj.play();
@@ -335,10 +342,10 @@ var scene_manager = function () {
         });
 
         if (flg == 0) {
-          createHlsPlayer();
-          // setTimeout(function(){
-          //   createHlsPlayer();
-          // }, items[scene_list[index]].time-5000);
+          // createHlsPlayer();
+          setTimeout(function(){
+            createHlsPlayer();
+          }, items[scene_list[index]].time-10000);
 
           setTimeout(function(){
             pauseVideos();
@@ -360,7 +367,7 @@ var scene_manager = function () {
         if (items[scene_list[index]].action.indexOf('play_mp4_') == 0) {
           pauseMp4('no'+scene_list[index]);
           if (END_INDEX>1) {
-            destroyHls('no'+scene_list[index]);     // タイミング違う？
+            destroyHls('no'+scene_list[index]);
           }
         }
         if (items[scene_list[index]].action.indexOf('play_webm_') == 0) {
@@ -473,10 +480,10 @@ $(function () {
       //   // mp4[i].obj.src = mp4[i].source;
       // }
     } else if (val.type == 'page_mp4') {
-      // var elem = document.getElementById('iframe_page_mp4_' + val.count);
-      // console.log(elem);
-      // mp4[i].obj = elem.contentWindow.document.getElementById('page_mp4_' + val.no);
-      // console.log(mp4[i].obj);
+      var elem = document.getElementById('iframe_page_mp4_' + val.count);
+      console.log(elem);
+      mp4[i].obj = elem.contentWindow.document.getElementById('page_mp4_' + val.no);
+      console.log(mp4[i].obj);
     }
   });
   $.each(webm, function(i, val) {
@@ -521,7 +528,8 @@ var progress= setInterval(function(){
   else {
     stopProgress()
   }
-},360*num_mp4);
+// },360*num_mp4);
+},3600);// 6 minutes wait
 // /ローディングバー
 </script>
 

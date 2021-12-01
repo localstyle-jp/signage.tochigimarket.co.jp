@@ -1,0 +1,132 @@
+<?php
+
+namespace App\Controller\V1;
+
+use Cake\Core\Configure;
+use Cake\Network\Exception\ForbiddenException;
+use Cake\Network\Exception\NotFoundException;
+use Cake\View\Exception\MissingTemplateException;
+use Cake\Event\Event;
+use Cake\ORM\TableRegistry;
+use Cake\Routing\Router;
+use Cake\Utility\Hash;
+use App\Model\Entity\Material;
+/**
+ * Static content controller
+ *
+ * This controller will render views from Template/Pages/
+ *
+ * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
+ */
+class ViewsController extends AppController
+{
+    private $list = [];
+
+    public function initialize()
+    {
+        parent::initialize();
+
+        $this->SiteConfigs = $this->getTableLocator()->get('SiteConfigs');
+        $this->Contents = $this->getTableLocator()->get('Contents');
+        $this->UserSites = $this->getTableLocator()->get('UserSites');
+        $this->MachineBoxes = $this->getTableLocator()->get('MachineBoxes');
+        $this->MachineContents = $this->getTableLocator()->get('MachineContents');
+
+        // $this->modelName = 'Infos';
+        // $this->set('ModelName', $this->modelName);
+
+    }
+    
+    public function beforeFilter(Event $event) {
+        // $this->viewBuilder()->theme('Admin');
+        $this->viewBuilder()->setLayout("simple");
+
+        $this->getEventManager()->off($this->Csrf);
+
+    }
+
+    public function index() {
+        $machine_id = $this->request->getData('id');
+        if (empty($machine_id)) {
+            $machine_id = 0;
+        }
+
+        // 表示端末
+        $machine_box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $machine_id])->first();
+        if (empty($machine_box) || empty($machine_box->content_id)) {
+            $this->rest_error(404, 'machine is not exist');
+        }
+
+        // コンテンツ
+        $content = $this->Contents->find()->where(['Contents.id' => $machine_box->content_id])
+                                    ->contain(['ContentMaterials' => function($q) {
+                                        return $q->contain(['Materials'])->order(['ContentMaterials.position' => 'ASC']);
+                                    }])
+                                    ->first();
+        if (empty($content) || empty($content->content_materials)) {
+            $this->rest_error(404, 'content is not exist');
+        }
+
+        // 返却情報配列
+        $item = [
+            'content_id' => $machine_box->content_id,
+            'serial_no' => $content->serial_no,
+            'width' => $machine_box->width,
+            'height' => $machine_box->height,
+        ]; 
+        if ($machine_box->is_vertical == 1) {
+            $item['width'] = $machine_box->height;
+            $item['height'] = $machine_box->width;
+        }
+
+        $item_count = 0;
+        $materials_output = [];
+        foreach ($content->content_materials as $c_material) {
+            $item_count++;
+            $materials_output[$item_count] = $this->setMaterial($item_count, $c_material, $c_material->material);
+        }
+        $item['materials'] = Hash::combine($materials_output, '{n}.no', '{n}');
+
+        $this->rest_success($item);
+    }
+
+    public function isReload() {
+        $id = $this->request->getData('id');
+
+        $machine_box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $id])->first();
+        if (empty($machine_box)) {
+            return $this->rest_error(404, 'machine is not exist');
+        }
+
+        $reload_flag = $machine_box->reload_flag;
+
+        $result = [
+            'reload_flag' => $reload_flag
+        ];
+        $this->rest_success($result);
+    }
+
+    public function setMaterial($item_count, $c_material, $material) {
+        
+
+        $data = [
+            'material_id' => $material->id,
+            'no' => $item_count,
+            'type' => Material::$type_list_api[$material->type],
+            'source' => '',
+            'movie_tag' => '',
+            'time_sec' => $c_material->view_second,
+        ];
+
+        if ($material->type == Material::TYPE_MOVIE_MP4) {
+            $data['source'] = Router::url(DS . UPLOAD_MOVIE_BASE_URL . DS . $material->url, true);
+        } elseif ($material->type == Material::TYPE_IMAGE) {
+            $data['source'] = Router::url($material->attaches['image']['0'], true);
+        } elseif ($material->type == Material::TYPE_URL) {
+            $data['source'] = $material->url;
+        }
+
+        return $data;
+    }
+
+}
