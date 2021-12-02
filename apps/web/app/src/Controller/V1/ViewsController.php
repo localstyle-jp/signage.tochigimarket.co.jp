@@ -54,7 +54,8 @@ class ViewsController extends AppController
         // 表示端末
         $machine_box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $machine_id])->first();
         if (empty($machine_box) || empty($machine_box->content_id)) {
-            $this->rest_error(1000);
+            $status_options = ['material_rows' => 0];
+            return $this->rest_custom(400, $status_options, []);
         }
 
         // コンテンツ
@@ -64,7 +65,8 @@ class ViewsController extends AppController
                                     }])
                                     ->first();
         if (empty($content) || empty($content->content_materials)) {
-            $this->rest_error(1000);
+            $status_options = ['material_rows' => 0];
+            return $this->rest_custom(400, $status_options, []);
         }
 
         // 返却情報配列
@@ -73,6 +75,7 @@ class ViewsController extends AppController
             'serial_no' => $content->serial_no,
             'width' => $machine_box->width,
             'height' => $machine_box->height,
+            'caption' => $machine_box->rolling_caption,
         ]; 
         if ($machine_box->is_vertical == 1) {
             $item['width'] = $machine_box->height;
@@ -86,20 +89,21 @@ class ViewsController extends AppController
             $materials_output[$item_count] = $this->setMaterial($item_count, $c_material, $c_material->material);
         }
         $item['materials'] = Hash::combine($materials_output, '{n}.no', '{n}');
+        
+        $status_options = ['material_rows' => $item_count];
 
-        $this->rest_success($item);
+        $this->rest_custom(200, $status_options, $item);
     }
 
     public function isReload() {
         $machine_id = ( empty($this->request->getData('id')) ? 0 : $this->request->getData('id') );
         $content_id = ( empty($this->request->getData('content_id')) ? 0 : $this->request->getData('content_id') );
         $content_serial_no = ( empty($this->request->getData('serial_no')) ? 0 : $this->request->getData('serial_no') );
-        $this->rest_success($this->request->getData());
 
         // 表示端末
         $machine_box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $machine_id])->first();
         if (empty($machine_box)) {
-            return $this->rest_error(1000);
+            return $this->rest_custom(400, [], []);
         }
 
         // コンテンツ
@@ -109,7 +113,7 @@ class ViewsController extends AppController
                                     }])
                                     ->first();
         if (empty($content) || empty($content->content_materials)) {
-            $this->rest_error(1000);
+            return $this->rest_custom(400, [], []);
         }
 
         // 返却情報配列
@@ -124,7 +128,7 @@ class ViewsController extends AppController
             $item['height'] = $machine_box->width;
         }
 
-        $this->rest_success($item);
+        $this->rest_custom(200, [], $item);
     }
 
     public function setMaterial($item_count, $c_material, $material) {

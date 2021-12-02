@@ -4,6 +4,7 @@ namespace App\Controller\V1;
 
 use App\Controller\AppController as BaseController;
 use Cake\ORM\TableRegistry;
+use Cake\I18n\Time;
 
 
 class AppController extends BaseController
@@ -37,7 +38,31 @@ class AppController extends BaseController
         $this->set('_serialize','data');
     }
 
-    protected function rest_custom($data) {
+    protected function rest_custom($http_status='0', $status_option=[], $item) {
+        
+        $state_list = array(
+            '200' => 'Success',
+            '400' => 'Bad Request', // タイプミス等、リクエストにエラーがあります。
+            // '401' => 'Unauthorixed', // 認証に失敗しました。（パスワードを適当に入れてみた時などに発生）
+            // '402' => '', // 使ってない
+            // '403' => 'Forbidden', // あなたにはアクセス権がありません。
+            // '404' => 'Not Found', // 該当アドレスのページはありません、またはそのサーバーが落ちている。
+            // '500' => 'Internal Server Error', // CGIスクリプトなどでエラーが出た。
+            // '501' => 'Not Implemented', // リクエストを実行するための必要な機能をサポートしていない。
+            '509' => 'Other', // オリジナルコード　例外処理
+            );
+
+        if (!array_key_exists($http_status, $state_list)) {
+            $http_status = '509';
+        }
+        
+        $status_option['result_code'] = $http_status;
+        $status_option['date'] = new Time();
+        $status_option['description'] = ( empty($status_option['description']) ? $state_list[$http_status] : $status_option['description'] );
+
+        $status = $status_option;
+
+        $data = ['status' => $status, 'item' => $item];
 
         $this->set(compact('data'));
         $this->set('_serialize', 'data');
