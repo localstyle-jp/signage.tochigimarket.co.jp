@@ -107,7 +107,7 @@ class ViewsController extends AppController
         }
 
         // コンテンツ
-        $content = $this->Contents->find()->where(['Contents.id' => $content_id])
+        $content = $this->Contents->find()->where(['Contents.id' => $machine_box->content_id])
                                     ->contain(['ContentMaterials' => function($q) {
                                         return $q->contain(['Materials'])->order(['ContentMaterials.position' => 'ASC']);
                                     }])
@@ -116,9 +116,16 @@ class ViewsController extends AppController
             return $this->rest_custom(400, [], []);
         }
 
+        if ($machine_box->status!='publish') {
+            return $this->rest_custom(509, [], []);
+        }
+
+        // コンテンツリロード判定
+        $content_reload_flag = ( $content_serial_no != $content->serial_no || $content_id != $content->id);
+
         // 返却情報配列
         $item = [
-            'content_reload_flag' => !($content_serial_no == $content->serial_no),
+            'content_reload_flag' => $content_reload_flag,
             'caption' => $machine_box->rolling_caption,
             'width' => $machine_box->width,
             'height' => $machine_box->height,
