@@ -65,7 +65,7 @@ class ViewsController extends AppController
                                     }])
                                     ->first();
         if (empty($content) || empty($content->content_materials)) {
-            $status_options = ['material_rows' => 0];
+            $status_options = ['material_rows' => 0, 'description' => 'Bad Request or No Materials'];
             return $this->rest_custom(400, $status_options, []);
         }
 
@@ -100,6 +100,8 @@ class ViewsController extends AppController
         $content_id = ( empty($this->request->getData('content_id')) ? 0 : $this->request->getData('content_id') );
         $content_serial_no = ( empty($this->request->getData('serial_no')) ? 0 : $this->request->getData('serial_no') );
 
+        $status_options = [];
+
         // 表示端末
         $machine_box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $machine_id])->first();
         if (empty($machine_box)) {
@@ -113,7 +115,8 @@ class ViewsController extends AppController
                                     }])
                                     ->first();
         if (empty($content) || empty($content->content_materials)) {
-            return $this->rest_custom(400, [], []);
+            $status_options['description'] = 'Bad Request or No Materials';
+            return $this->rest_custom(400, $status_options, []);
         }
 
         if ($machine_box->status!='publish') {
