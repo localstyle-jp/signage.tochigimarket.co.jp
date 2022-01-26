@@ -32,6 +32,8 @@ $count['total'] = $data_query->count();
                     <td class="border-0" style="width: 120px;text-align: center;vertical-align: middle;">タイプ</td>
                     <td class="border-0" colspan="3">
                       <?= $this->Form->input('sch_category_id', ['type' => 'hidden', 'value' => $query['sch_category_id']]); ?>
+                      <?= $this->Form->input('sch_modified_year', ['type' => 'hidden', 'value' => $query['sch_modified_year']]); ?>
+                      <?= $this->Form->input('sch_modified_month', ['type' => 'hidden', 'value' => $query['sch_modified_month']]); ?>
                       <?= $this->Form->input('sch_type', ['type' => 'select',
                                                              'value' => $query['sch_type'],
                                                              'onChange' => 'change_category("fm_search");',
@@ -41,12 +43,15 @@ $count['total'] = $data_query->count();
                     </td>
                   </tr>
                   <?= $this->Form->end(); ?>
+                  
                   <tr>
                     <td class="border-0" style="width: 120px;text-align: center;vertical-align: middle;">素材カテゴリ</td>
                     <td class="border-0" colspan="3">
                     <?php foreach ($category_list as $clist): ?>
                       <div class="breadcrumb-item" style="display: inline-block;">
                         <?= $this->Form->create(false, ['type' => 'get', 'id' => 'fm_search_' . $clist['category']->id, 'style' => 'display:inline-block;']); ?>
+                        <?= $this->Form->input('sch_modified_year', ['type' => 'hidden', 'value' => $query['sch_modified_year']]); ?>
+                        <?= $this->Form->input('sch_modified_month', ['type' => 'hidden', 'value' => $query['sch_modified_month']]); ?>
                         <?= $this->Form->input('sch_type', ['type' => 'hidden', 'value' => $query['sch_type']]); ?>
                         <?= $this->Form->input('sch_category_id', ['type' => 'select',
                                                                     'options' => $clist['list'],
@@ -59,6 +64,33 @@ $count['total'] = $data_query->count();
                     <?php endforeach; ?>
                     </td>
                   </tr>
+                  <?= $this->Form->create(false, array('type' => 'get', 'id' => 'fm_search_modified', 'class' => '')); ?>
+                  <tr>
+                    <td class="border-0" style="width: 120px;text-align: center;vertical-align: middle;">更新日時</td>
+                    <td class="border-0" colspan="3">
+                      <?= $this->Form->input('sch_category_id', ['type' => 'hidden', 'value' => $query['sch_category_id']]); ?>
+                      <?= $this->Form->input('sch_type', ['type' => 'hidden', 'value' => $query['sch_type']]); ?>
+                      <?= $this->Form->input('sch_modified_year', ['type' => 'select',
+                                                             'value' => $query['sch_modified_year'],
+                                                             'onChange' => 'change_category("fm_search_modified");',
+                                                             'options' => $year_list,
+                                                             'empty' => ['0' => '--'],
+                                                           ]); ?>
+                      年
+
+                      <?php if ($query['sch_modified_year']) : ?>
+                      <?= $this->Form->input('sch_modified_month', ['type' => 'select',
+                                                             'value' => $query['sch_modified_month'],
+                                                             'onChange' => 'change_category("fm_search_modified");',
+                                                             'options' => $month_list,
+                                                             'empty' => ['0' => '--'],
+                                                           ]); ?>
+                      月
+                      <?php endif; ?>
+                      
+                    </td>
+                  </tr>
+                  <?= $this->Form->end(); ?>
               </table>
 
               <div class="btn_area">
@@ -202,5 +234,10 @@ $(function () {
 
 
 })
+
+$.datetimepicker.setLocale('ja');
+    $('.datetimepicker').datetimepicker({
+        step:30,
+    });
 </script>
 <?php $this->end();?>

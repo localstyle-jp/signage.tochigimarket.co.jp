@@ -56,6 +56,8 @@ class MaterialsController extends AppController
         //         $query['sch_category_id'] = $category->id;
         //     }
         // }
+        $query['sch_modified_year'] = $this->request->getQuery('sch_modified_year');
+        $query['sch_modified_month'] = $this->request->getQuery('sch_modified_month');
 
         return $query;
     }
@@ -77,7 +79,16 @@ class MaterialsController extends AppController
         }
 
         if ($query['sch_category_id']) {
-            $cond['Materials.category_id'] = $query['sch_category_id'];
+            $cond[$cnt++]['Materials.category_id'] = $query['sch_category_id'];
+        }
+
+        if ($query['sch_modified_year']) {
+            $month = empty($query['sch_modified_month']) ?
+                         ['s' => '01', 'e' => '12'] :
+                         ['s' => str_pad($query['sch_modified_month'], 2, 0, STR_PAD_LEFT), 'e' => str_pad($query['sch_modified_month'], 2, 0, STR_PAD_LEFT)];
+
+            $cond[$cnt++]['Materials.modified >= '] = $query['sch_modified_year'] . '-' . $month['s'] . '-01 00:00';
+            $cond[$cnt++]['Materials.modified <= '] = $query['sch_modified_year'] . '-' . $month['e'] . '-31 23:59';
         }
 
         return $cond;
@@ -195,8 +206,11 @@ class MaterialsController extends AppController
     public function setList() {
         
         $list = array(
-            'type_list' => Material::$type_list
+            'type_list' => Material::$type_list,
         );
+    
+        $list['year_list'] = $this->getYearList();
+        $list['month_list'] = array_combine(range(1,12), range(1, 12));
 
         if (!empty($list)) {
             $this->set(array_keys($list),$list);
@@ -316,6 +330,22 @@ class MaterialsController extends AppController
 
         $cond = $this->_getConditions($query);
         return $cond;
+    }
+
+    public function getYearList(){
+        $result = [];
+        $first_mate = $this->Materials->find()
+                            ->order(['Materials.created' => 'ASC'])
+                            ->first();
+
+        $first_year = (new \DateTime($first_mate['created']))->format('Y');
+        $last_year = (new \DateTime('now'))->format('Y');
+
+        for ($i=$first_year; $i <= $last_year; $i++) { 
+            $result[$i] = $i;
+        }
+
+        return $result;
     }
 
 }
