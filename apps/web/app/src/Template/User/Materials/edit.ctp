@@ -41,6 +41,13 @@
               </td>
             </tr>
 
+            <tr>
+              <td>素材カテゴリ<span class="attent">※必須</span></td>
+              <td>
+                <?= $this->Form->select('category_id', $category_list);?>
+              </td>
+            </tr>
+
             <tr class="changeArea imageArea contentArea">
               <td>画像<span class="attent">※必須</span></td>
               <?php if (!empty($entity['attaches']['image']['0'])) :?>

@@ -203,4 +203,21 @@ CREATE TABLE user_sites
   PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+-- 2022/01/25
+-- カテゴリ
+CREATE TABLE material_categories
+(
+  id int unsigned NOT NULL AUTO_INCREMENT,
+  created datetime NOT NULL,
+  modified datetime NOT NULL,
+  parent_category_id int unsigned DEFAULT 0 NOT NULL,
+  position int unsigned DEFAULT 0 NOT NULL,
+  status enum('draft','publish') DEFAULT 'publish' NOT NULL,
+  name varchar(40) DEFAULT '' NOT NULL,
+  identifier varchar(30) NOT NULL DEFAULT '',
+  PRIMARY KEY (id)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+ALTER TABLE materials ADD COLUMN category_id int unsigned NOT NULL DEFAULT 0;
+-- 2022/01/25 end
 

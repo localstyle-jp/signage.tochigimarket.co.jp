@@ -10,34 +10,62 @@
       <div class="box">
           <h3>検索条件</h3>
           <div class="table_area form_area">
-<?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'class' => '')); ?>
+<!-- <-?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'class' => '')); ?> -->
               <table class=" table border-0">
+                <?= $this->Form->create(false, array('type' => 'get', 'id' => 'fm_search_name', 'class' => '')); ?>
                   <tr>
                     <td class="border-0" style="width: 120px;text-align: center;">素材名</td>
                     <td class="border-0">
+                      <?= $this->Form->input('sch_category_id', ['type' => 'hidden', 'value' => $query['sch_category_id']]); ?>
+                      <?= $this->Form->input('sch_type', ['type' => 'hidden', 'value' => $query['sch_type']]); ?>
                       <?= $this->Form->input('sch_name', ['type' => 'text',
                                                              'value' => $query['sch_name'],
                                                              'class' => 'w-100',
+                                                             'onChange' => 'change_category("fm_search_name");',
                                                              'placeholder' => 'あいまい検索'
                                                            ]); ?>
                     </td>
-
+                <?= $this->Form->end(); ?>
+                <?= $this->Form->create(false, array('type' => 'get', 'id' => 'fm_search_type', 'class' => '')); ?>
                     <td class="border-0 head" style="width: 120px;text-align: center;">タイプ</td>
                     <td class="border-0">
+                      <?= $this->Form->input('sch_category_id', ['type' => 'hidden', 'value' => $query['sch_category_id']]); ?>
+                      <?= $this->Form->input('sch_name', ['type' => 'hidden', 'value' => $query['sch_name']]); ?>
                       <?= $this->Form->input('sch_type', ['type' => 'select',
                                                           'options' => $type_list,
                                                           'empty' => ['0' => '全て'],
+                                                          'onChange' => 'change_category("fm_search_type");',
                                                           'value' => $query['sch_type']
                                                         ]); ?>
+                    </td>
+                <?= $this->Form->end(); ?>
+                  </tr>
+                  <tr>
+                    <td class="border-0" style="width: 120px;text-align: center;">素材カテゴリ</td>
+                    <td class="border-0" colspan="3">
+                    <?php foreach ($category_list as $clist): ?>
+                      <div class="breadcrumb-item" style="display: inline-block;">
+                        <?= $this->Form->create(false, ['type' => 'get', 'id' => 'fm_search_' . $clist['category']->id, 'style' => 'display:inline-block;']); ?>
+                        <?= $this->Form->input('sch_type', ['type' => 'hidden', 'value' => $query['sch_type']]); ?>
+                        <?= $this->Form->input('sch_name', ['type' => 'hidden', 'value' => $query['sch_name']]); ?>
+                        <?= $this->Form->input('sch_category_id', ['type' => 'select',
+                                                                    'options' => $clist['list'],
+                                                                    'onChange' => 'change_category("fm_search_' . $clist['category']->id . '");',
+                                                                    'value' => $clist['category']->id,
+                                                                    'empty' => $clist['empty']
+                                                                  ]); ?>
+                        <?= $this->Form->end(); ?>
+                      </div>
+                    <?php endforeach; ?>
                     </td>
                   </tr>
               </table>
 
               <div class="btn_area">
                 <a class="btn btn-secondary" href="<?= $this->Url->build(['action' => 'pop-list']); ?>"><i class="fas fa-eraser"></i> クリア</a>
-                <button class="btn btn-primary" onclick="document.fm_search.submit();"><i class="fas fa-search"></i> 検索開始</button>
+                <!-- <button class="btn btn-primary" onclick="document.fm_search.submit();"><i class="fas fa-search"></i> 検索開始</button> -->
               </div>
-<?= $this->Form->end(); ?>
+<!-- <-?= $this->Form->end(); ?> -->
           </div>
       </div>
 
@@ -103,8 +131,8 @@ $id = $data->id;
 <?php $this->start('beforeBodyClose');?>
 <link rel="stylesheet" href="/admin/common/css/cms.css">
 <script>
-function change_category() {
-  $("#fm_search").submit();
+function change_category(elm) {
+  $("#" + elm).submit();
     
 }
 $(function () {

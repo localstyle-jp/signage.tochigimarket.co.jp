@@ -53,6 +53,10 @@ class UserAdminHelper extends AppHelper
                             'icon' => '',
                             'link' => '/machine-boxes/'
                         ],
+                        '素材カテゴリ' => [
+                            'icon' => '',
+                            'link' => '/material-categories/'
+                        ],
                         
                     ],
                     // 2行目

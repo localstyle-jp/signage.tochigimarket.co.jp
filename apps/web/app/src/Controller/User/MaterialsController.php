@@ -25,6 +25,7 @@ class MaterialsController extends AppController
 
     public function initialize()
     {
+        $this->MaterialCategories = $this->getTableLocator()->get('MaterialCategories');
 
         parent::initialize();
     }
@@ -48,7 +49,13 @@ class MaterialsController extends AppController
 
         $query['sch_name'] = $this->request->getQuery('sch_name');
         $query['sch_type'] = $this->request->getQuery('sch_type');
-
+        $query['sch_category_id'] = $this->request->getQuery('sch_category_id');
+        if (!$query['sch_category_id']) {
+            $category = $this->MaterialCategories->find()->order(['MaterialCategories.position' => 'ASC'])->first();
+            if (!empty($category)) {
+                $query['sch_category_id'] = $category->id;
+            }
+        }
 
         return $query;
     }
@@ -69,6 +76,10 @@ class MaterialsController extends AppController
             $cond[$cnt++]['Materials.type'] = $query['sch_type'];
         }
 
+        if ($query['sch_category_id']) {
+            $cond['Materials.category_id'] = $query['sch_category_id'];
+        }
+
         return $cond;
     }
 
@@ -82,16 +93,24 @@ class MaterialsController extends AppController
 
         $is_search = ($this->request->getQuery() ? true : false);
 
+        $this->setCategoryListForSearch($query);
+
         $this->set(compact('query', 'is_search'));
 
-        $this->_lists($cond, ['order' => ['position' => 'ASC'],
-                              'limit' => 20]);
+        $options = [
+            'contain' => ['MaterialCategories'],
+            'order' => ['position' => 'ASC'],
+            'limit' => 20
+        ];
+
+        $this->_lists($cond, $options);
     }
 
     public function edit($id=0) {
         $this->checkLogin();
 
         $this->setList();
+        $this->setCategoryListDefault();
         $get_callback = null;
         $callback = null;
         $redirect = ['action' => 'index'];
@@ -179,8 +198,6 @@ class MaterialsController extends AppController
             'type_list' => Material::$type_list
         );
 
-
-
         if (!empty($list)) {
             $this->set(array_keys($list),$list);
         }
@@ -189,12 +206,82 @@ class MaterialsController extends AppController
         return $list;
     }
 
+    public function setCategoryListDefault() {
+        $category_list = [];
+        $category_list = $this->MaterialCategories->find('list', ['keyField' => 'id', 'valueField' => 'name'])
+                                        ->order(['MaterialCategories.position' => 'ASC'])
+                                        ->toArray();
+
+        $this->set(compact('category_list'));
+    }
+
+    public function setCategoryListForSearch($query) {
+        // 現在カテゴリ情報
+        $category = $this->MaterialCategories->find()->where(['MaterialCategories.id' =>$query['sch_category_id']])->first();
+
+        $pankuzu_category = [];
+        $category_list = [];
+        $is_data = true;
+
+        $_parent_id = $category->parent_category_id;
+        $pankuzu_category[] = $category;
+        do {
+            $tmp = $this->MaterialCategories->find()->where(
+                [
+                    // 'Categories.page_config_id' => $query['sch_page_id'],
+                    'MaterialCategories.id' => $_parent_id,
+                    ])->first();
+            if (!empty($tmp)) {
+                $_parent_id = $tmp->parent_category_id;
+                $pankuzu_category[] = $tmp;
+            }
+            
+        } while(!empty($tmp));
+        // 
+        // $category_cond = ['Categories.page_config_id' => $page_config_id];
+        while($pcat = array_pop($pankuzu_category)) {
+            $category_cond['MaterialCategories.parent_category_id'] = $pcat->parent_category_id;
+            $tmp = $this->MaterialCategories->find('list', ['keyField' => 'id', 'valueField' => 'name'])
+                                    ->where($category_cond)
+                                    ->order(['MaterialCategories.position' => 'ASC'])
+                                    ->all();
+            if ($tmp->isEmpty()) {
+                $tmp = null;
+            } else {
+                $category_list[] = [
+                    'category' => $pcat,
+                    'list' => $tmp->toArray(),
+                    'empty' => false
+                ];
+            }
+        }
+
+        // 最後に現カテゴリに下層カテゴリがあれば追加
+        $category_cond['MaterialCategories.parent_category_id'] = $category->id;
+        $tmp = $this->MaterialCategories->find('list', ['keyField' => 'id', 'valueField' => 'name'])
+                                ->where($category_cond)
+                                ->order(['MaterialCategories.position' => 'ASC'])
+                                ->all();
+        if (!$tmp->isEmpty()) {
+            $category_list[] = [
+                'category' => (object)['id' => 0],
+                'list' => $tmp->toArray(),
+                'empty' => ['' => '選択してください']
+            ];
+            $is_data = false;
+        }
+        $this->set(compact('category_list'));
+    }
+
     public function popList() {
         $this->viewBuilder()->setLayout("pop");
 
         $this->setList();
 
         $query = $this->_getQueryPop();
+
+        $this->setCategoryListForSearch($query);
+        
         $cond = $this->_getConditionsPop($query);
         $this->set(compact('query'));
 

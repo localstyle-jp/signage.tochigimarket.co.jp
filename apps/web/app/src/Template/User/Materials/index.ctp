@@ -25,25 +25,47 @@ $count['total'] = $data_query->count();
       <div class="box">
           <h3>検索条件</h3>
           <div class="table_area form_area">
-<?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'url' => array('action' => 'index'), 'class' => '')); ?>
+<!-- <-?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'url' => array('action' => 'index'), 'class' => '')); ?> -->
               <table class=" table border-0">
+                  <?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'url' => array('action' => 'index'), 'class' => '')); ?>
                   <tr>
                     <td class="border-0" style="width: 120px;text-align: center;vertical-align: middle;">タイプ</td>
                     <td class="border-0" colspan="3">
+                      <?= $this->Form->input('sch_category_id', ['type' => 'hidden', 'value' => $query['sch_category_id']]); ?>
                       <?= $this->Form->input('sch_type', ['type' => 'select',
                                                              'value' => $query['sch_type'],
+                                                             'onChange' => 'change_category("fm_search");',
                                                              'options' => $type_list,
                                                              'empty' => ['0' => '全て']
                                                            ]); ?>
+                    </td>
+                  </tr>
+                  <?= $this->Form->end(); ?>
+                  <tr>
+                    <td class="border-0" style="width: 120px;text-align: center;vertical-align: middle;">素材カテゴリ</td>
+                    <td class="border-0" colspan="3">
+                    <?php foreach ($category_list as $clist): ?>
+                      <div class="breadcrumb-item" style="display: inline-block;">
+                        <?= $this->Form->create(false, ['type' => 'get', 'id' => 'fm_search_' . $clist['category']->id, 'style' => 'display:inline-block;']); ?>
+                        <?= $this->Form->input('sch_type', ['type' => 'hidden', 'value' => $query['sch_type']]); ?>
+                        <?= $this->Form->input('sch_category_id', ['type' => 'select',
+                                                                    'options' => $clist['list'],
+                                                                    'onChange' => 'change_category("fm_search_' . $clist['category']->id . '");',
+                                                                    'value' => $clist['category']->id,
+                                                                    'empty' => $clist['empty']
+                                                                  ]); ?>
+                        <?= $this->Form->end(); ?>
+                      </div>
+                    <?php endforeach; ?>
                     </td>
                   </tr>
               </table>
 
               <div class="btn_area">
                 <a class="btn btn-secondary" href="<?= $this->Url->build(['action' => 'index']); ?>"><i class="fas fa-eraser"></i> クリア</a>
-                <button class="btn btn-primary" onclick="document.fm_search.submit();"><i class="fas fa-search"></i> 検索開始</button>
+                <!-- <button class="btn btn-primary" onclick="document.fm_search.submit();"><i class="fas fa-search"></i> 検索開始</button> -->
               </div>
-<?= $this->Form->end(); ?>
+<!-- <-?= $this->Form->end(); ?> -->
           </div>
       </div>
 
@@ -51,7 +73,7 @@ $count['total'] = $data_query->count();
       <div class="box">
         <h3 class="box__caption--count"><span>登録一覧</span><span class="count"><?php echo $count['total']; ?>件の登録</span></h3>
 
-        <div class="btn_area" style="margin-top:10px;"><a href="<?= $this->Url->build(array('action' => 'edit', '?' => [])); ?>" class="btn btn-primary w-20 rounded-pill"><i class="far fa-plus-square"></i> 新規登録</a></div>
+        <div class="btn_area" style="margin-top:10px;"><a href="<?= $this->Url->build(array('action' => 'edit', '?' => ['sch_type' => $query['sch_type'], 'sch_category_id' => $query['sch_category_id']])); ?>" class="btn btn-primary w-20 rounded-pill"><i class="far fa-plus-square"></i> 新規登録</a></div>
         
         <div style="text-align: center; margin-top: 10px;"><?= $this->Paginator->numbers();?></div>
 
@@ -60,6 +82,8 @@ $count['total'] = $data_query->count();
           <colgroup>
             <col style="width: 74px;">
             <col>
+            <col style="width: 100px;">
+            <col style="width: 100px;">
             <col style="width: 100px;">
             <col style="width: 150px;">
           <?php if (!$is_search): ?>
@@ -72,6 +96,8 @@ $count['total'] = $data_query->count();
               <th >状態</th>
               <th style="text-align:left;">素材名</th>
               <th>タイプ</th>
+              <th>登録日時</th>
+              <th>更新日時</th>
               <th>操作</th>
             <?php if (!$is_search): ?>
               <th>並び順</th>
@@ -101,11 +127,20 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
               </td>
 
               <td>
-                <?= $this->Html->link($data->name, ['action' => 'edit', $data->id, '?' => []], ['class' => 'btn-block text-left'])?>
+                <?= h($data->material_category->name); ?>
+                <?= $this->Html->link($data->name, ['action' => 'edit', $data->id, '?' => ['sch_type' => $query['sch_type'], 'sch_category_id' => $query['sch_category_id']]], ['class' => 'btn-block text-left'])?>
               </td>
 
               <td>
                 <?= Material::$type_list[$data->type]; ?>
+              </td>
+
+              <td>
+                <?= $data->created; ?>
+              </td>
+
+              <td>
+                <?= $data->modified; ?>
               </td>
 
 
@@ -145,7 +180,7 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
 
         </div>
         <div style="text-align: center; margin-top: 10px;"><?= $this->Paginator->numbers();?></div>
-        <div class="btn_area" style="margin-top:10px;"><a href="<?= $this->Url->build(array('action' => 'edit', '?' => [])); ?>" class="btn btn-primary w-20 rounded-pill"><i class="far fa-plus-square"></i> 新規登録</a></div>
+        <div class="btn_area" style="margin-top:10px;"><a href="<?= $this->Url->build(array('action' => 'edit', '?' => ['sch_type' => $query['sch_type'], 'sch_category_id' => $query['sch_category_id']])); ?>" class="btn btn-primary w-20 rounded-pill"><i class="far fa-plus-square"></i> 新規登録</a></div>
 
 
     </div>
@@ -153,7 +188,12 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
 <?php $this->start('beforeBodyClose');?>
 <link rel="stylesheet" href="/admin/common/css/cms.css">
 <script>
-function change_category() {
+function change_category(elm) {
+  $("#" + elm).submit();
+  
+}
+
+function change_type() {
   $("#fm_search").submit();
   
 }
