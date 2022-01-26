@@ -50,12 +50,12 @@ class MaterialsController extends AppController
         $query['sch_name'] = $this->request->getQuery('sch_name');
         $query['sch_type'] = $this->request->getQuery('sch_type');
         $query['sch_category_id'] = $this->request->getQuery('sch_category_id');
-        if (!$query['sch_category_id']) {
-            $category = $this->MaterialCategories->find()->order(['MaterialCategories.position' => 'ASC'])->first();
-            if (!empty($category)) {
-                $query['sch_category_id'] = $category->id;
-            }
-        }
+        // if (!$query['sch_category_id']) {
+        //     $category = $this->MaterialCategories->find()->order(['MaterialCategories.position' => 'ASC'])->first();
+        //     if (!empty($category)) {
+        //         $query['sch_category_id'] = $category->id;
+        //     }
+        // }
 
         return $query;
     }
@@ -221,55 +221,70 @@ class MaterialsController extends AppController
 
         $pankuzu_category = [];
         $category_list = [];
-        $is_data = true;
-
-        $_parent_id = $category->parent_category_id;
-        $pankuzu_category[] = $category;
-        do {
-            $tmp = $this->MaterialCategories->find()->where(
-                [
-                    // 'Categories.page_config_id' => $query['sch_page_id'],
-                    'MaterialCategories.id' => $_parent_id,
-                    ])->first();
-            if (!empty($tmp)) {
-                $_parent_id = $tmp->parent_category_id;
-                $pankuzu_category[] = $tmp;
-            }
+        // $is_data = true;
+        if ($category) {
+            $_parent_id = $category->parent_category_id;
+            $pankuzu_category[] = $category;
+            do {
+                $tmp = $this->MaterialCategories->find()->where([
+                            'MaterialCategories.id' => $_parent_id,
+                        ])->first();
+                if (!empty($tmp)) {
+                    $_parent_id = $tmp->parent_category_id;
+                    $pankuzu_category[] = $tmp;
+                }
+                
+            } while(!empty($tmp));
             
-        } while(!empty($tmp));
-        // 
-        // $category_cond = ['Categories.page_config_id' => $page_config_id];
-        while($pcat = array_pop($pankuzu_category)) {
-            $category_cond['MaterialCategories.parent_category_id'] = $pcat->parent_category_id;
+            while($pcat = array_pop($pankuzu_category)) {
+                $category_cond['MaterialCategories.parent_category_id'] = $pcat->parent_category_id;
+                $tmp = $this->MaterialCategories->find('list', ['keyField' => 'id', 'valueField' => 'name'])
+                                        ->where($category_cond)
+                                        ->order(['MaterialCategories.position' => 'ASC'])
+                                        ->all();
+                if ($tmp->isEmpty()) {
+                    $tmp = null;
+                } elseif ($pcat->parent_category_id===0) {
+                    $category_list[] = [
+                        'category' => $pcat,
+                        'list' => $tmp->toArray(),
+                        'empty' => ['0' => '全て']
+                    ];
+                } else {
+                    $category_list[] = [
+                        'category' => $pcat,
+                        'list' => $tmp->toArray(),
+                        'empty' => false
+                    ];
+                }
+            }
+
+            // 最後に現カテゴリに下層カテゴリがあれば追加
+            $category_cond['MaterialCategories.parent_category_id'] = $category->id;
             $tmp = $this->MaterialCategories->find('list', ['keyField' => 'id', 'valueField' => 'name'])
                                     ->where($category_cond)
                                     ->order(['MaterialCategories.position' => 'ASC'])
                                     ->all();
-            if ($tmp->isEmpty()) {
-                $tmp = null;
-            } else {
+            if (!$tmp->isEmpty()) {
                 $category_list[] = [
-                    'category' => $pcat,
+                    'category' => (object)['id' => 0],
                     'list' => $tmp->toArray(),
-                    'empty' => false
+                    'empty' => ['' => '選択してください']
                 ];
+                // $is_data = false;
             }
-        }
-
-        // 最後に現カテゴリに下層カテゴリがあれば追加
-        $category_cond['MaterialCategories.parent_category_id'] = $category->id;
-        $tmp = $this->MaterialCategories->find('list', ['keyField' => 'id', 'valueField' => 'name'])
-                                ->where($category_cond)
-                                ->order(['MaterialCategories.position' => 'ASC'])
-                                ->all();
-        if (!$tmp->isEmpty()) {
+        } else {        // カテゴリを絞り込まないとき
+            $tmp = $this->MaterialCategories->find('list', ['keyField' => 'id', 'valueField' => 'name'])
+                                    ->where(['MaterialCategories.parent_category_id' => 0])
+                                    ->order(['MaterialCategories.position' => 'ASC'])
+                                    ->all();
             $category_list[] = [
                 'category' => (object)['id' => 0],
                 'list' => $tmp->toArray(),
-                'empty' => ['' => '選択してください']
+                'empty' => ['0' => '全て']
             ];
-            $is_data = false;
         }
+        
         $this->set(compact('category_list'));
     }
 
