@@ -58,6 +58,14 @@ class MaterialsController extends AppController
         // }
         $query['sch_modified_year'] = $this->request->getQuery('sch_modified_year');
         $query['sch_modified_month'] = $this->request->getQuery('sch_modified_month');
+        if (!$query['sch_modified_year']) {
+            $query['sch_modified_month'] = 0;
+        }
+        $query['sch_created_year'] = $this->request->getQuery('sch_created_year');
+        $query['sch_created_month'] = $this->request->getQuery('sch_created_month');
+        if (!$query['sch_created_year']) {
+            $query['sch_created_month'] = 0;
+        }
 
         return $query;
     }
@@ -89,6 +97,15 @@ class MaterialsController extends AppController
 
             $cond[$cnt++]['Materials.modified >= '] = $query['sch_modified_year'] . '-' . $month['s'] . '-01 00:00';
             $cond[$cnt++]['Materials.modified <= '] = $query['sch_modified_year'] . '-' . $month['e'] . '-31 23:59';
+        }
+
+        if ($query['sch_created_year']) {
+            $month = empty($query['sch_created_month']) ?
+                         ['s' => '01', 'e' => '12'] :
+                         ['s' => str_pad($query['sch_created_month'], 2, 0, STR_PAD_LEFT), 'e' => str_pad($query['sch_created_month'], 2, 0, STR_PAD_LEFT)];
+
+            $cond[$cnt++]['Materials.created >= '] = $query['sch_created_year'] . '-' . $month['s'] . '-01 00:00';
+            $cond[$cnt++]['Materials.created <= '] = $query['sch_created_year'] . '-' . $month['e'] . '-31 23:59';
         }
 
         return $cond;

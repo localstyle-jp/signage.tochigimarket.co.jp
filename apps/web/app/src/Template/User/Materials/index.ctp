@@ -27,6 +27,7 @@ $count['total'] = $data_query->count();
           <div class="table_area form_area">
 <!-- <-?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'url' => array('action' => 'index'), 'class' => '')); ?> -->
               <table class=" table border-0">
+                  <!-- 素材タイプ -->
                   <?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'url' => array('action' => 'index'), 'class' => '')); ?>
                   <tr>
                     <td class="border-0" style="width: 120px;text-align: center;vertical-align: middle;">タイプ</td>
@@ -34,6 +35,8 @@ $count['total'] = $data_query->count();
                       <?= $this->Form->input('sch_category_id', ['type' => 'hidden', 'value' => $query['sch_category_id']]); ?>
                       <?= $this->Form->input('sch_modified_year', ['type' => 'hidden', 'value' => $query['sch_modified_year']]); ?>
                       <?= $this->Form->input('sch_modified_month', ['type' => 'hidden', 'value' => $query['sch_modified_month']]); ?>
+                      <?= $this->Form->input('sch_created_year', ['type' => 'hidden', 'value' => $query['sch_created_year']]); ?>
+                      <?= $this->Form->input('sch_created_month', ['type' => 'hidden', 'value' => $query['sch_created_month']]); ?>
                       <?= $this->Form->input('sch_type', ['type' => 'select',
                                                              'value' => $query['sch_type'],
                                                              'onChange' => 'change_category("fm_search");',
@@ -43,7 +46,7 @@ $count['total'] = $data_query->count();
                     </td>
                   </tr>
                   <?= $this->Form->end(); ?>
-                  
+                  <!-- 素材カテゴリ -->
                   <tr>
                     <td class="border-0" style="width: 120px;text-align: center;vertical-align: middle;">素材カテゴリ</td>
                     <td class="border-0" colspan="3">
@@ -52,6 +55,8 @@ $count['total'] = $data_query->count();
                         <?= $this->Form->create(false, ['type' => 'get', 'id' => 'fm_search_' . $clist['category']->id, 'style' => 'display:inline-block;']); ?>
                         <?= $this->Form->input('sch_modified_year', ['type' => 'hidden', 'value' => $query['sch_modified_year']]); ?>
                         <?= $this->Form->input('sch_modified_month', ['type' => 'hidden', 'value' => $query['sch_modified_month']]); ?>
+                        <?= $this->Form->input('sch_created_year', ['type' => 'hidden', 'value' => $query['sch_created_year']]); ?>
+                        <?= $this->Form->input('sch_created_month', ['type' => 'hidden', 'value' => $query['sch_created_month']]); ?>
                         <?= $this->Form->input('sch_type', ['type' => 'hidden', 'value' => $query['sch_type']]); ?>
                         <?= $this->Form->input('sch_category_id', ['type' => 'select',
                                                                     'options' => $clist['list'],
@@ -64,12 +69,45 @@ $count['total'] = $data_query->count();
                     <?php endforeach; ?>
                     </td>
                   </tr>
+                  <!-- 登録日時 -->
+                  <?= $this->Form->create(false, array('type' => 'get', 'id' => 'fm_search_created', 'class' => '')); ?>
+                  <tr>
+                    <td class="border-0" style="width: 120px;text-align: center;vertical-align: middle;">登録日時</td>
+                    <td class="border-0" colspan="3">
+                      <?= $this->Form->input('sch_category_id', ['type' => 'hidden', 'value' => $query['sch_category_id']]); ?>
+                      <?= $this->Form->input('sch_type', ['type' => 'hidden', 'value' => $query['sch_type']]); ?>
+                      <?= $this->Form->input('sch_modified_year', ['type' => 'hidden', 'value' => $query['sch_modified_year']]); ?>
+                      <?= $this->Form->input('sch_modified_month', ['type' => 'hidden', 'value' => $query['sch_modified_month']]); ?>
+                      <?= $this->Form->input('sch_created_year', ['type' => 'select',
+                                                             'value' => $query['sch_created_year'],
+                                                             'onChange' => 'change_category("fm_search_created");',
+                                                             'options' => $year_list,
+                                                             'empty' => ['0' => '--'],
+                                                           ]); ?>
+                      年
+
+                      <?php if ($query['sch_created_year']) : ?>
+                      <?= $this->Form->input('sch_created_month', ['type' => 'select',
+                                                             'value' => $query['sch_created_month'],
+                                                             'onChange' => 'change_category("fm_search_created");',
+                                                             'options' => $month_list,
+                                                             'empty' => ['0' => '--'],
+                                                           ]); ?>
+                      月
+                      <?php endif; ?>
+                      
+                    </td>
+                  </tr>
+                  <?= $this->Form->end(); ?>
+                  <!-- 更新日時 -->
                   <?= $this->Form->create(false, array('type' => 'get', 'id' => 'fm_search_modified', 'class' => '')); ?>
                   <tr>
                     <td class="border-0" style="width: 120px;text-align: center;vertical-align: middle;">更新日時</td>
                     <td class="border-0" colspan="3">
                       <?= $this->Form->input('sch_category_id', ['type' => 'hidden', 'value' => $query['sch_category_id']]); ?>
                       <?= $this->Form->input('sch_type', ['type' => 'hidden', 'value' => $query['sch_type']]); ?>
+                      <?= $this->Form->input('sch_created_year', ['type' => 'hidden', 'value' => $query['sch_created_year']]); ?>
+                      <?= $this->Form->input('sch_created_month', ['type' => 'hidden', 'value' => $query['sch_created_month']]); ?>
                       <?= $this->Form->input('sch_modified_year', ['type' => 'select',
                                                              'value' => $query['sch_modified_year'],
                                                              'onChange' => 'change_category("fm_search_modified");',
@@ -221,23 +259,16 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
 <link rel="stylesheet" href="/admin/common/css/cms.css">
 <script>
 function change_category(elm) {
+  console.log(elm);
   $("#" + elm).submit();
   
 }
 
-function change_type() {
-  $("#fm_search").submit();
-  
-}
 $(function () {
 
 
 
 })
 
-$.datetimepicker.setLocale('ja');
-    $('.datetimepicker').datetimepicker({
-        step:30,
-    });
 </script>
 <?php $this->end();?>
