@@ -112,7 +112,7 @@
             </tr>
             
 
-            <tr class="changeArea urlArea mp4Area webmArea">
+            <tr class="changeArea urlArea">
               <td>URL<span class="attent">※必須</span></td>
               <td>
                 <?= $this->Form->input('url', array('type' => 'text', 'maxlength' => 255,));?>

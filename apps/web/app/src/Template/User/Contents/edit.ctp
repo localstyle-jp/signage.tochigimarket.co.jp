@@ -81,8 +81,8 @@
             <th></th>
             <th>素材名</th>
             <th>種別</th>
-            <th>内容</th>
             <th>表示秒数</th>
+            <th>内容</th>
             <th></th>
           </thead>
 

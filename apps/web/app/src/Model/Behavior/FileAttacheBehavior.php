@@ -298,8 +298,8 @@ class FileAttacheBehavior extends Behavior
                                 // マスターファイルの作成
                                 $this->create_master_m3u8($newdist, $id, $bitrates);
                                 // DBへの記録準備
-                                $newname = '';
-                                $filenameMaster = $dist_dir.'m'.$id.'.m3u8';
+                                // $newname = '';
+                                $filenameMaster = 'm'.$id.'.m3u8';
                                 $old_entity->set('url', 'm'.$id.DS.$filenameMaster);
                             }
 
@@ -324,9 +324,9 @@ class FileAttacheBehavior extends Behavior
                                 }
                             }
                             // 分割前mp4ファイルの削除
-                            if ($ext=='mp4') {
-                                @unlink($basedir.$newname);
-                            }
+                            // if ($ext=='mp4') {
+                            //     @unlink($basedir.$newname);
+                            // }
                         }
 
                     }
