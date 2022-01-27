@@ -91,21 +91,41 @@ class MaterialsController extends AppController
         }
 
         if ($query['sch_modified_year']) {
-            $month = empty($query['sch_modified_month']) ?
-                         ['s' => '01', 'e' => '12'] :
-                         ['s' => str_pad($query['sch_modified_month'], 2, 0, STR_PAD_LEFT), 'e' => str_pad($query['sch_modified_month'], 2, 0, STR_PAD_LEFT)];
+            $month = ['s' => '01', 'e' => '12'];
+            $day = ['s' => '01', 'e' => '31'];
+            if ($query['sch_modified_month']) {
+                $month = [
+                    's' => str_pad($query['sch_modified_month'], 2, 0, STR_PAD_LEFT), 
+                    'e' => str_pad($query['sch_modified_month'], 2, 0, STR_PAD_LEFT)
+                ];
+                $last_day = date('d', mktime(0,0,0, $query['sch_modified_month']+1, 0, $query['sch_modified_year']));
+                $day = [
+                    's' => '01', 
+                    'e' => str_pad($last_day, 2, 0, STR_PAD_LEFT)
+                ];
+            }
 
-            $cond[$cnt++]['Materials.modified >= '] = $query['sch_modified_year'] . '-' . $month['s'] . '-01 00:00';
-            $cond[$cnt++]['Materials.modified <= '] = $query['sch_modified_year'] . '-' . $month['e'] . '-31 23:59';
+            $cond[$cnt++]['Materials.modified >= '] = $query['sch_modified_year'] . '-' . $month['s'] . '-' . $day['s'] . ' 00:00:00';
+            $cond[$cnt++]['Materials.modified <= '] = $query['sch_modified_year'] . '-' . $month['e'] . '-' . $day['e'] . ' 23:59:59';
         }
 
         if ($query['sch_created_year']) {
-            $month = empty($query['sch_created_month']) ?
-                         ['s' => '01', 'e' => '12'] :
-                         ['s' => str_pad($query['sch_created_month'], 2, 0, STR_PAD_LEFT), 'e' => str_pad($query['sch_created_month'], 2, 0, STR_PAD_LEFT)];
-
-            $cond[$cnt++]['Materials.created >= '] = $query['sch_created_year'] . '-' . $month['s'] . '-01 00:00';
-            $cond[$cnt++]['Materials.created <= '] = $query['sch_created_year'] . '-' . $month['e'] . '-31 23:59';
+            $month = ['s' => '01', 'e' => '12'];
+            $day = ['s' => '01', 'e' => '31'];
+            if ($query['sch_created_month']) {
+                $month = [
+                    's' => str_pad($query['sch_created_month'], 2, 0, STR_PAD_LEFT), 
+                    'e' => str_pad($query['sch_created_month'], 2, 0, STR_PAD_LEFT)
+                ];
+                $last_day = date('d', mktime(0,0,0, $query['sch_created_month']+1, 0, $query['sch_created_year']));
+                $day = [
+                    's' => '01', 
+                    'e' => str_pad($last_day, 2, 0, STR_PAD_LEFT)
+                ];
+            }
+            
+            $cond[$cnt++]['Materials.created >= '] = $query['sch_created_year'] . '-' . $month['s'] . '-' . $day['s'] . ' 00:00:00';
+            $cond[$cnt++]['Materials.created <= '] = $query['sch_created_year'] . '-' . $month['e'] . '-' . $day['e'] . ' 23:59:59';
         }
 
         return $cond;
