@@ -331,7 +331,13 @@ class MaterialsController extends AppController
         $cond = $this->_getConditionsPop($query);
         $this->set(compact('query'));
 
-        $this->_lists($cond, ['limit' => 10, 'order' => ['Materials.position' => 'ASC']]);
+        $options = [
+            'contain' => ['MaterialCategories'],
+            'limit' => 10, 
+            'order' => ['Materials.position' => 'ASC']
+        ];
+
+        $this->_lists($cond, $options);
 
     }
     private function _getQueryPop() {
