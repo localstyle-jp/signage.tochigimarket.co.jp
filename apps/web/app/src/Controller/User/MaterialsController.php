@@ -141,7 +141,7 @@ class MaterialsController extends AppController
 
         $is_search = ($this->request->getQuery() ? true : false);
 
-        $this->setCategoryListForSearch($query);
+        $this->setCategoryListForSearch($query['sch_category_id']);
 
         $this->set(compact('query', 'is_search'));
 
@@ -266,9 +266,9 @@ class MaterialsController extends AppController
         $this->set(compact('category_list'));
     }
 
-    public function setCategoryListForSearch($query) {
+    public function setCategoryListForSearch($category_id) {
         // 現在カテゴリ情報
-        $category = $this->MaterialCategories->find()->where(['MaterialCategories.id' =>$query['sch_category_id']])->first();
+        $category = $this->MaterialCategories->find()->where(['MaterialCategories.id' =>$category_id])->first();
 
         $pankuzu_category = [];
         $category_list = [];
@@ -337,6 +337,7 @@ class MaterialsController extends AppController
         }
         
         $this->set(compact('category_list'));
+        return $category_list;
     }
 
     public function popList() {
@@ -373,6 +374,17 @@ class MaterialsController extends AppController
 
         $cond = $this->_getConditions($query);
         return $cond;
+    }
+
+    public function changeCategoryInput() {
+        $this->viewBuilder()->setLayout("plain");
+        
+        $category_id = $this->request->getData('category_id');
+
+        $this->setCategoryListForSearch($category_id);
+        // $datas = [];
+        
+        $this->set(compact('category_id'));
     }
 
     public function getYearList(){
