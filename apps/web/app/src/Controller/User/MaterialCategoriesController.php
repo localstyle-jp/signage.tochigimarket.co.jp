@@ -151,7 +151,7 @@ class MaterialCategoriesController extends AppController
             return;
         }
 
-        $options['redirect'] = ['action' => 'index', '?' => ['sch_page_id' => $data->page_config_id, 'parent_id' => $data->parent_category_id], '#' => 'content-' . $id];
+        $options['redirect'] = ['action' => 'index', '?' => ['sch_page_id' => $data->page_config_id, 'parent_id' => $data->parent_category_id]/*, '#' => 'content-' . $id*/];
 
         return parent::_position($id, $pos, $options);
     }
@@ -173,7 +173,7 @@ class MaterialCategoriesController extends AppController
             return;
         }
 
-        $options['redirect'] = ['action' => 'index', '?' => ['sch_page_id' => $data->page_config_id, 'parent_id' => $data->parent_category_id], '#' => 'content-' . $id];
+        $options['redirect'] = ['action' => 'index', '?' => ['sch_page_id' => $data->page_config_id, 'parent_id' => $data->parent_category_id]/*, '#' => 'content-' . $id*/];
         
         parent::_enable($id, $options);
 

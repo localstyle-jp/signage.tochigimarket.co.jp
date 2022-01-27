@@ -24,7 +24,8 @@ class MaterialCategoriesTable extends AppTable {
         // 添付ファイル
         // $this->addBehavior('FileAttache');
         $this->addBehavior('Position', [
-                'group' => [],
+                'group' => ['parent_category_id'],
+                'groupMove' => false,
                 'order' => 'DESC'
             ]);
 

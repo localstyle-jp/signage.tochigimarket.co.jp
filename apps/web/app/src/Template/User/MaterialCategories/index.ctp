@@ -119,7 +119,7 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
 
               <td>
                 <div class="btn_area" style="text-align:left;">
-                  <a href="<?= $this->Url->build(['action' => 'index', 0, '?' => ['parent_id' => $data->id]]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> 下層カテゴリ</a>
+                  <a href="<?= $this->Url->build(['action' => 'index', '?' => ['parent_id' => $data->id]]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> 下層カテゴリ</a>
                 </div>
               </td>
 
