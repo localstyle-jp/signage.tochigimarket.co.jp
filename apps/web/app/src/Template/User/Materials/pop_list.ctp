@@ -12,17 +12,35 @@
           <div class="table_area form_area">
 <?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'class' => '')); ?>
               <table class=" table border-0">
-                <!-- 素材名 -->
+                <!-- 素材カテゴリ -->
                   <tr>
+                    <td class="border-0" style="width: 120px;text-align: center; vertical-align: middle;">素材カテゴリ</td>
+                    <td class="border-0" colspan="11" id="category_input">
+                    <?php foreach ($category_list as $n => $clist): ?>
+                      <div class="breadcrumb-item" style="display: inline-block;">
+                        <?= $this->Form->input('sch_category_id' . $n, ['type' => 'select',
+                                                                      'options' => $clist['list'],
+                                                                      'onChange' => "change_category_input($n);",
+                                                                      'value' => $clist['category']->id,
+                                                                      'empty' => $clist['empty']
+                                                                    ]); ?>
+                      </div>
+                    <?php endforeach; ?>
+                    </td>
+                  </tr>
+                
+                  <tr>
+                    <!-- 素材名 -->
                     <td class="border-0" style="width: 120px;text-align: center; vertical-align: middle;">素材名</td>
                     <td class="border-0">
                       <?= $this->Form->input('sch_name', ['type' => 'text',
                                                              'value' => $query['sch_name'],
                                                              'class' => 'w-100',
-                                                             'placeholder' => 'あいまい検索'
+                                                             'placeholder' => 'あいまい検索',
+                                                             'max-length' => 40
                                                            ]); ?>
                     </td>
-                <!-- 素材タイプ -->
+                    <!-- 素材タイプ -->
                     <td class="border-0 head" style="width: 120px;text-align: center; vertical-align: middle;">タイプ</td>
                     <td class="border-0">
                       <?= $this->Form->input('sch_type', ['type' => 'select',
@@ -49,7 +67,6 @@
                         'style' => 'width: 120px;'));?>
                     </td>
                   </tr>
-                  <?= $this->Form->end(); ?>
                   <!-- 更新日時 -->
                   <tr>
                     <td class="border-0" style="width: 120px;text-align: center; vertical-align: middle;">更新日時</td>
@@ -67,22 +84,7 @@
                         'style' => 'width: 120px;'));?>                      
                     </td>
                   </tr>
-                  <!-- 素材カテゴリ -->
-                  <tr>
-                    <td class="border-0" style="width: 120px;text-align: center; vertical-align: middle;">素材カテゴリ</td>
-                    <td class="border-0" colspan="11" id="category_input">
-                    <?php foreach ($category_list as $n => $clist): ?>
-                      <div class="breadcrumb-item" style="display: inline-block;">
-                        <?= $this->Form->input('sch_category_id' . $n, ['type' => 'select',
-                                                                      'options' => $clist['list'],
-                                                                      'onChange' => "change_category_input($n);",
-                                                                      'value' => $clist['category']->id,
-                                                                      'empty' => $clist['empty']
-                                                                    ]); ?>
-                      </div>
-                    <?php endforeach; ?>
-                    </td>
-                  </tr>
+                  
               </table>
 
               <div class="btn_area">
@@ -167,6 +169,7 @@ $id = $data->id;
 </div>
 <?php $this->start('beforeBodyClose');?>
 <link rel="stylesheet" href="/admin/common/css/cms.css">
+<script src="/user/common/js/jquery.ui.datepicker-ja.js"></script>
 <?= $this->Html->script('/user/common/js/materials/index') ?>
 <script>
 // function change_category(elm) {

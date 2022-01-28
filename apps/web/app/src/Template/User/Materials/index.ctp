@@ -27,10 +27,36 @@ $count['total'] = $data_query->count();
           <div class="table_area form_area">
 <?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'url' => array('action' => 'index'), 'class' => '')); ?>
               <table class=" table border-0" style="width: fit-content;">
-                  
+                  <!-- 素材カテゴリ -->
                   <tr>
+                    <td class="border-0" style="width: 120px;text-align: center;vertical-align: middle;">素材カテゴリ</td>
+                    <td class="border-0" colspan="11" id="category_input">
+                    <?php foreach ($category_list as $n => $clist): ?>
+                      <div class="breadcrumb-item" style="display: inline-block;">
+                          <?= $this->Form->input('sch_category_id' . $n, ['type' => 'select',
+                                                                      'options' => $clist['list'],
+                                                                      'onChange' => "change_category_input($n);",
+                                                                      'value' => $clist['category']->id,
+                                                                      'empty' => $clist['empty'],
+                                                                    ]); ?>
+                      </div>
+                    <?php endforeach; ?>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <!-- 素材名 -->
+                    <td class="border-0 head" style="width: 120px;text-align: center; vertical-align: middle;">素材名</td>
+                    <td class="border-0" colspan="3">
+                      <?= $this->Form->input('sch_name', ['type' => 'text',
+                                                              'value' => $query['sch_name'],
+                                                              'class' => 'w-100',
+                                                              'placeholder' => 'あいまい検索',
+                                                              'max-length' => 40
+                                                            ]); ?>
+                    </td>
                     <!-- 素材タイプ -->
-                    <td class="border-0" style="width: 120px;text-align: center;vertical-align: middle;">タイプ</td>
+                    <td class="border-0 head" style="width: 120px;text-align: center;vertical-align: middle;">タイプ</td>
                     <td class="border-0" colspan="3">
                       <?= $this->Form->input('sch_type', ['type' => 'select',
                                                              'value' => $query['sch_type'],
@@ -38,6 +64,8 @@ $count['total'] = $data_query->count();
                                                              'empty' => ['0' => '全て']
                                                            ]); ?>
                     </td>
+                  </tr>
+                  <tr>
                     <!-- 登録日時 -->
                     <td class="border-0 head" style="width: 120px;text-align: center;vertical-align: middle;">登録日時</td>
                     <td class="border-0" colspan="3"  style="vertical-align: middle;">
@@ -69,22 +97,7 @@ $count['total'] = $data_query->count();
                         'style' => 'width: 120px;'));?>
                     </td>
                   </tr>
-                  <!-- 素材カテゴリ -->
-                  <tr>
-                    <td class="border-0" style="width: 120px;text-align: center;vertical-align: middle;">素材カテゴリ</td>
-                    <td class="border-0" colspan="11" id="category_input">
-                    <?php foreach ($category_list as $n => $clist): ?>
-                      <div class="breadcrumb-item" style="display: inline-block;">
-                          <?= $this->Form->input('sch_category_id' . $n, ['type' => 'select',
-                                                                      'options' => $clist['list'],
-                                                                      'onChange' => "change_category_input($n);",
-                                                                      'value' => $clist['category']->id,
-                                                                      'empty' => $clist['empty'],
-                                                                    ]); ?>
-                      </div>
-                    <?php endforeach; ?>
-                    </td>
-                  </tr>
+                  
 
               </table>
 
@@ -214,6 +227,7 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
 </div>
 <?php $this->start('beforeBodyClose');?>
 <link rel="stylesheet" href="/admin/common/css/cms.css">
+<script src="/user/common/js/jquery.ui.datepicker-ja.js"></script>
 <?= $this->Html->script('/user/common/js/materials/index') ?>
 <script>
 // function change_category(elm) {
