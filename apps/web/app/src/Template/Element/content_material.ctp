@@ -41,9 +41,20 @@
       </div>
 
     <?php elseif ($material['material']['type'] == Material::TYPE_MOVIE_MP4): ?>
-      <video controls width="300px;">
+      <video width="300px;" id="mate_mp4_<?= $material['id'] ?>">
         <source src="<?= $material['material']['attaches']['file']['src']; ?>">
       </video>
+
+      <script type="text/javascript">
+        document.getElementById('mate_mp4_<?= $material['id'] ?>').currentTime = 1.0;
+
+        $('#mate_mp4_<?= $material['id'] ?>')
+          .mouseover( function() {
+            $(this).get(0).setAttribute("controls", "controls");
+          }).mouseout( function() {
+            $(this).get(0).removeAttribute("controls");
+        });
+      </script>
     
     <?php elseif($material['material']['type'] == Material::TYPE_URL):?>
       <div>
