@@ -95,7 +95,7 @@
                     <div><?= $this->Html->link('ダウンロード', $entity['attaches'][$_column]['0'], array('target' => '_blank'))?></div>
                   </li>
                   <?= $this->Form->input("_old_{$_column}", array('type' => 'hidden', 'value' => h($entity[$_column]))); ?>
-                <?php endif;?>
+                  <?php else : ?>
 
                   <li>
                     <?= $this->Form->input("file", array('type' => 'file', 'class' => 'attaches'));?>
@@ -103,8 +103,10 @@
                     <div>※ファイルサイズxxxMB以内</div>
                   </li>
 
+                  <?php endif; ?>
+
                   <li>
-                    <!-- <-?= $this->Form->input('view_second', ['type' => 'text', 'readonly' => false, 'style' => 'width: 60px;', 'id' => 'idViewSecond', 'class' => 'text-right']); ?>秒 -->
+                    <?= $this->Form->input('view_second', ['type' => 'text', 'readonly' => false, 'style' => 'width: 60px;', 'id' => 'idViewSecond', 'class' => 'text-right']); ?>秒
                   </li>
                 </ul>
 
@@ -112,7 +114,7 @@
             </tr>
             
 
-            <tr class="changeArea urlArea">
+            <tr class="changeArea urlArea mp4Area">
               <td>URL<span class="attent">※必須</span></td>
               <td>
                 <?= $this->Form->input('url', array('type' => 'text', 'maxlength' => 255,));?>
