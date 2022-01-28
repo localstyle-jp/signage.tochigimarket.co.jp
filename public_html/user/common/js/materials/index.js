@@ -46,3 +46,24 @@ function EncodeHTMLForm( data )
 
     return params.join( '&' ).replace( /%20/g, '+' );
 }
+
+$(function () {
+    // 日付
+    $('.datepicker').datepicker({
+        dateFormat: 'yy-mm-dd'
+    });
+
+    //日付変更時に実行
+    $('.datepicker').on('change', function() {
+        var $this = $(this);
+        if (! $this.val() && $this.data('auto-date')) {
+            var dt = new Date(), d = [];
+            var m = '0' + (dt.getMonth() + 1);
+            var dd = '0' + dt.getDate();
+            d.push(dt.getFullYear()),
+            d.push(m.substr(m.length-2,2)),
+            d.push(dd.substr(dd.length-2,2));
+            $(this).val(d.join('-'));
+        }
+    });
+});

@@ -49,25 +49,33 @@ class MaterialsController extends AppController
 
         $query['sch_name'] = $this->request->getQuery('sch_name');
         $query['sch_type'] = $this->request->getQuery('sch_type');
-        $query['sch_category_id'] = $this->request->getQuery('sch_category_id');
-        // if (!$query['sch_category_id']) {
-        //     $category = $this->MaterialCategories->find()->order(['MaterialCategories.position' => 'ASC'])->first();
-        //     if (!empty($category)) {
-        //         $query['sch_category_id'] = $category->id;
-        //     }
-        // }
-        $query['sch_modified_year'] = $this->request->getQuery('sch_modified_year');
-        $query['sch_modified_month'] = $this->request->getQuery('sch_modified_month');
-        if (!$query['sch_modified_year']) {
-            $query['sch_modified_month'] = 0;
+        $query['sch_category_id'] = 0;
+        for ($i=0; true ; $i++) { 
+            if( !$this->request->getQuery('sch_category_id' . $i) ) {break;}
+            $query['sch_category_id'] = $this->request->getQuery('sch_category_id' . $i);
         }
-        $query['sch_created_year'] = $this->request->getQuery('sch_created_year');
-        $query['sch_created_month'] = $this->request->getQuery('sch_created_month');
-        if (!$query['sch_created_year']) {
-            $query['sch_created_month'] = 0;
-        }
+        $query['sch_modified_start'] = $this->checkDate($this->request->getQuery('sch_modified_start')) ?
+                                            $this->request->getQuery('sch_modified_start') : 
+                                            null;
+        $query['sch_modified_end'] = $this->checkDate($this->request->getQuery('sch_modified_end')) ?
+                                            $this->request->getQuery('sch_modified_end') : 
+                                            null;
+        $query['sch_created_start'] = $this->checkDate($this->request->getQuery('sch_created_start')) ?
+                                            $this->request->getQuery('sch_created_start') : 
+                                            null;
+        $query['sch_created_end'] = $this->checkDate($this->request->getQuery('sch_created_end')) ?
+                                            $this->request->getQuery('sch_created_end') : 
+                                            null;
 
         return $query;
+    }
+
+    protected function checkDate($date) {
+        $is_match = preg_match('/^(\d{4})[\/-](\d{2})[\/-](\d{2})$/', $date, $match);
+        if($is_match && checkdate($match[2], $match[3], $match[1])){
+            return true;
+        }
+        return false;
     }
 
     protected function _getConditions($query) {
@@ -90,42 +98,20 @@ class MaterialsController extends AppController
             $cond[$cnt++]['Materials.category_id'] = $query['sch_category_id'];
         }
 
-        if ($query['sch_modified_year']) {
-            $month = ['s' => '01', 'e' => '12'];
-            $day = ['s' => '01', 'e' => '31'];
-            if ($query['sch_modified_month']) {
-                $month = [
-                    's' => str_pad($query['sch_modified_month'], 2, 0, STR_PAD_LEFT), 
-                    'e' => str_pad($query['sch_modified_month'], 2, 0, STR_PAD_LEFT)
-                ];
-                $last_day = date('d', mktime(0,0,0, $query['sch_modified_month']+1, 0, $query['sch_modified_year']));
-                $day = [
-                    's' => '01', 
-                    'e' => str_pad($last_day, 2, 0, STR_PAD_LEFT)
-                ];
-            }
-
-            $cond[$cnt++]['Materials.modified >= '] = $query['sch_modified_year'] . '-' . $month['s'] . '-' . $day['s'] . ' 00:00:00';
-            $cond[$cnt++]['Materials.modified <= '] = $query['sch_modified_year'] . '-' . $month['e'] . '-' . $day['e'] . ' 23:59:59';
+        if ($query['sch_modified_start']) {
+            $cond[$cnt++]['Materials.modified >= '] = $query['sch_modified_start'] . ' 00:00:00';
         }
 
-        if ($query['sch_created_year']) {
-            $month = ['s' => '01', 'e' => '12'];
-            $day = ['s' => '01', 'e' => '31'];
-            if ($query['sch_created_month']) {
-                $month = [
-                    's' => str_pad($query['sch_created_month'], 2, 0, STR_PAD_LEFT), 
-                    'e' => str_pad($query['sch_created_month'], 2, 0, STR_PAD_LEFT)
-                ];
-                $last_day = date('d', mktime(0,0,0, $query['sch_created_month']+1, 0, $query['sch_created_year']));
-                $day = [
-                    's' => '01', 
-                    'e' => str_pad($last_day, 2, 0, STR_PAD_LEFT)
-                ];
-            }
-            
-            $cond[$cnt++]['Materials.created >= '] = $query['sch_created_year'] . '-' . $month['s'] . '-' . $day['s'] . ' 00:00:00';
-            $cond[$cnt++]['Materials.created <= '] = $query['sch_created_year'] . '-' . $month['e'] . '-' . $day['e'] . ' 23:59:59';
+        if ($query['sch_modified_end']) {
+            $cond[$cnt++]['Materials.modified <= '] = $query['sch_modified_end'] . ' 23:59:59';
+        }
+
+        if ($query['sch_created_start']) {
+            $cond[$cnt++]['Materials.created >= '] = $query['sch_created_start'] . ' 00:00:00';
+        }
+
+        if ($query['sch_created_end']) {
+            $cond[$cnt++]['Materials.created <= '] = $query['sch_created_end'] . ' 23:59:59';
         }
 
         return $cond;
@@ -245,9 +231,6 @@ class MaterialsController extends AppController
         $list = array(
             'type_list' => Material::$type_list,
         );
-    
-        $list['year_list'] = $this->getYearList();
-        $list['month_list'] = array_combine(range(1,12), range(1, 12));
 
         if (!empty($list)) {
             $this->set(array_keys($list),$list);
@@ -347,7 +330,7 @@ class MaterialsController extends AppController
 
         $query = $this->_getQueryPop();
 
-        $this->setCategoryListForSearch($query);
+        $this->setCategoryListForSearch($query['sch_category_id']);
         
         $cond = $this->_getConditionsPop($query);
         $this->set(compact('query'));

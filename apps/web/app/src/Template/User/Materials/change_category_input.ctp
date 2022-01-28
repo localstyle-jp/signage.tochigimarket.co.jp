@@ -1,4 +1,4 @@
-<td class="border-0" colspan="3" id="category_input">
+<td class="border-0" colspan="11" id="category_input">
 <?php foreach ($category_list as $n => $clist): ?>
     <div class="breadcrumb-item" style="display: inline-block;">
         <?= $this->Form->input('sch_category_id' . $n, ['type' => 'select',
