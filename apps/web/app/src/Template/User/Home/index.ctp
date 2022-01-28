@@ -47,7 +47,7 @@
         <?php foreach ($machines as $key => $data): ?>
         <?php $status = ($data->status == 'publish' ? true : false); ?>
         <div class="col-lg-4 mb-5">
-          <div class="card" style="width: 300px;">
+          <div class="card" style="width: 350px;">
             <div class="card-header">
               <div class="btn_area text-center mt-2">
               <?php if ($data->content_id): ?>
@@ -66,10 +66,10 @@
               <h5 class="card-title"><?= h($data->name); ?></h5>
               <div class="btn_area">
                 <a href="<?= '/view/' . $data->site_config->slug . '/' . trim($data->url, '/') . '/'; ?>" target="_blank" class="btn btn-info btn-sm"><i class="fas fa-search"></i> プレビュー</a>
-                <a href="<?= '/view-tests/' . $data->site_config->slug . '/' . trim($data->url, '/') . '/'; ?>" target="_blank" class="btn btn-info btn-sm"><i class="fas fa-search"></i> プレビューテスト</a>
-                <a href="<?= '/view-reacts/' . $data->site_config->slug . '/' . trim($data->url, '/') . '/'; ?>" target="_blank" class="btn btn-info btn-sm"><i class="fas fa-search"></i> プレビューforReactNative</a>
                 <a href="<?= $this->Url->build(['controller' => 'machine-boxes','action' => 'edit', $data->id]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> 編集</a>
-              
+                <?php if (!empty($data->content_id)): ?>
+                <a href="<?= $this->Url->build(['controller' => 'contents','action' => 'edit', $data->content_id]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> コンテンツ編集</a>
+                <?php endif; ?>
               </div>
 
               

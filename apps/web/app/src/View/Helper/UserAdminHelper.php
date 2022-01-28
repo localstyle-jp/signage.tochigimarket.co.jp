@@ -53,11 +53,6 @@ class UserAdminHelper extends AppHelper
                             'icon' => '',
                             'link' => '/machine-boxes/'
                         ],
-                        '素材カテゴリ' => [
-                            'icon' => '',
-                            'link' => '/material-categories/'
-                        ],
-                        
                     ],
                     // 2行目
                     // '  ' => [
@@ -66,6 +61,14 @@ class UserAdminHelper extends AppHelper
                     //         'link' => '/reports/'
                     //     ]
                     // ]
+                ],
+                'サブ' => [
+                    '  ' => [
+                        '素材カテゴリ' => [
+                            'icon' => '',
+                            'link' => '/material-categories/'
+                        ],
+                    ],
                 ],
                 // '管理者メニュー' => [
 
