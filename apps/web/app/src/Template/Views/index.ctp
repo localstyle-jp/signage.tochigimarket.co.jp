@@ -37,11 +37,11 @@ $(function () {
   var height_new = <?= $height ?>/parseFloat(window.devicePixelRatio);
   var width_new = <?= $width ?>/parseFloat(window.devicePixelRatio);
   var bottom_pos = <?= $height ?> - height_new;
-  var caption_time = 0.002 * (<?= $width ?> + <?= $height ?>*0.08*<?= strlen($machine->rolling_caption) ?>);
+  var caption_time = 0.003 * (<?= $width ?> + <?= $height ?>*0.05*<?= strlen($machine->rolling_caption) ?>);
 
   $('iframe').css('transform', scale).css('-webkit-transform', scale).css('-ms-transform', scale).css('-o-transform', scale).css('-moz-transform', scale);
   $('.rolling_caption_wrapper').css('bottom', bottom_pos+'px');
-  $(':root').css('--initial-left-pos', width_new + 'px').css('--initial-font-size', height_new*0.08 + 'px');
+  $(':root').css('--initial-left-pos', width_new + 'px').css('--initial-font-size', height_new*0.05 + 'px');
   $('.rolling_caption_text').css('animation-duration', caption_time + 's').css('animation-name', 'marquee');
 });
 </script>
@@ -85,13 +85,19 @@ $(function () {
   font-size: var(--initial-font-size);
   position: absolute;
   bottom: 0px;
-  margin:0; display:inline-block; white-space:nowrap;
+  margin:10px 0; display:inline-block; white-space:nowrap;
   /* animation-name:marquee; */
   animation-timing-function:linear;
   /* animation-duration:calc(0.2s*(var(--initial-left-pos)+<-?= strlen($machine->rolling_caption) ?>)); */
   animation-iteration-count:infinite;
-  background-color: white;
+  /* background-color: white; */
+  color: white;
   line-height: 1.2em;
+  text-shadow: 3px 3px 4px black;
+  
+  /* textShadowColor: 'black',
+    textShadowOffset: {width: 2, height: 2},
+    textShadowRadius: 3, */
 }
 @keyframes marquee {
   from   { transform: translate(var(--initial-left-pos));}

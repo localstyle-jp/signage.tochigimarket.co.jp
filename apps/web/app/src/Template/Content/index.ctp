@@ -37,7 +37,7 @@
 </div><!-- / #wrapper -->
 
 <!-- ローディングバー -->
-<div class="loader_container" id="loader_container">
+<!-- <div class="loader_container" id="loader_container">
   <div class="bar_container">
     <div class="progress_bar" id="progress_bar">
       <div class="progress_percentage" id="progress_percentage">
@@ -51,13 +51,13 @@
     <span>Please Wait...</span>
   </div>
   
-</div>
+</div> -->
 <!-- / ローディングバー -->
 
 <!-- デバッグ用 -->
-<div id="content_no_block">
+<!-- <div id="content_no_block">
   <div></div>
-</div>
+</div> -->
 
 <script>
 var reload = function () {
@@ -89,7 +89,7 @@ var reload = function () {
 var player;
 var mp4;
 var mp4_obj;
-var webm;
+// var webm;
 var webpage;
 <?php if(!empty($material_youtube)): ?>
 player = <?= json_encode($material_youtube); ?>;
@@ -101,9 +101,9 @@ mp4 = <?= json_encode(($material_mp4)); ?>;
 // num_mp4 = Object.keys(mp4).length;
 <?php endif; ?>
 
-<?php if (!empty($material_webm)): ?>
-webm = <?= json_encode(($material_webm)); ?>;
-<?php endif; ?>
+// <-?php if (!empty($material_webm)): ?>
+// webm = <-?= json_encode(($material_webm)); ?>;
+// <-?php endif; ?>
 
 <?php if (!empty($material_webpage)): ?>
 webpage = <?= json_encode(($material_webpage)); ?>;
@@ -225,12 +225,12 @@ function playMp4(i, n) {        // n : play()を実行しようとした回数
   }
 }
 
-function playWebm(i) {
+// function playWebm(i) {
 
-  webm[i].obj.currentTime = 0;
-  webm[i].obj.play();
+//   webm[i].obj.currentTime = 0;
+//   webm[i].obj.play();
 
-}
+// }
 
 function pauseMp4(i) {
   $("#mp4_play_block").html(mp4[i].content);
@@ -239,10 +239,10 @@ function pauseMp4(i) {
   // console.log('pauseMp4 '+i);
 }
 
-function pauseWebm(i) {
-  webm[i].obj.pause();
-  webm[i].obj.currentTime = 0;
-}
+// function pauseWebm(i) {
+//   webm[i].obj.pause();
+//   webm[i].obj.currentTime = 0;
+// }
 
 function loadWebpage(i, n) {      // n : play()を実行しようとした回数
   if (webpage[i].obj!=null) {
@@ -327,12 +327,12 @@ var scene_manager = function () {
           }
         });
 
-        $.each(webm, function(i, val) {
-          if (items[scene_list[index]].action == 'play_webm_' + val.no) {
-            playWebm(i);
-            return false;
-          }
-        });
+        // $.each(webm, function(i, val) {
+        //   if (items[scene_list[index]].action == 'play_webm_' + val.no) {
+        //     playWebm(i);
+        //     return false;
+        //   }
+        // });
 
         $.each(webpage, function(i, val){
           if (items[scene_list[index]].action == 'load_webpage_' + val.no) {
@@ -370,9 +370,9 @@ var scene_manager = function () {
             destroyHls('no'+scene_list[index]);
           }
         }
-        if (items[scene_list[index]].action.indexOf('play_webm_') == 0) {
-           pauseWebm('no'+scene_list[index]);
-        }
+        // if (items[scene_list[index]].action.indexOf('play_webm_') == 0) {
+        //    pauseWebm('no'+scene_list[index]);
+        // }
     }
 
     var removeWebpages = function(prev) {
@@ -486,12 +486,12 @@ $(function () {
       console.log(mp4[i].obj);
     }
   });
-  $.each(webm, function(i, val) {
-    // if (val.type == 'webm') {
-    webm[i].obj = document.getElementById('webm_' + val.no);
-    webm[i].obj.src = webm[i].source;
-    // }
-  });
+  // $.each(webm, function(i, val) {
+  //   // if (val.type == 'webm') {
+  //   webm[i].obj = document.getElementById('webm_' + val.no);
+  //   webm[i].obj.src = webm[i].source;
+  //   // }
+  // });
   $.each(webpage, function(i, val) {
     webpage[i].obj = document.getElementById('webpage_' + val.no);
     if (val.no==1) {
@@ -506,30 +506,30 @@ window.onload = function() {
 }
 
 // ローディングバー
-var bar=$('#progress_bar');
-var percentage=parseInt($('#progress_percentage').html());
+// var bar=$('#progress_bar');
+// var percentage=parseInt($('#progress_percentage').html());
 
-function stopProgress(){
-  clearInterval(progress);
-  setTimeout(function(){
-    $('#loader_container').hide();         
-  }, 5000);
-}
+// function stopProgress(){
+//   clearInterval(progress);
+//   setTimeout(function(){
+//     $('#loader_container').hide();         
+//   }, 5000);
+// }
 
-var progress= setInterval(function(){
-  percentage++;
-  if (percentage<=100){
-    $('#progress_percentage').html(percentage+'%');
-    if (percentage>10) {
-      bar.css('width',percentage+'%');
-      // console.log(percentage);
-    }
-  }
-  else {
-    stopProgress()
-  }
-// },360*num_mp4);
-},3600);// 6 minutes wait
+// var progress= setInterval(function(){
+//   percentage++;
+//   if (percentage<=100){
+//     $('#progress_percentage').html(percentage+'%');
+//     if (percentage>10) {
+//       bar.css('width',percentage+'%');
+//       // console.log(percentage);
+//     }
+//   }
+//   else {
+//     stopProgress()
+//   }
+// // },360*num_mp4);
+// },3600);// 6 minutes wait
 // /ローディングバー
 </script>
 

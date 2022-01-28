@@ -174,6 +174,7 @@ class ContentController extends AppController
         $data['class'] = 'box type_' . $item_count;
         if ($detail->type == Material::TYPE_IMAGE) {
             $data['content'] = '<img src="' . $detail->attaches['image']['0'] . '" alt="">';
+            $data['type'] = 'image';
         } elseif ($detail->type == Material::TYPE_URL) {
             $data['content'] = '<iframe ';
             $data['content'] .= 'src=""';

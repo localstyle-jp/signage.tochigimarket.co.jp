@@ -26,7 +26,7 @@ $count['total'] = $data_query->count();
           <h3>検索条件</h3>
           <div class="table_area form_area">
 <?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'url' => array('action' => 'index'), 'class' => '')); ?>
-              <table class=" table border-0">
+              <table class=" table border-0" style="width: fit-content;">
                   
                   <tr>
                     <!-- 素材タイプ -->
