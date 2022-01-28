@@ -286,18 +286,15 @@ class FileAttacheBehavior extends Behavior
                             if ($ext=='mp4') {
                                 // tsファイルへの分割
                                 $newdist = WWW_ROOT . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS;
-                                $bitrates = [BITRATE_LOW, BITRATE_MID, BITRATE_HIGH];
-                                for ($i=0; $i < 3; $i++) { 
-                                    $filenameM3u8 = 'm' . $id . '_' . $bitrates[$i] . 'k.m3u8';
-                                    $this->convert_mp4($basedir.$newname, $newdist, $filenameM3u8, $bitrates[$i]);
+                                $bitrates = [/*BITRATE_LOW, BITRATE_MID, */BITRATE_HIGH];
+                                foreach ($bitrates as $bitrate) {
+                                    $filenameM3u8 = 'm' . $id . '_' . $bitrate . 'k.m3u8';
+                                    $this->convert_mp4($basedir.$newname, $newdist, $filenameM3u8, $bitrate);
                                 }
-                                // foreach ($bitrates as $bitrate) {
-                                //     $filenameM3u8 = 'm' . $id . '_' . $bitrate . 'k.m3u8';
-                                //     $this->convert_mp4($basedir.$newname, $newdist, $filenameM3u8, $bitrate);
-                                // }
                                 // マスターファイルの作成
                                 $this->create_master_m3u8($newdist, $id, $bitrates);
                                 // DBへの記録準備
+                                $old_entity->set('view_second', $this->getViewSeconds($basedir.$newname));
                                 // $newname = '';
                                 $filenameMaster = 'm'.$id.'.m3u8';
                                 $old_entity->set('url', 'm'.$id.DS.$filenameMaster);
@@ -345,6 +342,18 @@ class FileAttacheBehavior extends Behavior
     }
     public function getFileName($filename, $ext) {
         return str_replace('.' . $ext, '', $filename);
+    }
+
+    /**
+     * 動画時間の取得
+     * */
+    public function getViewSeconds($source) {
+        // コマンド実行
+        $command = 'ffprobe ' . $source . ' -hide_banner -show_entries format=duration';
+        $last_line = exec(escapeshellcmd($command), $out);
+        $time = preg_match('/^duration=([0-9]+)\.([0-9]+)/', $out[1], $matches);
+
+        return $matches[1] + 1;
     }
 
     /**
@@ -449,9 +458,9 @@ class FileAttacheBehavior extends Behavior
         // マスターファイルの文面作成
         $contents = "#EXTM3U\n";
         foreach ($bitrates as $bitrate) {
-            if ($bitrate < 4000) {
-                continue;
-            }
+            // if ($bitrate < 4000) {
+            //     continue;
+            // }
             $filenameM3u8 = 'm' . $id . '_' . $bitrate . 'k.m3u8';
             $contents .= '#EXT-X-STREAM-INF:BANDWIDTH='.$bitrate*1000*1.2.',RESOLUTION=1920x1080,CODECS="avc1.42e00a,mp4a.40.2"'."\n";
             $contents .= DS . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS.$filenameM3u8."\n";

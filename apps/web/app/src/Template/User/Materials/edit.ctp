@@ -99,12 +99,12 @@
 
                   <li>
                     <?= $this->Form->input("file", array('type' => 'file', 'class' => 'attaches'));?>
-                    <div class="remark">※MP4(.mp4),WEBM(.webm)ファイルのみ</div>
+                    <div class="remark">※MP4(.mp4)ファイルのみ</div>
                     <div>※ファイルサイズxxxMB以内</div>
                   </li>
 
                   <li>
-                    <?= $this->Form->input('view_second', ['type' => 'text', 'readonly' => false, 'style' => 'width: 60px;', 'id' => 'idViewSecond', 'class' => 'text-right']); ?>秒
+                    <!-- <-?= $this->Form->input('view_second', ['type' => 'text', 'readonly' => false, 'style' => 'width: 60px;', 'id' => 'idViewSecond', 'class' => 'text-right']); ?>秒 -->
                   </li>
                 </ul>
 
