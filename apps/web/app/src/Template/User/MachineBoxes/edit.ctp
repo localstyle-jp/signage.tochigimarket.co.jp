@@ -131,11 +131,12 @@
           </tr>
 
           <!-- <tr>
-            <td>ビューアの再読み込み</td>
+            <td>ブラウザの再読み込み</td>
             <td>
-              <-?= $this->Form->input('reload_flag_device', ['type' => 'checkbox', 'value' => '1', 'hiddenField' => true, 'label' => '表示端末側で再読み込みを実行します（10秒以内に実行されます）']); ?>
+              <-?= $this->Form->input('reload_flag', ['type' => 'checkbox', 'value' => '1', 'hiddenField' => true, 'label' => '表示端末側のブラウザを再読み込みさせます（10秒以内に実行されます）']); ?>
             </td>
           </tr> -->
+
         </table>
       <?php endif; ?>
 

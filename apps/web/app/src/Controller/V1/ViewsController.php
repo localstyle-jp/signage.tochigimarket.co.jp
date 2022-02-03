@@ -59,12 +59,12 @@ class ViewsController extends AppController
         }
 
         // コンテンツ
-        $content = $this->Contents->find()->where(['Contents.id' => $machine_box->content_id])
-                                    ->contain(['ContentMaterials' => function($q) {
-                                        return $q->contain(['Materials'])->order(['ContentMaterials.position' => 'ASC']);
+        $content = $this->MachineContents->find()->where(['MachineContents.id' => $machine_box->machine_content_id])
+                                    ->contain(['MachineMaterials' => function($q) {
+                                        return $q->order(['MachineMaterials.position' => 'ASC']);
                                     }])
                                     ->first();
-        if (empty($content) || empty($content->content_materials)) {
+        if (empty($content) || empty($content->machine_materials)) {
             $status_options = ['material_rows' => 0, 'description' => 'Bad Request or No Materials'];
             return $this->rest_custom(400, $status_options, []);
         }
@@ -84,9 +84,9 @@ class ViewsController extends AppController
 
         $item_count = 0;
         $materials_output = [];
-        foreach ($content->content_materials as $c_material) {
+        foreach ($content->machine_materials as $material) {
             $item_count++;
-            $materials_output[$item_count] = $this->setMaterial($item_count, $c_material, $c_material->material);
+            $materials_output[$item_count] = $this->setMaterial($item_count, $material);
         }
         $item['materials'] = Hash::combine($materials_output, '{n}.no', '{n}');
         
@@ -161,16 +161,14 @@ class ViewsController extends AppController
         $this->rest_custom(200, [], []);
     }
 
-    public function setMaterial($item_count, $c_material, $material) {
-        
-
+    public function setMaterial($item_count, $material) {
         $data = [
             'material_id' => $material->id,
             'no' => $item_count,
             'type' => Material::$type_list_api[$material->type],
             'source' => '',
             'movie_tag' => '',
-            'time_sec' => $c_material->view_second,
+            'time_sec' => $material->view_second,
         ];
 
         if ($material->type == Material::TYPE_MOVIE_MP4) {
