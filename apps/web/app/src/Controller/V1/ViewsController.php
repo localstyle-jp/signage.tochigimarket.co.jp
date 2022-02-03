@@ -71,8 +71,8 @@ class ViewsController extends AppController
 
         // 返却情報配列
         $item = [
-            'content_id' => $machine_box->content_id,
-            'serial_no' => $content->serial_no,
+            // 'content_id' => $machine_box->content_id,
+            // 'serial_no' => $content->serial_no,
             'width' => $machine_box->width,
             'height' => $machine_box->height,
             'caption' => $machine_box->rolling_caption,
@@ -97,8 +97,8 @@ class ViewsController extends AppController
 
     public function isReload() {
         $machine_id = ( empty($this->request->getData('id')) ? 0 : $this->request->getData('id') );
-        $content_id = ( empty($this->request->getData('content_id')) ? 0 : $this->request->getData('content_id') );
-        $content_serial_no = ( empty($this->request->getData('serial_no')) ? 0 : $this->request->getData('serial_no') );
+        // $content_id = ( empty($this->request->getData('content_id')) ? 0 : $this->request->getData('content_id') );
+        // $content_serial_no = ( empty($this->request->getData('serial_no')) ? 0 : $this->request->getData('serial_no') );
 
         $status_options = [];
 
@@ -109,22 +109,23 @@ class ViewsController extends AppController
         }
 
         // コンテンツ
-        $content = $this->Contents->find()->where(['Contents.id' => $machine_box->content_id])
-                                    ->contain(['ContentMaterials' => function($q) {
-                                        return $q->contain(['Materials'])->order(['ContentMaterials.position' => 'ASC']);
-                                    }])
-                                    ->first();
-        if (empty($content) || empty($content->content_materials)) {
-            $status_options['description'] = 'Bad Request or No Materials';
-            return $this->rest_custom(400, $status_options, []);
-        }
+        // $content = $this->Contents->find()->where(['Contents.id' => $machine_box->content_id])
+        //                             ->contain(['ContentMaterials' => function($q) {
+        //                                 return $q->contain(['Materials'])->order(['ContentMaterials.position' => 'ASC']);
+        //                             }])
+        //                             ->first();
+        // if (empty($content) || empty($content->content_materials)) {
+        //     $status_options['description'] = 'Bad Request or No Materials';
+        //     return $this->rest_custom(400, $status_options, []);
+        // }
 
-        if ($machine_box->status!='publish') {
-            return $this->rest_custom(509, [], []);
-        }
+        // if ($machine_box->status!='publish') {
+        //     return $this->rest_custom(509, [], []);
+        // }
 
         // コンテンツリロード判定
-        $content_reload_flag = ( $content_serial_no != $content->serial_no || $content_id != $content->id);
+        $content_reload_flag = $machine_box->reload_flag_device;
+        // $content_reload_flag = ( $content_serial_no != $content->serial_no || $content_id != $content->id);
 
         // 返却情報配列
         $item = [
@@ -139,6 +140,25 @@ class ViewsController extends AppController
         }
 
         $this->rest_custom(200, [], $item);
+    }
+
+    public function disableReload() {
+        $id = $this->request->getData('id');
+
+        $machine_box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $id])->first();
+        if (empty($machine_box)) {
+            return $this->rest_custom(400, [], []);
+        }
+
+        $reload_flag_device = $machine_box->reload_flag_device;
+
+        // フラグが経ってたら戻す
+        if ($machine_box->reload_flag_device == 1) {
+            $entity = $this->MachineBoxes->patchEntity($machine_box, ['reload_flag_device' => 0]);
+            $this->MachineBoxes->save($entity);
+        }
+
+        $this->rest_custom(200, [], []);
     }
 
     public function setMaterial($item_count, $c_material, $material) {

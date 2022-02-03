@@ -92,22 +92,50 @@
 
         </table>
 
-      <?php if ($data['id']): ?>
+      <!-- <-?php if ($data['id']): ?>
         <table class="vertical_table table__meta">
           <tr>
-            <td>フルパス</td>
+            <td>プレビューURL</td>
             <td>
-              <?php $url = $this->Url->build('/', true) . 'view/' . $site_config->slug . '/' . trim($entity->url, '/') . '/'; ?>
-              <?= $this->Form->input('_full_path', ['type' => 'text', 'class' => 'w-100', 'readonly' => true, 'value' => $url]); ?>
+              <-?php $url = $this->Url->build('/', true) . 'view/' . $site_config->slug . '/' . trim($entity->url, '/') . '/'; ?>
+              <-?= $this->Form->input('_full_path', ['type' => 'text', 'class' => 'w-100', 'readonly' => true, 'value' => $url]); ?>
             </td>
           </tr>
 
           <tr>
             <td>ブラウザの再読み込み</td>
             <td>
-              <?= $this->Form->input('reload_flag', ['type' => 'checkbox', 'value' => '1', 'hiddenField' => true, 'label' => '表示端末側のブラウザを再読み込みさせます（10秒以内に実行されます）']); ?>
+              <-?= $this->Form->input('reload_flag', ['type' => 'checkbox', 'value' => '1', 'hiddenField' => true, 'label' => '表示端末側のブラウザを再読み込みさせます（10秒以内に実行されます）']); ?>
             </td>
           </tr>
+        </table>
+      <-?php endif; ?> -->
+
+      <?php if ($data['id']): ?>
+        <table class="vertical_table table__meta">
+          <tr>
+            <td colspan='2'>ビューア設定用情報</td>
+          </tr>
+          <tr>
+            <td>URL</td>
+            <td>
+              <?= $this->Url->build('/', true); ?>
+            </td>
+          </tr>
+
+          <tr>
+            <td>ID</td>
+            <td>
+              <?= $entity->id; ?>
+            </td>
+          </tr>
+
+          <!-- <tr>
+            <td>ビューアの再読み込み</td>
+            <td>
+              <-?= $this->Form->input('reload_flag_device', ['type' => 'checkbox', 'value' => '1', 'hiddenField' => true, 'label' => '表示端末側で再読み込みを実行します（10秒以内に実行されます）']); ?>
+            </td>
+          </tr> -->
         </table>
       <?php endif; ?>
 

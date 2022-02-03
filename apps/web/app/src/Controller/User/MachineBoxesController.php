@@ -128,14 +128,14 @@ class MachineBoxesController extends AppController
             // MachineContentsなければ作る
             $entity = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $id])->first();
             if (empty($entity->machine_content_id)) {
-                $machine_content = $this->MachineContents->newEntity($this->MachineContents->defaultValues + ['reload_flag' => 1]);
+                $machine_content = $this->MachineContents->newEntity($this->MachineContents->defaultValues + ['reload_flag' => 1, 'reload_flag_device' => 1]);
                 $this->MachineContents->save($machine_content);
                 // MachineBox紐付け
-                $machine_box = $this->MachineBoxes->patchEntity($entity, ['machine_content_id' => $machine_content->id, 'reload_flag' => 1]);
+                $machine_box = $this->MachineBoxes->patchEntity($entity, ['machine_content_id' => $machine_content->id, 'reload_flag' => 1, 'reload_flag_device' => 1]);
                 $this->MachineBoxes->save($machine_box);
             } else {
                 $machine_content = $this->MachineContents->find()->where(['MachineContents.id' => $entity->machine_content_id])->first();
-                $machine_box = $this->MachineBoxes->patchEntity($entity, ['machine_content_id' => $machine_content->id, 'reload_flag' => 1]);
+                $machine_box = $this->MachineBoxes->patchEntity($entity, ['machine_content_id' => $machine_content->id, 'reload_flag' => 1, 'reload_flag_device' => 1]);
                 $this->MachineBoxes->save($machine_box);
             }
             // Contents → MachineContents
@@ -160,7 +160,7 @@ class MachineBoxesController extends AppController
         $box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $id])->first();
 
         if (!empty($box)) {
-            $machine_box = $this->MachineBoxes->patchEntity($box, ['reload_flag' => 1]);
+            $machine_box = $this->MachineBoxes->patchEntity($box, ['reload_flag' => 1, 'reload_flag_device' => 1]);
             $this->MachineBoxes->save($machine_box);
 
             $this->transferMachine($box->content_id, $box->machine_content_id);
