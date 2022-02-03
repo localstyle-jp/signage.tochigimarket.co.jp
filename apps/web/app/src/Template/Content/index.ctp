@@ -11,7 +11,7 @@
 <script src="/user/common/js/hls.js"></script>
 
 <script src="/user/common/js/jquery-3.5.1.min.js"></script>
-
+<script src="/user/common/js/cms-slim.js"></script>
 </head>
 <body>
 <div id="wrapper">
@@ -500,10 +500,33 @@ $(function () {
   });
 });
 
+
+var checkReloadContent = function(id, serial_no) {
+  var url = '/v1/management/is-reload-content.json';
+  var params = {
+    id: id,
+    serial_no: serial_no
+  };
+  ajax_get(url, 'post', params, function(a) {
+    if (a.error.code == 0) {
+      if (a.result.reload_flag == 1) {
+        window.location.reload();
+      }
+    }
+  });
+};
+
 window.onload = function() {
   scene_manager();
   setInterval(checkOnline, 20000);
+  setInterval(function () {
+    checkReloadContent(<?= $content->id; ?>, <?= $content->serial_no; ?>);
+  }, 10000);
 }
+
+
+
+
 
 // ローディングバー
 // var bar=$('#progress_bar');

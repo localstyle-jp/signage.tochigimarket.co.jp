@@ -160,7 +160,7 @@ class MachineBoxesController extends AppController
         $box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $id])->first();
 
         if (!empty($box)) {
-            $machine_box = $this->MachineBoxes->patchEntity($box, ['reload_flag' => 1, 'reload_flag_device' => 1]);
+            $machine_box = $this->MachineBoxes->patchEntity($box, [/*'reload_flag' => 1, */'reload_flag_device' => 1]);
             $this->MachineBoxes->save($machine_box);
 
             $this->transferMachine($box->content_id, $box->machine_content_id);
