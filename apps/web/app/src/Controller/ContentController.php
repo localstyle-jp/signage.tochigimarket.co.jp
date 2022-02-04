@@ -201,6 +201,7 @@ class ContentController extends AppController
             // $data['content'] = '<video id="mp4_' . $item_count . '"';
             $data['content'] = '<video id="mp4_video"';
             // $data['content'] .= ' muted';
+            $data['content'] .= ($item['time'] == 0 ? ' loop' : '' );
             $data['content'] .= '>';
             $data['content'] .= '</video>';
             $data['type'] = 'mp4';

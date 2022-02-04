@@ -341,7 +341,7 @@ var scene_manager = function () {
           }
         });
 
-        if (flg == 0) {
+        if (flg == 0 && items[scene_list[index]].time != 0) {
           // createHlsPlayer();
           setTimeout(function(){
             createHlsPlayer();
