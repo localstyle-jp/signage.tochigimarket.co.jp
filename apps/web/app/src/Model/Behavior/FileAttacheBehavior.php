@@ -294,7 +294,7 @@ class FileAttacheBehavior extends Behavior
                                 // マスターファイルの作成
                                 $this->create_master_m3u8($newdist, $id, $bitrates);
                                 // DBへの記録準備
-                                // $old_entity->set('view_second', $this->getViewSeconds($basedir.$newname));
+                                $old_entity->set('view_second', $this->getViewSeconds($basedir.$newname));
                                 // $newname = '';
                                 $filenameMaster = 'm'.$id.'.m3u8';
                                 $old_entity->set('url', 'm'.$id.DS.$filenameMaster);
@@ -347,14 +347,14 @@ class FileAttacheBehavior extends Behavior
     /**
      * 動画時間の取得
      * */
-    // public function getViewSeconds($source) {
-    //     // コマンド実行
-    //     $command = 'ffprobe ' . $source . ' -hide_banner -show_entries format=duration';
-    //     $last_line = exec(escapeshellcmd($command), $out);
-    //     $time = preg_match('/^duration=([0-9]+)\.([0-9]+)/', $out[1], $matches);
+    public function getViewSeconds($source) {
+        // コマンド実行
+        $command = 'ffprobe ' . $source . ' -hide_banner -show_entries format=duration';
+        $last_line = exec(escapeshellcmd($command), $out);
+        $time = preg_match('/^duration=([0-9]+)\.([0-9]+)/', $out[1], $matches);
 
-    //     return $matches[1] + 1;
-    // }
+        return $matches[1] + 1;
+    }
 
     /**
      * 画像アップロード
