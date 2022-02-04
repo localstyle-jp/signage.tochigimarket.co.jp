@@ -41,7 +41,7 @@ $(function () {
 
   $('iframe').css('transform', scale).css('-webkit-transform', scale).css('-ms-transform', scale).css('-o-transform', scale).css('-moz-transform', scale);
   $('.rolling_caption_wrapper').css('bottom', bottom_pos+'px');
-  $(':root').css('--initial-left-pos', width_new + 'px').css('--initial-font-size', height_new*0.05 + 'px');
+  $(':root').css('--initial-left-pos', width_new + 'px').css('--initial-font-size', Math.max(1, Math.min(height_new*0.05 - 2, width_new*0.05 - 2)) + 'px');
   $('.rolling_caption_text').css('animation-duration', caption_time + 's').css('animation-name', 'marquee');
 });
 </script>
