@@ -427,13 +427,15 @@ class FileAttacheBehavior extends Behavior
         $src = '-i ' . $source;
         $codec = '-c:v libx264 -c:a aac';
         $bitrate = '-b:v '. $n_bitrate .'k -minrate '. $n_bitrate .'k -maxrate '. $n_bitrate .'k -bufsize '. $n_bitrate*2 .'k -b:a 128k';
-        $scale = '-s 1920x1080';
+        // $scale = '-s 1920x1080';
         // $format = "-f hls -hls_time 1 -hls_playlist_type vod";
         $format = "-f hls -hls_time 10 -hls_playlist_type vod -g 30 -keyint_min 30 -sc_threshold 0";
         $dist = "-hls_segment_filename \"" . $dist_dir . "v1_".$n_bitrate."k_%4d.ts\" " . $dist_dir . $filenameM3u8;
 
         // コマンド実行
-        $command = $cmdline . ' ' . $src . ' ' . $codec . ' ' . $bitrate . ' ' . $scale . ' ' . $format . ' ' . $dist;
+        $command = $cmdline . ' ' . $src . ' ' . $codec . ' ' . $bitrate . 
+        // ' ' . $scale . 
+        ' ' . $format . ' ' . $dist;
         $a = system(escapeshellcmd($command));
         // パーミッション
         @chmod($dist_dir.$filenameM3u8, $this->uploadFileMask);

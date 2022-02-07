@@ -52,7 +52,9 @@ $(function () {
 <!-- 字幕 -->
 <?php if(!empty($machine->rolling_caption)) : ?>
 <div class="rolling_caption_wrapper">
-  <p class="rolling_caption_text" id="rolling_caption_text"><?= h($machine->rolling_caption) ?></p>
+  <div class="displayed_area">
+    <p class="rolling_caption_text" id="rolling_caption_text"><?= h($machine->rolling_caption) ?></p>
+  </div>
   <!-- <marquee class="test_marquee" id="test_marquee" scrollamount="15"><-?= h($machine->rolling_caption) ?></marquee> -->
   <!-- <p class="test_marquee" id="jquery_marquee"><-?= h($machine->rolling_caption) ?></p> -->
 </div>
@@ -81,12 +83,21 @@ $(function () {
     line-height: 1.2em;
   } */
 
+.rolling_caption_wrapper .displayed_area {
+  position: absolute;
+  bottom: 8px;
+  overflow: hidden;
+  width: <?= $width ?>px;
+  height: 1.6em;
+  font-size: var(--initial-font-size);
+}
+
 .rolling_caption_text {
   /* position: fixed; */
   font-size: var(--initial-font-size);
   position: absolute;
   bottom: 0px;
-  margin:10px 0; display:inline-block; white-space:nowrap;
+  margin:0; display:inline-block; white-space:nowrap;
   /* animation-name:marquee; */
   animation-timing-function:linear;
   /* animation-duration:calc(0.2s*(var(--initial-left-pos)+<-?= strlen($machine->rolling_caption) ?>)); */
