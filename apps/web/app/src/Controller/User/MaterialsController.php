@@ -179,9 +179,22 @@ class MaterialsController extends AppController
             if ($entity->type == Material::TYPE_MOVIE_MP4 && empty($entity->url)) {
                 $this->Materials->setMp4($entity->toArray());
             }
-            // Webmの変換
-            if ($entity->type == Material::TYPE_MOVIE_WEBM && empty($entity->url)) {
-                $this->Materials->setWebm($entity->toArray());
+            // MP4分割
+            if ($entity->type == Material::TYPE_MOVIE_MP4) {
+                $cakeCommPath = ROOT . DS . 'bin/cake';
+                $a = exec(
+                    'nohup ' .
+                        $cakeCommPath . ' convert_mp4 ' .
+                        $entity->id . ' ' .
+                        WWW_ROOT . UPLOAD_BASE_URL . DS . 'Materials' . DS . 'files' . DS . ' ' .
+                        WWW_ROOT . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS . ' ' .
+                        $entity->file . ' ' .
+                        '1>>' . LOGS . 'mp4_conversion.log ' . 
+                        '2>>' . LOGS . 'mp4_conversion_debug.log ' .
+                        '&',
+                    $output, 
+                    $status_code
+                );
             }
         };
 
