@@ -36,7 +36,7 @@ class ConvertMp4Command extends Command
         $newdist = $args->getArgument('newdist');
         $name_mp4 = $args->getArgument('name_mp4');
 
-        $io->out((new \DateTime('now'))->format('Y/m/d H:i:s') . ' START ' . $basedir.$name_mp4 . ' -> ' . $newdist);
+        $io->out((new \DateTime('now'))->format('Y/m/d H:i:s') . ' START material_id : ' . $id . ' mp4_file : ' . $basedir.$name_mp4 . ' -> hls_file : ' . $newdist);
         // tsファイルへの分割
         $bitrates = [/*BITRATE_LOW, BITRATE_MID, */BITRATE_HIGH];
         foreach ($bitrates as $bitrate) {
@@ -45,7 +45,7 @@ class ConvertMp4Command extends Command
         }
         // マスターファイルの作成
         $this->_create_master_m3u8($newdist, $id, $bitrates);
-        $io->out((new \DateTime('now'))->format('Y/m/d H:i:s') . ' FINISH ' . $basedir.$name_mp4 . ' -> ' . $newdist);
+        $io->out((new \DateTime('now'))->format('Y/m/d H:i:s') . ' FINISH material_id : ' . $id . ' mp4_file : ' . $basedir.$name_mp4 . ' -> hls_file : ' . $newdist);
     }
 
     /**
@@ -97,7 +97,9 @@ class ConvertMp4Command extends Command
             //     continue;
             // }
             $filenameM3u8 = 'm' . $id . '_' . $bitrate . 'k.m3u8';
-            $contents .= '#EXT-X-STREAM-INF:BANDWIDTH='.$bitrate*1000*1.2.',RESOLUTION=1920x1080,CODECS="avc1.42e00a,mp4a.40.2"'."\n";
+            $contents .= '#EXT-X-STREAM-INF:BANDWIDTH='.$bitrate*1000*1.2;
+            // $contents .= ',RESOLUTION=1920x1080';
+            $contents .= ',CODECS="avc1.42e00a,mp4a.40.2"'."\n";
             $contents .= DS . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS.$filenameM3u8."\n";
         }
         

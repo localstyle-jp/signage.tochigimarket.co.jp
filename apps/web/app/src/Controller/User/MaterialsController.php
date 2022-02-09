@@ -190,7 +190,8 @@ class MaterialsController extends AppController
                         WWW_ROOT . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS . ' ' .
                         $entity->file . ' ' .
                         '1>>' . LOGS . 'mp4_conversion.log ' . 
-                        '2>>' . LOGS . 'mp4_conversion_debug.log ' .
+                        '2>/dev/null ' . 
+                        // '2>>' . LOGS . 'mp4_conversion_debug.log ' .
                         '&',
                     $output, 
                     $status_code
