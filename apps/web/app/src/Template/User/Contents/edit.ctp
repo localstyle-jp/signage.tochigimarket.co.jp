@@ -72,7 +72,7 @@
             <col style="width: 70px;">
             <col style="width: 150px;">
             <col style="width: 100px;">
-            <col style="width: 90px;">
+            <col style="width: 160px;">
             <col>
             <col style="width: 90px;">
           </colgroup>
@@ -81,7 +81,7 @@
             <th></th>
             <th>素材名</th>
             <th>種別</th>
-            <th>表示秒数</th>
+            <th>表示秒数<br>(※15秒以上で指定、0秒の場合は永続表示)</th>
             <th>内容</th>
             <th></th>
           </thead>

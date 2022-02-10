@@ -184,7 +184,8 @@ class ContentsController extends AppController
                     'movie_tag' => $master->movie_tag,
                     'url' => $master->url,
                     'content' => '',
-                    'attaches' => $master->attaches
+                    'attaches' => $master->attaches,
+                    'status_mp4' => $master->status_mp4,
                 ]
             ];
         }

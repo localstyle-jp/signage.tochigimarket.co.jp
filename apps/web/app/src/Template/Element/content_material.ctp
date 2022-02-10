@@ -21,9 +21,11 @@
   <!-- 表示秒数 -->
   <td>
   <?php if ($material['material']['type'] == Material::TYPE_MOVIE): ?>
-    <?= $this->Form->input("content_materials.{$rownum}.view_second",['type' => 'text','maxlength' => 5, 'value' => $material['view_second'], 'readonly' => false]); ?>秒
+    <?= $this->Form->input("content_materials.{$rownum}.view_second",['type' => 'text','maxlength' => 5, 'value' => $material['view_second'], 'readonly' => false, 'error' => false]); ?>秒
+    <?= $this->Form->error("content_materials.{$rownum}.view_second"); ?>
   <?php else: ?>
-    <?= $this->Form->input("content_materials.{$rownum}.view_second",['type' => 'text','maxlength' => 5, 'value' => $material['view_second']]); ?>秒
+    <?= $this->Form->input("content_materials.{$rownum}.view_second",['type' => 'text','maxlength' => 5, 'value' => $material['view_second'], 'error' => false]); ?>秒
+    <?= $this->Form->error("content_materials.{$rownum}.view_second"); ?>
   <?php endif; ?>
   </td>
 
