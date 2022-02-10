@@ -11,6 +11,11 @@
   <!-- 種別 -->
   <td>
     <?= Material::$type_list[$material['material']['type']]; ?>
+    <?php if (Material::$type_list[$material['material']['type']] == 'mp4') : ?>
+      <span class='badge <?= $material['material']['status_mp4'] == 'converting' ? 'badge-danger' : 'badge-success' ;?>'>
+        <?= $material['material']['status_mp4'] == 'converting' ? '配信不可' : '配信可' ;?>
+      </span>
+    <?php endif; ?>
   </td>
 
   <!-- 表示秒数 -->

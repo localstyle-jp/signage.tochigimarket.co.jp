@@ -223,3 +223,6 @@ ALTER TABLE materials ADD COLUMN category_id int unsigned NOT NULL DEFAULT 0;
 
 -- 2022/02/03
 ALTER TABLE machine_boxes ADD COLUMN reload_flag_device decimal(1) NOT NULL DEFAULT 0;
+
+-- 2022/02/10
+ALTER TABLE materials ADD COLUMN status_mp4 enum('converting', 'converted') DEFAULT 'converted' NOT NULL;

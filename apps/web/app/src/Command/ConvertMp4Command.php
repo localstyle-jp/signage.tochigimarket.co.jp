@@ -16,6 +16,12 @@ class ConvertMp4Command extends Command
     //ffmpeg configure
     public $convertPath_mp4 = 'ffmpeg';
     
+    public function initialize()
+    {
+        parent::initialize();
+        $this->loadModel('Materials');
+    }
+
     protected function buildOptionParser(ConsoleOptionParser $parser)
     {
         $parser
@@ -36,7 +42,9 @@ class ConvertMp4Command extends Command
         $newdist = $args->getArgument('newdist');
         $name_mp4 = $args->getArgument('name_mp4');
 
+        // $material = $this->Materials->query()->update()->where(['id' => $id])->set(['status_mp4' => 'converting'])->execute();
         $io->out((new \DateTime('now'))->format('Y/m/d H:i:s') . ' START material_id : ' . $id . ' mp4_file : ' . $basedir.$name_mp4 . ' -> hls_file : ' . $newdist);
+
         // tsファイルへの分割
         $bitrates = [/*BITRATE_LOW, BITRATE_MID, */BITRATE_HIGH];
         foreach ($bitrates as $bitrate) {
@@ -45,7 +53,9 @@ class ConvertMp4Command extends Command
         }
         // マスターファイルの作成
         $this->_create_master_m3u8($newdist, $id, $bitrates);
+
         $io->out((new \DateTime('now'))->format('Y/m/d H:i:s') . ' FINISH material_id : ' . $id . ' mp4_file : ' . $basedir.$name_mp4 . ' -> hls_file : ' . $newdist);
+        $material = $this->Materials->query()->update()->where(['id' => $id])->set(['status_mp4' => 'converted'])->execute();
     }
 
     /**

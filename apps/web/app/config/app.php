@@ -238,9 +238,9 @@ return [
              * the following line and set the port accordingly
              */
             //'port' => 'non_standard_port_number',
-            'username' => 'cms-v5-multi',
-            'password' => 'Caters@040917',
-            'database' => 'cms-v5-multi',
+            'username' => 'test-signage',
+            'password' => 'caters040917',
+            'database' => 'test-signage',
             'encoding' => 'utf8',
             'timezone' => 'UTC',
             'flags' => [],

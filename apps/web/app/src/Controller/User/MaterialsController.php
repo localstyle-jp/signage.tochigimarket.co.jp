@@ -152,6 +152,10 @@ class MaterialsController extends AppController
         $validate = 'default';
 
         if ($this->request->is(['put', 'post'])) {
+            // mp4動画のステータス
+            if ($this->request->getData('type') == Material::TYPE_MOVIE_MP4 && !empty($this->request->getData('file')['tmp_name'])) {
+                $this->request->data['status_mp4'] = 'converting';
+            }
 
             $site_config_id = $this->getSiteId();
             $this->request->data['site_config_id'] = $site_config_id;

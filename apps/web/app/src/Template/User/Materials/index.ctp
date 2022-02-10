@@ -173,6 +173,11 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
 
               <td>
                 <?= Material::$type_list[$data->type]; ?>
+                <?php if (Material::$type_list[$data->type] == 'mp4') : ?>
+                <span class='badge <?= $data->status_mp4 == 'converting' ? 'badge-danger' : 'badge-success' ;?>'>
+                  <?= $data->status_mp4 == 'converting' ? '配信不可' : '配信可' ;?>
+                </span>
+                <?php endif; ?>
               </td>
 
               <td>
