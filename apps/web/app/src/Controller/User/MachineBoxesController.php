@@ -265,6 +265,7 @@ class MachineBoxesController extends AppController
                 $material->machine_content_id = $entity->id;
                 $material->position = $source_material->position;
                 $material->view_second = $source_material->view_second;
+                $material->rolling_caption = $source_material->rolling_caption;
                 $this->MachineMaterials->save($material);
 
                 // 画像コピー

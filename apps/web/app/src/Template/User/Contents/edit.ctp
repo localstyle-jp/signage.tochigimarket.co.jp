@@ -74,6 +74,7 @@
             <col style="width: 100px;">
             <col style="width: 160px;">
             <col>
+            <col style="width: 400px;">
             <col style="width: 90px;">
           </colgroup>
 
@@ -83,6 +84,7 @@
             <th>種別</th>
             <th>表示秒数<br>(※15秒以上で指定、0秒の場合は永続表示)</th>
             <th>内容</th>
+            <th>字幕</th>
             <th></th>
           </thead>
 

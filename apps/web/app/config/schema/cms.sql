@@ -226,3 +226,7 @@ ALTER TABLE machine_boxes ADD COLUMN reload_flag_device decimal(1) NOT NULL DEFA
 
 -- 2022/02/10
 ALTER TABLE materials ADD COLUMN status_mp4 enum('converting', 'converted') DEFAULT 'converted' NOT NULL;
+ALTER TABLE content_materials ADD COLUMN rolling_caption text NOT NULL;
+ALTER TABLE machine_materials ADD COLUMN rolling_caption text NOT NULL;
+-- 追加漏れのカラム
+ALTER TABLE machine_boxes ADD COLUMN rolling_caption text NOT NULL;

@@ -78,7 +78,11 @@
     <?php endif;?>
     
   </td>
-  
+
+  <!-- 字幕 -->
+  <td>
+    <?= $this->Form->input("content_materials.{$rownum}.rolling_caption",['type' => 'text','maxlength' => 100, 'value' => $material['rolling_caption'], 'readonly' => false]); ?>
+  </td>
 
   <td>
       <div class='btn_area' style=''>
