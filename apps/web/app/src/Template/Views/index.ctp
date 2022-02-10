@@ -2,8 +2,6 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
-  <!-- <meta name="viewport" content="width=<-?=$width?>, height=<-?=$height?>, initial-scale=1"> -->
-  <!-- <meta name="viewport" content="width=<-?= $width; ?>, initial-scale=1, shrink-to-fit=no"> -->
 <title>サイネージ <?= h($machine->name); ?></title>
 <style>
 :root {
@@ -25,13 +23,9 @@ body::-webkit-scrollbar {
 }
 </style>
 <script src="/user/common/js/jquery-3.5.1.min.js"></script>
-<!-- <script src="//cdn.jsdelivr.net/npm/jquery.marquee@1.6.0/jquery.marquee.min.js" type="text/javascript"></script> -->
 
 <script>
 $(function () {
-  // console.log(window.innerWidth+"\n"+window.devicePixelRatio);
-  // var zoom = <-?= $width; ?> / $('iframe').width();
-  // var zoom = parseFloat(window.innerWidth) / parseFloat($('iframe').width());
   var zoom = <?= $width; ?> / $('iframe').width() / parseFloat(window.devicePixelRatio);
   var scale = 'scale(' + zoom + ')';
   var height_new = <?= $height ?>/parseFloat(window.devicePixelRatio);
@@ -55,15 +49,10 @@ $(function () {
   <div class="displayed_area">
     <p class="rolling_caption_text" id="rolling_caption_text"><?= h($machine->rolling_caption) ?></p>
   </div>
-  <!-- <marquee class="test_marquee" id="test_marquee" scrollamount="15"><-?= h($machine->rolling_caption) ?></marquee> -->
-  <!-- <p class="test_marquee" id="jquery_marquee"><-?= h($machine->rolling_caption) ?></p> -->
 </div>
 <?php endif; ?>
 
 <style>
-/* body {
-  font-size: 70px;
-} */
 /* 字幕 */
 .rolling_caption_wrapper {
   position: relative;
@@ -72,16 +61,6 @@ $(function () {
   height: 1px;
   line-height: 0;
 }
-
- /* .test_marquee {
-    /* width: max-content;
-    width: <-?= $width; ?>px; 
-    position: fixed;
-    bottom: 0px;
-    margin:0; display:inline-block; white-space:nowrap;
-    background-color: white;
-    line-height: 1.2em;
-  } */
 
 .rolling_caption_wrapper .displayed_area {
   position: absolute;
@@ -93,16 +72,12 @@ $(function () {
 }
 
 .rolling_caption_text {
-  /* position: fixed; */
   font-size: var(--initial-font-size);
   position: absolute;
   bottom: 0px;
   margin:0; display:inline-block; white-space:nowrap;
-  /* animation-name:marquee; */
   animation-timing-function:linear;
-  /* animation-duration:calc(0.2s*(var(--initial-left-pos)+<-?= strlen($machine->rolling_caption) ?>)); */
   animation-iteration-count:infinite;
-  /* background-color: white; */
   color: white;
   line-height: 1.6em;
   text-shadow: 3px 3px 4px black;
@@ -116,20 +91,9 @@ $(function () {
 
 <script>
   function reInputCaption() {
-    // var defaultHTML  = document.getElementById("test_marquee").innerHTML;
-    // document.getElementById("test_marquee").innerHTML = defaultHTML;
-    
     var defaultHTML  = document.getElementById("rolling_caption_text").innerHTML;
     document.getElementById("rolling_caption_text").innerHTML = defaultHTML;
   }
-
-  // setInterval(reInputCaption, 10000);
-  // setInterval(reInputCaption, 400*<-?= strlen($machine->rolling_caption) ?>);
-  // $(document).ready(function() {
-  //   $('#jquery_marquee').marquee({
-  //     scrollSpeed: 4
-  //   });
-  // });
 </script>
 
 <script src="/user/common/js/cms-slim.js"></script>
