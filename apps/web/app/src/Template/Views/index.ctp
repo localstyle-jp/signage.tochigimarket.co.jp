@@ -7,6 +7,8 @@
 :root {
   --initial-left-pos: 0;
   --initial-font-size: 0;
+  --height: 0;
+  --width: 0;
 }
 iframe {
   border: 0;
@@ -25,6 +27,8 @@ body::-webkit-scrollbar {
 <script src="/user/common/js/jquery-3.5.1.min.js"></script>
 
 <script>
+
+  
 $(function () {
   var zoom = <?= $width; ?> / $('iframe').width() / parseFloat(window.devicePixelRatio);
   var scale = 'scale(' + zoom + ')';
@@ -32,26 +36,34 @@ $(function () {
   var width_new = <?= $width ?>/parseFloat(window.devicePixelRatio);
   var bottom_pos = <?= $height ?> - height_new;
   var font_size = Math.max(1, Math.min(height_new*0.05 - 2, width_new*0.05 - 2));
-  var caption_time = 0.003 * (<?= $width ?> + font_size*<?= strlen($machine->rolling_caption) ?>);
 
   $('iframe').css('transform', scale).css('-webkit-transform', scale).css('-ms-transform', scale).css('-o-transform', scale).css('-moz-transform', scale);
+  <?php if(!empty($machine->rolling_caption)) : ?>
   $('.rolling_caption_wrapper').css('bottom', bottom_pos+'px');
-  $(':root').css('--initial-left-pos', width_new + 'px').css('--initial-font-size', font_size + 'px');
-  $('.rolling_caption_text').css('animation-duration', caption_time + 's').css('animation-name', 'marquee');
+  $(':root').css({
+    '--initial-left-pos': width_new + 'px', 
+    '--initial-font-size': font_size + 'px', 
+    '--height': height_new, 
+    '--width': width_new
+  });
+  $('.displayed_area').css('width', width_new + 'px');
+  <?php endif; ?>
 });
 </script>
 </head>
 <body style="margin: 0; height:<?= $height; ?>px; overflow: hidden">
 <iframe src="<?= $this->Url->build(['controller' => 'content', 'action' => 'machine', $machine->machine_content_id, '?' => $query]); ?>" width="<?= $width; ?>" height="<?= $height; ?>"></iframe>
-<!-- 字幕 -->
+
 <?php if(!empty($machine->rolling_caption)) : ?>
+<!-- 字幕 -->
 <div class="rolling_caption_wrapper">
   <div class="displayed_area">
-    <p class="rolling_caption_text" id="rolling_caption_text"><?= h($machine->rolling_caption) ?></p>
+    <p class="rolling_caption_text" id="rolling_caption_text" style="display: none;"><?= h($machine->rolling_caption) ?></p>
   </div>
 </div>
 <?php endif; ?>
 
+<?php if(!empty($machine->rolling_caption)) : ?>
 <style>
 /* 字幕 */
 .rolling_caption_wrapper {
@@ -66,7 +78,6 @@ $(function () {
   position: absolute;
   bottom: 8px;
   overflow: hidden;
-  width: <?= $width ?>px;
   height: 1.6em;
   font-size: var(--initial-font-size);
 }
@@ -76,6 +87,7 @@ $(function () {
   position: absolute;
   bottom: 0px;
   margin:0; display:inline-block; white-space:nowrap;
+  animation-name: marquee;
   animation-timing-function:linear;
   animation-iteration-count:infinite;
   color: white;
@@ -88,9 +100,25 @@ $(function () {
 }
 /* /字幕 */
 </style>
+<?php endif; ?>
 
 <script src="/user/common/js/cms-slim.js"></script>
 <script>
+// 字幕
+function set_caption () {
+  // 字幕の流れる時間を入力
+  var width = $(':root').css('--width');
+  var text_width = $("#rolling_caption_text").width();
+  var caption_time = 0.005 * (parseInt(width) + parseInt(text_width));
+  $('.rolling_caption_text').css('animation-duration', caption_time + 's').css('display', 'block');
+}
+
+window.onload = function () {
+  set_caption();
+}
+
+// 字幕 end
+
 var reload_flag = 1;
 
 var disableReload = function(id) {
@@ -125,7 +153,6 @@ $(function(){
     disableReload(<?= $machine->id; ?>);
     reload_flag = 0;
   }
-
 })
 </script>
 </body>

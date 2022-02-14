@@ -17,6 +17,8 @@
 :root {
   --initial-left-pos: 0;
   --initial-font-size: 0;
+  --width: 0;
+  --height: 0;
 }
 body::-webkit-scrollbar {
   background:#000000;
@@ -30,11 +32,16 @@ $(function () {
   var width_new = <?= $width ?>/parseFloat(window.devicePixelRatio);
   var bottom_pos = <?= $height ?> - height_new;
   var font_size = Math.max(1, Math.min(height_new*0.05 - 2, width_new*0.05 - 2));
-  var caption_time = 0.003 * (<?= $width ?> + font_size*<?= strlen($content['content_materials'][0]['rolling_caption']) ?>);
 
   $('.rolling_caption_wrapper').css('bottom', bottom_pos+'px');
-  $(':root').css('--initial-left-pos', width_new + 'px').css('--initial-font-size', font_size + 'px');
-  $('.rolling_caption_text').css('animation-duration', caption_time + 's').css('animation-name', 'marquee');
+  $(':root').css({
+    '--initial-left-pos': width_new + 'px', 
+    '--initial-font-size': font_size + 'px', 
+    '--height': height_new, 
+    '--width': width_new
+  });
+  // $('.rolling_caption_text').css('animation-name', 'marquee');
+  $('.displayed_area').css('width', width_new + 'px');
 });
 </script>
 <!-- 字幕 -->
@@ -51,7 +58,6 @@ $(function () {
   position: absolute;
   bottom: 8px;
   overflow: hidden;
-  width: <?= $width ?>px;
   height: 1.6em;
   font-size: var(--initial-font-size);
 }
@@ -61,6 +67,7 @@ $(function () {
   position: absolute;
   bottom: 0px;
   margin:0; display:inline-block; white-space:nowrap;
+  animation-name: marquee;
   animation-timing-function:linear;
   animation-iteration-count:infinite;
   color: white;
@@ -227,10 +234,16 @@ webpage = <?= json_encode(($material_webpage)); ?>;
 // }
 
 function next_caption (caption_str) {
+  // 字幕文字列切り替え
   var old_marquee = document.getElementById("rolling_caption_text");
   old_marquee.innerHTML = caption_str;
   old_marquee.parentNode.insertBefore(old_marquee.cloneNode(true), old_marquee);
   old_marquee.parentNode.removeChild(old_marquee);
+  // 字幕の流れる時間を入力
+  var width = $(':root').css('--width');
+  var text_width = document.getElementById("rolling_caption_text").clientWidth;  
+  var caption_time = 0.005 * (parseInt(width) + parseInt(text_width));
+  $('.rolling_caption_text').css('animation-duration', caption_time + 's');
 }
 
 function checkOnline () {
