@@ -12,6 +12,67 @@
 
 <script src="/user/common/js/jquery-3.5.1.min.js"></script>
 <script src="/user/common/js/cms-slim.js"></script>
+<!-- 字幕 -->
+<style>
+:root {
+  --initial-left-pos: 0;
+  --initial-font-size: 0;
+}
+body::-webkit-scrollbar {
+  background:#000000;
+  display: none;
+  width: 0;
+}
+</style>
+<script>
+$(function () {
+  var height_new = <?= $height ?>/parseFloat(window.devicePixelRatio);
+  var width_new = <?= $width ?>/parseFloat(window.devicePixelRatio);
+  var bottom_pos = <?= $height ?> - height_new;
+  var font_size = Math.max(1, Math.min(height_new*0.05 - 2, width_new*0.05 - 2));
+  var caption_time = 0.003 * (<?= $width ?> + font_size*<?= strlen($content['content_materials'][0]['rolling_caption']) ?>);
+
+  $('.rolling_caption_wrapper').css('bottom', bottom_pos+'px');
+  $(':root').css('--initial-left-pos', width_new + 'px').css('--initial-font-size', font_size + 'px');
+  $('.rolling_caption_text').css('animation-duration', caption_time + 's').css('animation-name', 'marquee');
+});
+</script>
+<!-- 字幕 -->
+<style>
+.rolling_caption_wrapper {
+  position: relative;
+  bottom: 0px;
+  width: 1px;
+  height: 1px;
+  line-height: 0;
+}
+
+.rolling_caption_wrapper .displayed_area {
+  position: absolute;
+  bottom: 8px;
+  overflow: hidden;
+  width: <?= $width ?>px;
+  height: 1.6em;
+  font-size: var(--initial-font-size);
+}
+
+.rolling_caption_text {
+  font-size: var(--initial-font-size);
+  position: absolute;
+  bottom: 0px;
+  margin:0; display:inline-block; white-space:nowrap;
+  animation-timing-function:linear;
+  animation-iteration-count:infinite;
+  color: white;
+  line-height: 1.6em;
+  text-shadow: 3px 3px 4px black;
+}
+@keyframes marquee {
+  from   { transform: translate(var(--initial-left-pos));}
+  99%,to { transform: translate(-100%);}
+}
+</style>
+<!-- 字幕 end -->
 </head>
 <body>
 <div id="wrapper">
@@ -30,11 +91,20 @@
 
   <?php endforeach; ?>
 
+    <!-- 字幕 -->
+    <div class="rolling_caption_wrapper">
+      <div class="displayed_area">
+        <p class="rolling_caption_text" id="rolling_caption_text"></p>
+      </div>
+    </div>
+
 
   </div>
 
 
 </div><!-- / #wrapper -->
+
+
 
 <!-- ローディングバー -->
 <!-- <div class="loader_container" id="loader_container">
@@ -155,6 +225,13 @@ webpage = <?= json_encode(($material_webpage)); ?>;
 //   });
   
 // }
+
+function next_caption (caption_str) {
+  var old_marquee = document.getElementById("rolling_caption_text");
+  old_marquee.innerHTML = caption_str;
+  old_marquee.parentNode.insertBefore(old_marquee.cloneNode(true), old_marquee);
+  old_marquee.parentNode.removeChild(old_marquee);
+}
 
 function checkOnline () {
   fetch("<?= $this->Url->build('/phpinfo.php', true); ?>")
@@ -289,6 +366,8 @@ var scene_manager = function () {
         // });
 
         var now = index; // indexのままfadeIn()で利用すると,fadeOut(1000)の間にindexが進んでしまう
+
+        next_caption(items[now]['caption']);
         
         $('.type_' + scene_box_list[prev]).hide(0, function () {
             $('.type_' + scene_box_list[now]).show(0)

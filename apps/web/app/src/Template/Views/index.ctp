@@ -89,13 +89,6 @@ $(function () {
 /* /字幕 */
 </style>
 
-<script>
-  function reInputCaption() {
-    var defaultHTML  = document.getElementById("rolling_caption_text").innerHTML;
-    document.getElementById("rolling_caption_text").innerHTML = defaultHTML;
-  }
-</script>
-
 <script src="/user/common/js/cms-slim.js"></script>
 <script>
 var reload_flag = 1;
