@@ -169,6 +169,7 @@ class ViewsController extends AppController
             'source' => '',
             'movie_tag' => '',
             'time_sec' => $material->view_second,
+            'caption' => $material->rolling_caption,
         ];
 
         if ($material->type == Material::TYPE_MOVIE_MP4) {
