@@ -230,3 +230,6 @@ ALTER TABLE content_materials ADD COLUMN rolling_caption text NOT NULL;
 ALTER TABLE machine_materials ADD COLUMN rolling_caption text NOT NULL;
 -- 追加漏れのカラム
 ALTER TABLE machine_boxes ADD COLUMN rolling_caption text NOT NULL;
+
+-- 2022/02/15
+ALTER TABLE machine_boxes ADD COLUMN caption_flg enum('machine', 'content') DEFAULT 'machine' NOT NULL;

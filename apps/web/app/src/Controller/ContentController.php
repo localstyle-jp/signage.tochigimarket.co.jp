@@ -134,7 +134,11 @@ class ContentController extends AppController
 
         $item = [];
         $item['time'] = intval($material->view_second) * 1000;
-        $item['caption'] = $material->rolling_caption;
+        $item['caption'] = '';
+        if (empty($machine) || $machine->caption_flg == 'content') {
+            $item['caption'] = $material->rolling_caption;
+        }
+        
         if ($detail->type == Material::TYPE_MOVIE) {
             $item['action'] = 'play_video_' . $item_count;
         } elseif ($detail->type == Material::TYPE_MOVIE_MP4) {

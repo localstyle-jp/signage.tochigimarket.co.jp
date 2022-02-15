@@ -84,6 +84,13 @@
             </tr>
 
             <tr>
+              <td>表示する字幕の設定</td>
+              <td>
+              <?= $this->Form->input('caption_flg', array('type' => 'select', 'options' => array('machine' => '共通の字幕を設定', 'content' => '素材ごとに異なる字幕を設定')));?>
+              </td>
+            </tr>
+
+            <tr id="rolling_caption_wrapper">
               <td>字幕</td>
               <td>
                 <?= $this->Form->input('rolling_caption', ['type' => 'textarea', 'style' => 'height:80px;']); ?>
@@ -187,6 +194,21 @@ function changeResolution() {
 $(function() {
   changeResolution();
 })
+
+function changeTargetType() {
+  var type = $('[name=caption_flg]').val();
+  if (type === 'content') {
+    $("#rolling_caption_wrapper").hide();
+  } else if (type === 'machine') {
+    $("#rolling_caption_wrapper").show();
+  }
+}
+$(function() {
+  changeTargetType();
+  $('#caption-flg').on('change', function() {
+    changeTargetType();
+  });
+});
 
 </script>
 

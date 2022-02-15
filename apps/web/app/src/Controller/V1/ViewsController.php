@@ -75,18 +75,22 @@ class ViewsController extends AppController
             // 'serial_no' => $content->serial_no,
             'width' => $machine_box->width,
             'height' => $machine_box->height,
-            'caption' => $machine_box->rolling_caption,
+            'caption' => '',
+            'materials' => [],
         ]; 
         if ($machine_box->is_vertical == 1) {
             $item['width'] = $machine_box->height;
             $item['height'] = $machine_box->width;
+        }
+        if ($machine_box->caption_flg == 'machine') {
+            $item['caption'] = $machine_box->rolling_caption;
         }
 
         $item_count = 0;
         $materials_output = [];
         foreach ($content->machine_materials as $material) {
             $item_count++;
-            $materials_output[$item_count] = $this->setMaterial($item_count, $material);
+            $materials_output[$item_count] = $this->setMaterial($item_count, $material, $machine_box);
         }
         $item['materials'] = Hash::combine($materials_output, '{n}.no', '{n}');
         
@@ -130,13 +134,16 @@ class ViewsController extends AppController
         // 返却情報配列
         $item = [
             'content_reload_flag' => $content_reload_flag,
-            'caption' => $machine_box->rolling_caption,
+            'caption' => '',
             'width' => $machine_box->width,
             'height' => $machine_box->height,
         ];
         if ($machine_box->is_vertical == 1) {
             $item['width'] = $machine_box->height;
             $item['height'] = $machine_box->width;
+        }
+        if ($machine_box->caption_flg == 'machine') {
+            $item['caption'] = $machine_box->rolling_caption;
         }
 
         $this->rest_custom(200, [], $item);
@@ -161,7 +168,7 @@ class ViewsController extends AppController
         $this->rest_custom(200, [], []);
     }
 
-    public function setMaterial($item_count, $material) {
+    public function setMaterial($item_count, $material, $machine) {
         $data = [
             'material_id' => $material->id,
             'no' => $item_count,
@@ -169,8 +176,12 @@ class ViewsController extends AppController
             'source' => '',
             'movie_tag' => '',
             'time_sec' => $material->view_second,
-            'caption' => $material->rolling_caption,
+            'caption' => '',
         ];
+
+        if ($machine->caption_flg == 'content') {
+            $data['caption'] = $material->rolling_caption;
+        }
 
         if ($material->type == Material::TYPE_MOVIE_MP4) {
             $data['source'] = Router::url(DS . UPLOAD_MOVIE_BASE_URL . DS . $material->url, true);
