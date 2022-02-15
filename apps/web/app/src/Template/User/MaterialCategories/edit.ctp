@@ -4,11 +4,11 @@
 <?php $this->end(); ?>
 
 <div class="title_area">
-  <h1>素材のカテゴリ</h1>
+  <h1>素材カテゴリ</h1>
   <div class="pankuzu">
     <ul>
       <?= $this->element('pankuzu_home'); ?>
-      <li><a href="<?= $this->Url->build(['action' => 'index', '?' => []]); ?>">素材のカテゴリ</a></li>
+      <li><a href="<?= $this->Url->build(['action' => 'index', '?' => []]); ?>">素材カテゴリ</a></li>
       <li><span><?= ($data['id'] > 0)? '編集': '新規登録'; ?></span></li>
     </ul>
   </div>

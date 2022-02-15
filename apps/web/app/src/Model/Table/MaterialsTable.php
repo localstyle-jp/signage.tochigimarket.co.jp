@@ -154,9 +154,9 @@ class MaterialsTable extends AppTable {
     public function validationMp4New(Validator $validator) {
         $validator = $this->validationDefault($validator);
 
-        // $validator
-        //     ->notEmpty('file', '選択してください')
-        // ;
+        $validator
+            ->notEmpty('file', '選択してください')
+        ;
 
         return $validator;
     }
@@ -164,24 +164,28 @@ class MaterialsTable extends AppTable {
     public function validationMp4Update(Validator $validator) {
         $validator = $this->validationDefault($validator);
 
-        return $validator;
-    }
-
-    public function validationWebmNew(Validator $validator) {
-        $validator = $this->validationDefault($validator);
-
         // $validator
-        //     ->notEmpty('file', '選択してください')
+        //     ->notEmpty('_old_file', '選択してください')
         // ;
 
         return $validator;
     }
 
-    public function validationWebmUpdate(Validator $validator) {
-        $validator = $this->validationDefault($validator);
+    // public function validationWebmNew(Validator $validator) {
+    //     $validator = $this->validationDefault($validator);
 
-        return $validator;
-    }
+    //     // $validator
+    //     //     ->notEmpty('file', '選択してください')
+    //     // ;
+
+    //     return $validator;
+    // }
+
+    // public function validationWebmUpdate(Validator $validator) {
+    //     $validator = $this->validationDefault($validator);
+
+    //     return $validator;
+    // }
 
     public function setMp4($data) {
         $dir = UPLOAD_MOVIE_BASE_URL . DS . 'm' . $data['id'];

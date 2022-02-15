@@ -24,9 +24,9 @@ class Material extends AppEntity
     ];
     static $validation_list = [
         self::TYPE_IMAGE => 'image',
-        self::TYPE_MOVIE => 'movie',
-        self::TYPE_URL => 'mp4',
-        self::TYPE_URL => 'webm',
+        // self::TYPE_MOVIE => 'movie',
+        self::TYPE_MOVIE_MP4 => 'mp4',
+        // self::TYPE_URL => 'webm',
         self::TYPE_URL => 'url',
         // self::TYPE_PAGE => 'page'
     ];

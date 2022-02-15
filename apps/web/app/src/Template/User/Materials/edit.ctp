@@ -36,8 +36,13 @@
             <tr>
               <td>タイプ<span class="attent">※必須</span></td>
               <td>
+                <?php if (!empty($entity['attaches']['image']['0']) || !empty($entity['url'])) : ?>
+                <?= $this->Form->input('type', array('type' => 'hidden', 'id' => 'typeSelect'));?>
+                <div><?= $type_list[$entity->type] ?></div>
+                <?php else : ?>
                 <?= $this->Form->select('type', $type_list,['id' => 'typeSelect','onChange' => 'select()']);?>
                 <br><span>※素材タイプを選択してください</span>
+                <?php endif; ?>
               </td>
             </tr>
 
@@ -89,14 +94,30 @@
               <td>
                 <ul>
                   <?php if (!empty($entity['attaches'][$_column]['0'])) :?>
+
+                  <video width="300px;" id="mate_mp4_<?= $entity['id'] ?>">
+                    <source src="<?= $entity['attaches']['file']['src']; ?>">
+                  </video>
+
+                  <script type="text/javascript">
+                    document.getElementById('mate_mp4_<?= $entity['id'] ?>').currentTime = 1.0;
+
+                    $('#mate_mp4_<?= $entity['id'] ?>')
+                      .mouseover( function() {
+                        $(this).get(0).setAttribute("controls", "controls");
+                      }).mouseout( function() {
+                        $(this).get(0).removeAttribute("controls");
+                    });
+                  </script>
+
                   <li class="<?= h($entity['attaches'][$_column]['extention']); ?>">
                     <?= $this->Form->input("file_name", ['type' => 'hidden', 'maxlength' => '50', 'style' => 'width:300px;', 'placeholder' => '添付ファイル']); ?>
                     <?= $this->Form->input("file_size", ['type' => 'hidden', 'value' => h($entity['file_size'])]); ?>
-                    <div><?= $this->Html->link('ダウンロード', $entity['attaches'][$_column]['0'], array('target' => '_blank'))?></div>
+                    <!-- <div><-?= $this->Html->link('ダウンロード', $entity['attaches'][$_column]['0'], array('target' => '_blank'))?></div> -->
                   </li>
                   <?= $this->Form->input("_old_{$_column}", array('type' => 'hidden', 'value' => h($entity[$_column]))); ?>
-                  <?php endif; ?>
-                  <?php //else : ?>
+
+                  <?php else : ?>
 
                   <li>
                     <?= $this->Form->input("file", array('type' => 'file', 'class' => 'attaches'));?>
@@ -104,18 +125,18 @@
                     <div>※ファイルサイズxxxMB以内</div>
                   </li>
 
-                  <?php //endif; ?>
+                  <?php endif; ?>
 
-                  <li>
-                    <?= $this->Form->input('view_second', ['type' => 'text', 'readonly' => false, 'style' => 'width: 60px;', 'id' => 'idViewSecond', 'class' => 'text-right']); ?>秒
-                  </li>
+                  <!-- <li>
+                    <-?= $this->Form->input('view_second', ['type' => 'text', 'readonly' => false, 'style' => 'width: 60px;', 'id' => 'idViewSecond', 'class' => 'text-right']); ?>秒
+                  </li> -->
                 </ul>
 
               </td>
             </tr>
             
 
-            <tr class="changeArea urlArea mp4Area">
+            <tr class="changeArea urlArea">
               <td>URL<span class="attent">※必須</span></td>
               <td>
                 <?= $this->Form->input('url', array('type' => 'text', 'maxlength' => 255,));?>

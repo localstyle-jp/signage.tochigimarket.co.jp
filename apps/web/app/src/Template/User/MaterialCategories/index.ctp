@@ -1,11 +1,11 @@
 <?php use App\Model\Entity\Material; ?>
 
 <div class="title_area">
-      <h1>素材のカテゴリ</h1>
+      <h1>素材カテゴリ</h1>
       <div class="pankuzu">
         <ul>
           <?= $this->element('pankuzu_home'); ?>
-          <li><span>素材のカテゴリ</span></li>
+          <li><span>素材カテゴリ</span></li>
         </ul>
       </div>
     </div>

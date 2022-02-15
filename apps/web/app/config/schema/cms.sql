@@ -177,13 +177,13 @@ CREATE TABLE site_configs
 CREATE TABLE users
 (
   id int unsigned NOT NULL AUTO_INCREMENT,
-  updated datetime NOT NULL,
+  created datetime NOT NULL,
   modified datetime NOT NULL,
   email varchar(200) DEFAULT '' NOT NULL,
   username varchar(30) DEFAULT '' NOT NULL,
   password varchar(200) DEFAULT '' NOT NULL,
   temp_password varchar(40) DEFAULT '' NOT NULL,
-  temp_pass_expired datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+  temp_pass_expired datetime DEFAULT '1900-01-01 00:00:00' NOT NULL,
   temp_key varchar(200) DEFAULT '' NOT NULL,
   name varchar(60) DEFAULT '' NOT NULL,
   status enum('publish','draft') DEFAULT 'publish' NOT NULL,
