@@ -99,26 +99,24 @@
 
         </table>
 
-      <!-- <-?php if ($data['id']): ?>
+      <?php if ($data['id']): ?>
         <table class="vertical_table table__meta">
           <tr>
             <td>プレビューURL</td>
             <td>
-              <-?php $url = $this->Url->build('/', true) . 'view/' . $site_config->slug . '/' . trim($entity->url, '/') . '/'; ?>
-              <-?= $this->Form->input('_full_path', ['type' => 'text', 'class' => 'w-100', 'readonly' => true, 'value' => $url]); ?>
+              <?php $url = $this->Url->build('/', true) . 'view/' . $site_config->slug . '/' . trim($entity->url, '/') . '/'; ?>
+              <?= $this->Form->input('_full_path', ['type' => 'text', 'class' => 'w-100', 'readonly' => true, 'value' => $url]); ?>
             </td>
           </tr>
 
-          <tr>
+          <!-- <tr>
             <td>ブラウザの再読み込み</td>
             <td>
               <-?= $this->Form->input('reload_flag', ['type' => 'checkbox', 'value' => '1', 'hiddenField' => true, 'label' => '表示端末側のブラウザを再読み込みさせます（10秒以内に実行されます）']); ?>
             </td>
-          </tr>
+          </tr> -->
         </table>
-      <-?php endif; ?> -->
 
-      <?php if ($data['id']): ?>
         <table class="vertical_table table__meta">
           <tr>
             <td colspan='2'>ビューア設定用情報</td>
@@ -140,7 +138,7 @@
           <!-- <tr>
             <td>ブラウザの再読み込み</td>
             <td>
-              <-?= $this->Form->input('reload_flag', ['type' => 'checkbox', 'value' => '1', 'hiddenField' => true, 'label' => '表示端末側のブラウザを再読み込みさせます（10秒以内に実行されます）']); ?>
+              <-?= $this->Form->input('reload_flag_device', ['type' => 'checkbox', 'value' => '1', 'hiddenField' => true, 'label' => '表示端末側のブラウザを再読み込みさせます（10秒以内に実行されます）']); ?>
             </td>
           </tr> -->
 

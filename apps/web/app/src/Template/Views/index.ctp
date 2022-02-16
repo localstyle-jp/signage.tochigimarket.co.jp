@@ -52,7 +52,7 @@ $(function () {
 </script>
 </head>
 <body style="margin: 0; height:<?= $height; ?>px; overflow: hidden">
-<iframe src="<?= $this->Url->build(['controller' => 'content', 'action' => 'machine', $machine->machine_content_id, '?' => $query]); ?>" width="<?= $width; ?>" height="<?= $height; ?>"></iframe>
+<iframe src="<?= $this->Url->build(['controller' => 'content', 'action' => 'machine', $machine->machine_content_id, $machine->id, '?' => $query]); ?>" width="<?= $width; ?>" height="<?= $height; ?>"></iframe>
 
 <?php if(!empty($machine->rolling_caption) && $machine->caption_flg == 'machine') : ?>
 <!-- 字幕 -->

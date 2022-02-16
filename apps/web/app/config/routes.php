@@ -64,8 +64,8 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/content/:id', ['controller' => 'content', 'action' => 'index'])
            ->setPass(['id']);
 
-    $routes->connect('/content/machine/:id', ['controller' => 'content', 'action' => 'machine'])
-           ->setPass(['id']);
+    $routes->connect('/content/machine/:id/:machine_id', ['controller' => 'content', 'action' => 'machine'])
+           ->setPass(['id', 'machine_id']);
 
     $routes->connect('/material/:action', ['controller' => 'material']);
     $routes->connect('/material/:action/:id', ['controller' => 'material'])

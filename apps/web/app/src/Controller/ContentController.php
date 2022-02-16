@@ -88,24 +88,40 @@ class ContentController extends AppController
         
     }
 
-    public function machine($id) {
+    public function machine($id, $machine_id) {
 
         // コンテンツ
-        $content = $this->MachineContents->find()->where(['MachineContents.id' => $id])
-                                    ->contain(['MachineMaterials' => function($q) {
-                                        return $q->order(['MachineMaterials.position' => 'ASC']);
-                                    }, 'MachineBoxes'])
+        $content = $this->Contents->find()->where(['Contents.id' => $id])
+                                    ->contain(['ContentMaterials' => function($q) {
+                                        return $q->contain(['Materials'])->order(['ContentMaterials.position' => 'ASC']);
+                                    }])
                                     ->first();
+        // $content = $this->MachineContents->find()->where(['MachineContents.id' => $id])
+        //                             ->contain(['MachineMaterials' => function($q) {
+        //                                 return $q->order(['MachineMaterials.position' => 'ASC']);
+        //                             }, 'MachineBoxes'])
+        //                             ->first();
+
+        // 表示端末
+        $machine_box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $machine_id])->first();
 
         $query = $this->_getQuery();
 
-        $width = $content->machine_box->width;
-        $height = $content->machine_box->height;
+        $width = $machine_box->width;
+        $height = $machine_box->height;
 
-        if ($content->machine_box->is_vertical == 1) {
-            $width = $content->machine_box->height;
-            $height = $content->machine_box->width;
+        if ($machine_box->is_vertical == 1) {
+            $width = $machine_box->height;
+            $height = $machine_box->width;
         }
+
+        // $width = $content->machine_box->width;
+        // $height = $content->machine_box->height;
+
+        // if ($content->machine_box->is_vertical == 1) {
+        //     $width = $content->machine_box->height;
+        //     $height = $content->machine_box->width;
+        // }
 
 
         // アイテム
@@ -118,9 +134,12 @@ class ContentController extends AppController
         $material_webm = [];
         $material_webpage = [];
         $item_count = 0;
-        foreach ($content->machine_materials as $material) {
-            $this->setContents($material, $material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $material_webm, $material_webpage, $item_count, $content->machine_box, $scene_box_list);
+        foreach ($content->content_materials as $material) {
+            $this->setContents($material, $material->material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $material_webm, $material_webpage, $item_count, $machine_box, $scene_box_list);
         }
+        // foreach ($content->machine_materials as $material) {
+        //     $this->setContents($material, $material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $material_webm, $material_webpage, $item_count, $content->machine_box, $scene_box_list);
+        // }
 
         $this->set(compact('content', 'query', 'items', 'scene_list', 'scene_box_list', 'materials', 'material_youtube', 'material_mp4', 'material_webm', 'material_webpage', 'item_count'));
         $this->set(compact('width', 'height'));
