@@ -5,8 +5,11 @@
     
   </td>
 
-  <!-- 素材名 -->
-  <td><?= h($material['material']['name']) ?></td>
+  <!-- カテゴリ / 素材名 -->
+  <td>
+    <div>【<?= h($category_list[$material['material']['category_id']]) ?>】</div>
+    <div><?= h($material['material']['name']) ?></div>
+  </td>
 
   <!-- 種別 -->
   <td>

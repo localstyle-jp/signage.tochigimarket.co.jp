@@ -25,6 +25,7 @@ class ContentsController extends AppController
     {
         $this->Materials = $this->getTableLocator()->get('Materials');
         $this->ContentMaterials = $this->getTableLocator()->get('ContentMaterials');
+        $this->MaterialCategories = $this->getTableLocator()->get('MaterialCategories');
 
         parent::initialize();
     }
@@ -189,6 +190,7 @@ class ContentsController extends AppController
                     'content' => '',
                     'attaches' => $master->attaches,
                     'status_mp4' => $master->status_mp4,
+                    'category_id' => $master->category_id,
                 ]
             ];
         }
@@ -231,7 +233,12 @@ class ContentsController extends AppController
             'type_list' => Material::$type_list
         );
 
+        $category_list = [];
+        $category_list = $this->MaterialCategories->find('list', ['keyField' => 'id', 'valueField' => 'name'])
+                                        ->order(['MaterialCategories.position' => 'ASC'])
+                                        ->toArray();
 
+        $list['category_list'] = $category_list;
 
         if (!empty($list)) {
             $this->set(array_keys($list),$list);
