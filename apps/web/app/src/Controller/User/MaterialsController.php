@@ -125,7 +125,16 @@ class MaterialsController extends AppController
         $query = $this->_getQuery();
         $cond = $this->_getConditions($query);
 
-        $is_search = ($this->request->getQuery() ? true : false);
+        $is_search = false;
+        foreach ($query as $k => $v) {
+            if (empty($v)) {
+                continue;
+            }
+            if (preg_match('/^sch_/', $k)) {
+                $is_search = true;
+            }
+        }
+        // $is_search = ($this->request->getQuery() ? true : false);
 
         $this->setCategoryListForSearch($query['sch_category_id']);
 
