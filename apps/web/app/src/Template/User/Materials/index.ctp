@@ -120,7 +120,10 @@ $count['total'] = $data_query->count();
         <div class="table_area">
           <table class="table__list table-hover" style="table-layout: fixed;">
           <colgroup>
+          <?php if (false): ?>
             <col style="width: 74px;">
+            <?php endif; ?>
+            <col style="width: 75px;">
             <col>
             <col style="width: 100px;">
             <col style="width: 100px;">
@@ -133,7 +136,10 @@ $count['total'] = $data_query->count();
           </colgroup>
 
             <tr>
+            <?php if (false): ?>
               <th >状態</th>
+              <?php endif; ?>
+              <th >ID</th>
               <th style="text-align:left;">カテゴリ / 素材名</th>
               <th>タイプ</th>
               <th>登録日時</th>
@@ -162,8 +168,14 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
             <a name="m_<?= $id ?>"></a>
             <tr class="<?= $status ? "visible" : "unvisible" ?>" id="content-<?= $data->id ?>">
 
+              <?php if (false): ?>
               <td>
                 <?= $this->element('status_button', ['status' => $status, 'id' => $data->id]); ?>
+              </td>
+              <?php endif; ?>
+
+              <td>
+                <?= h($data->id); ?>
               </td>
 
               <td>

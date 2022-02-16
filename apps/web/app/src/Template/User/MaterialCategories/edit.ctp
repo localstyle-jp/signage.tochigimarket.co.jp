@@ -54,13 +54,14 @@
               </td>
             </tr>
           <?php endif; ?>
-
+          <?php if (false): ?>
             <tr>
               <td>有効/無効</td>
               <td>
                   <?= $this->Form->input('status', array('type' => 'select', 'options' => array('draft' => '無効', 'publish' => '有効')));?>
               </td>
             </tr>
+          <?php endif; ?>
 
         </table>
 

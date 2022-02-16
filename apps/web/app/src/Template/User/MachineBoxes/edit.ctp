@@ -75,13 +75,14 @@
                 <?= $this->Form->input('memo', ['type' => 'textarea', 'style' => 'height:80px;']); ?>
               </td>
             </tr>
-
+<?php if(false) : ?>
             <tr>
               <td>状態</td>
               <td>
                   <?= $this->Form->input('status', array('type' => 'select', 'options' => array('draft' => '無効', 'publish' => '有効')));?>
               </td>
             </tr>
+            <?php endif; ?>
 
             <tr>
               <td>表示する字幕の設定</td>
@@ -119,7 +120,7 @@
 
         <table class="vertical_table table__meta">
           <tr>
-            <td colspan='2'>ビューア設定用情報</td>
+            <td colspan='2'>ビューアアプリ設定用情報</td>
           </tr>
           <tr>
             <td>URL</td>
