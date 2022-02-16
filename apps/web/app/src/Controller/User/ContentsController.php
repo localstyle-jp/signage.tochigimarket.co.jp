@@ -101,6 +101,8 @@ class ContentsController extends AppController
                     if ($v['is_delete'] == 1) {
                         if ($v['id']) {
                             $delete_ids[] = $v['id'];
+                        } else {
+                            unset($this->request->data['content_materials'][$k]);
                         }
                         continue;
                     }

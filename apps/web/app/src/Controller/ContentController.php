@@ -60,7 +60,7 @@ class ContentController extends AppController
 
         $query = $this->_getQuery();
 
-        if (empty($content) || empty($content->content_materials)) {
+        if (empty($content) /*|| empty($content->content_materials)*/) {
             throw new NotFoundException('ページが見つかりません');
         }
 

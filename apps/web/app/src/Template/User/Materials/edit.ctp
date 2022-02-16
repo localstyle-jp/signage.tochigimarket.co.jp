@@ -49,7 +49,13 @@
             <tr>
               <td>素材カテゴリ<span class="attent">※必須</span></td>
               <td>
+                <?php if (empty($category_list)) : ?>
+                <?= $this->Form->input('category_id', ['type' => 'hidden', 'value' => '']);?>
+                <?= $this->Form->error('category_id');?>
+                <span>※素材カテゴリを設定してください</span>
+                <?php else : ?>
                 <?= $this->Form->select('category_id', $category_list);?>
+                <?php endif; ?>
               </td>
             </tr>
 
