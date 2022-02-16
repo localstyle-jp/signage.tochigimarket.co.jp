@@ -177,6 +177,7 @@ class ContentsController extends AppController
                 'material_id' => $master->id,
                 'position' => 0,
                 'view_second' => $master->view_second,
+                'rolling_caption' => $master->rolling_caption,
                 'material' =>[
                     'type' => $master->type,
                     'name' => $master->name,
