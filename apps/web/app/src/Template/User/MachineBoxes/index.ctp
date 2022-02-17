@@ -13,7 +13,8 @@
 $count = array('total' => 0,
                'enable' => 0,
                'disable' => 0);
-$count['total'] = $data_query->count();
+// $count['total'] = $data_query->count();
+$count['total'] = $numrows;
 ?>
   
     <?= $this->element('error_message'); ?>

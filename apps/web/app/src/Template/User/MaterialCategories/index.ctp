@@ -15,7 +15,8 @@
 $count = array('total' => 0,
                'enable' => 0,
                'disable' => 0);
-$count['total'] = $data_query->count();
+// $count['total'] = $data_query->count();
+$count['total'] = $numrows;
 ?>
   
     <?= $this->element('error_message'); ?>
@@ -53,6 +54,10 @@ $count['total'] = $data_query->count();
         <h3 class="box__caption--count"><span>登録一覧</span><span class="count"><?php echo $count['total']; ?>件の登録</span></h3>
 
         <div class="btn_area" style="margin-top:10px;"><a href="<?= $this->Url->build(array('action' => 'edit', '?' => ['parent_id' => $query['parent_id']])); ?>" class="btn btn-primary w-20 rounded-pill"><i class="far fa-plus-square"></i> 新規登録</a></div>
+
+        <div class="btn_area" style="margin-top:10px; text-align:right; margin-right:30px;">
+          <a href="<?= $this->Url->build(array('controller' => 'materials', 'action' => 'index')); ?>" class="btn btn-primary">素材一覧</a>
+        </div>
 
         <div class="table_area">
           <nav aria-label="breadcrumb">

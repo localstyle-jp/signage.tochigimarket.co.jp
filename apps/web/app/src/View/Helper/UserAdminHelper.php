@@ -62,14 +62,6 @@ class UserAdminHelper extends AppHelper
                     //     ]
                     // ]
                 ],
-                'サブ' => [
-                    '  ' => [
-                        '素材カテゴリ' => [
-                            'icon' => '',
-                            'link' => '/material-categories/'
-                        ],
-                    ],
-                ],
                 // '管理者メニュー' => [
 
                 // ],
