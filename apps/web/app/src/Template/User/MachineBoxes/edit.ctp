@@ -84,10 +84,10 @@
             </tr>
             <?php endif; ?>
 
-            <tr>
+            <tr id="caption_flg_wrapper">
               <td>表示する字幕の設定</td>
               <td>
-              <?= $this->Form->input('caption_flg', array('type' => 'select', 'options' => array('machine' => '共通の字幕を設定', 'content' => '素材ごとに異なる字幕を設定')));?>
+              <?= $this->Form->input('caption_flg', array('type' => 'radio', 'options' => array('machine' => '共通の字幕', 'content' => '素材ごとに異なる字幕')));?>
               </td>
             </tr>
 
@@ -195,7 +195,7 @@ $(function() {
 })
 
 function changeTargetType() {
-  var type = $('[name=caption_flg]').val();
+  var type = $('#caption_flg_wrapper [type="radio"]:checked').val();
   if (type === 'content') {
     $("#rolling_caption_wrapper").hide();
   } else if (type === 'machine') {
@@ -204,7 +204,7 @@ function changeTargetType() {
 }
 $(function() {
   changeTargetType();
-  $('#caption-flg').on('change', function() {
+  $('#caption_flg_wrapper [type="radio"]').on('change', function() {
     changeTargetType();
   });
 });
