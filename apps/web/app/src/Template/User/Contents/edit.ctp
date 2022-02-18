@@ -74,7 +74,7 @@
             <col style="width: 150px;">
             <col style="width: 100px;">
             <col style="width: 160px;">
-            <col>
+            <col style="min-width: 330px;">
             <col style="width: 400px;">
             <col style="width: 90px;">
           </colgroup>

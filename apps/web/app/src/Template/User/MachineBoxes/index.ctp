@@ -117,7 +117,7 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
 
               <td>
               <?php if ($data->machine_content_id): ?>
-                <?= $data->machine_content->name; ?> [<?= $data->machine_content->serial_no; ?>]
+                <?= h($data->machine_content->name); ?> [<?= $data->machine_content->serial_no; ?>]
                 
                 <?php else: ?>
                   （未設定）

@@ -90,8 +90,11 @@ class ContentController extends AppController
 
     public function machine($id, $machine_id) {
 
+        // 表示端末
+        $machine_box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $machine_id])->first();
+
         // コンテンツ
-        $content = $this->Contents->find()->where(['Contents.id' => $id])
+        $content = $this->Contents->find()->where(['Contents.id' => $machine_box->content_id])
                                     ->contain(['ContentMaterials' => function($q) {
                                         return $q->contain(['Materials'])->order(['ContentMaterials.position' => 'ASC']);
                                     }])
@@ -102,8 +105,7 @@ class ContentController extends AppController
         //                             }, 'MachineBoxes'])
         //                             ->first();
 
-        // 表示端末
-        $machine_box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $machine_id])->first();
+        
 
         $query = $this->_getQuery();
 

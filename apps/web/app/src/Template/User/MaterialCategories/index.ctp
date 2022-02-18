@@ -66,9 +66,9 @@ $count['total'] = $numrows;
             <?php $parent_categories = $parent_category; ?>
             <?php while ($pcat = array_pop($parent_categories)): ?>
               <?php if ($query['parent_id'] == $pcat->id): ?>
-                <li class="breadcrumb-item active"><?= $pcat->name; ?></li>
+                <li class="breadcrumb-item active"><?= h($pcat->name); ?></li>
               <?php else: ?>
-                <li class="breadcrumb-item"><a href="<?= $this->Url->build(['action' => 'index', '?' => ['parent_id' => $pcat->id]]); ?>"><?= $pcat->name; ?></a></li>
+                <li class="breadcrumb-item"><a href="<?= $this->Url->build(['action' => 'index', '?' => ['parent_id' => $pcat->id]]); ?>"><?= h($pcat->name); ?></a></li>
               <?php endif; ?>
             <?php endwhile; ?>
             </ul>
