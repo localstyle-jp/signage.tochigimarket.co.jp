@@ -52,7 +52,7 @@
               <div class="btn_area text-center mt-2">
               <?php if ($data->content_id): ?>
                 <?php if (empty($data->machine_content) || $data->content->serial_no != $data->machine_content->serial_no): ?>
-                  <a href="javascript:void(0);" class="btn btn-warning btn-sm blinking w-100" style="color:#212529;" id="btnUpdateContent" data-id="<?= $data->id; ?>"><i class="fas fa-sync-alt"></i> 最新版にする</a>
+                  <a href="javascript:void(0);" class="btn btn-warning btn-sm blinking w-100 btnUpdateContent" style="color:#212529;" data-id="<?= $data->id; ?>"><i class="fas fa-sync-alt"></i> 最新版にする</a>
                   <?= $this->Form->create(false, ['type' => 'get', 'url' => ['controller' => 'machine-boxes','action' => 'update-content', $data->id], 'id' => 'fm_update_'.$data->id]); ?>
                   <?= $this->Form->end(); ?>
                 <?php else: ?>
@@ -95,7 +95,7 @@ function change_category() {
 }
 $(function () {
 
-$("#btnUpdateContent").on('click', function() {
+$(".btnUpdateContent").on('click', function() {
   var id = $(this).data('id');
 
   alert_dlg('現在のコンテンツを最新版にします。<br><span class="text-danger">自動的に表示端末のブラウザの再読み込みを実行します。</span><br>元に戻すことは出来ません。よろしいですか？', 
