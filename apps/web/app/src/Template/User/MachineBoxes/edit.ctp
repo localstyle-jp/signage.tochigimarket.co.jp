@@ -41,7 +41,7 @@
             </tr>
 
             <tr>
-              <td>表示コンテンツ<span class="attent">※必須</span></td>
+              <td>表示コンテンツ</td>
               <td>
                 <?= $this->Form->input('content_id', ['type' => 'select', 'options' => $content_list, 'empty' => ['0' => '選択してください']]); ?>
 

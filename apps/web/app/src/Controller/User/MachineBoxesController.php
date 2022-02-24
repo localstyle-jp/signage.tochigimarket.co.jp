@@ -229,7 +229,9 @@ class MachineBoxesController extends AppController
      * @return [type]            [description]
      */
     private function transferMachine($source_id, $dest_id) {
-
+        if (empty($source_id)) {
+            return false;
+        }
         // try {
             $source = $this->Contents->get($source_id);
             if (empty($source)) {

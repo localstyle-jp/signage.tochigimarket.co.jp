@@ -39,8 +39,8 @@ class MachineBoxesTable extends AppTable {
             ->notEmpty('name', '入力してください')
             ->add('name', 'maxLength', ['rule' => ['maxLength', 40],'message' => '40文字以内で入力してください'])
             ->notEmpty('url', '入力してください')
-            ->notEmpty('content_id', '選択してください')
-            ->naturalNumber('content_id', '選択してください')
+            // ->notEmpty('content_id', '選択してください')
+            // ->naturalNumber('content_id', '選択してください')
             ;
         
         return $validator;

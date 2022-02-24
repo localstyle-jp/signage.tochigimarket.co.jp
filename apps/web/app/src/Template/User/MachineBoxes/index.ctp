@@ -125,7 +125,7 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
               </td>
 
               <td>
-              <?php if ($data->machine_content_id): ?>
+              <?php if ($data->machine_content_id && $data->content): ?>
                 <span class="btn_area">
                   <a href="<?= $this->Url->build(['controller' => 'contents', 'action' => 'edit', $data->content_id, '?' => ['mode' => 'machine']]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> コンテンツの編集</a>
 
@@ -140,6 +140,8 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
                 <div class="btn_area" style="text-align:left;">
                   <a href="<?= $this->Url->build(['action' => 'edit', $data->id]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> 編集</a>
                   <a href="<?= $url; ?>" class="btn btn-info btn-sm" target="_blank"><i class="fas fa-search"></i> プレビュー</a>
+
+                <?php if ($data->content_id) : ?>
                 <?php if ($data->content->serial_no != $data->machine_content->serial_no): ?>
                   <a href="javascript:void(0);" class="btn btn-warning btn-sm blinking btnUpdateContent" style="color:#212529;" data-id="<?= $data->id; ?>"><i class="fas fa-sync-alt"></i> 最新版にする</a>
                   <?= $this->Form->create(false, ['type' => 'get', 'url' => ['action' => 'update-content', $data->id], 'id' => 'fm_update_'.$data->id]); ?>
@@ -147,6 +149,8 @@ $preview_url = "/" . $this->Common->session_read('data.username') . "/{$data->id
                 <?php else: ?>
                   <a href="#" class="btn btn-success btn-sm disabled" aria-disabled="true"><i class="fas fa-sync-alt"></i> 最新版です</a>
                 <?php endif; ?>
+                <?php endif; ?>
+
                 </div>
               </td>
 
