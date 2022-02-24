@@ -14,7 +14,7 @@
               <table class=" table border-0">
                 <!-- 素材カテゴリ -->
                   <tr>
-                    <td class="border-0" style="width: 120px;text-align: center; vertical-align: middle;">素材カテゴリ</td>
+                    <td class="border-0" style="white-space: nowrap; text-align: center; vertical-align: middle;">素材カテゴリ</td>
                     <td class="border-0" colspan="11" id="category_input">
                     <?php foreach ($category_list as $n => $clist): ?>
                       <div class="breadcrumb-item" style="display: inline-block;">
@@ -31,7 +31,7 @@
                 
                   <tr>
                     <!-- 素材名 -->
-                    <td class="border-0" style="width: 120px;text-align: center; vertical-align: middle;">素材名</td>
+                    <td class="border-0" style="white-space: nowrap; text-align: center; vertical-align: middle;">素材名</td>
                     <td class="border-0">
                       <?= $this->Form->input('sch_name', ['type' => 'text',
                                                              'value' => $query['sch_name'],
@@ -41,7 +41,7 @@
                                                            ]); ?>
                     </td>
                     <!-- 素材タイプ -->
-                    <td class="border-0 head" style="width: 120px;text-align: center; vertical-align: middle;">タイプ</td>
+                    <td class="border-0 head" style="white-space: nowrap; text-align: center; vertical-align: middle;">タイプ</td>
                     <td class="border-0">
                       <?= $this->Form->input('sch_type', ['type' => 'select',
                                                           'options' => $type_list,
@@ -52,7 +52,7 @@
                   </tr>
                   <!-- 登録日時 -->
                   <tr>
-                    <td class="border-0" style="width: 120px;text-align: center; vertical-align: middle;">登録日時</td>
+                    <td class="border-0" style="white-space: nowrap; text-align: center; vertical-align: middle;">登録日時</td>
                     <td class="border-0" colspan="3">
                       <?= $this->Form->input('sch_created_start', array(
                         'type' => 'text', 
@@ -69,7 +69,7 @@
                   </tr>
                   <!-- 更新日時 -->
                   <tr>
-                    <td class="border-0" style="width: 120px;text-align: center; vertical-align: middle;">更新日時</td>
+                    <td class="border-0" style="white-space: nowrap; text-align: center; vertical-align: middle;">更新日時</td>
                     <td class="border-0" colspan="3">
                       <?= $this->Form->input('sch_modified_start', array(
                         'type' => 'text', 

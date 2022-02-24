@@ -94,7 +94,7 @@
             <tr id="rolling_caption_wrapper">
               <td>字幕</td>
               <td>
-                <?= $this->Form->input('rolling_caption', ['type' => 'textarea', 'style' => 'height:80px;']); ?>
+                <?= $this->Form->input('rolling_caption', ['type' => 'textarea', 'style' => 'height:80px;', 'maxlength' => 1000]); ?>
               </td>
             </tr>
 
