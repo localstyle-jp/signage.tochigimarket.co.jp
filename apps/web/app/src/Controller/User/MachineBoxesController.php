@@ -86,7 +86,16 @@ class MachineBoxesController extends AppController
             'MachineContents'
         ];
 
-        $is_search = ($this->request->getQuery() ? true : false);
+        $is_search = false;
+        foreach ($query as $k => $v) {
+            if (empty($v)) {
+                continue;
+            }
+            if (preg_match('/^sch_/', $k)) {
+                $is_search = true;
+            }
+        }
+        // $is_search = ($this->request->getQuery() ? true : false);
 
         $site_config_id = $this->getSiteId();
         $site_config = $this->SiteConfigs->find()->where(['SiteConfigs.id' => $site_config_id])->first();

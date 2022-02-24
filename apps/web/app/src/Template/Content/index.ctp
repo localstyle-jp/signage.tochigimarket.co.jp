@@ -593,27 +593,27 @@ $(function () {
 });
 
 
-var checkReloadContent = function(id, serial_no) {
-  var url = '/v1/management/is-reload-content.json';
-  var params = {
-    id: id,
-    serial_no: serial_no
-  };
-  ajax_get(url, 'post', params, function(a) {
-    if (a.error.code == 0) {
-      if (a.result.reload_flag == 1) {
-        window.location.reload();
-      }
-    }
-  });
-};
+// var checkReloadContent = function(id, serial_no) {
+//   var url = '/v1/management/is-reload-content.json';
+//   var params = {
+//     id: id,
+//     serial_no: serial_no
+//   };
+//   ajax_get(url, 'post', params, function(a) {
+//     if (a.error.code == 0) {
+//       if (a.result.reload_flag == 1) {
+//         window.location.reload();
+//       }
+//     }
+//   });
+// };
 
 window.onload = function() {
   scene_manager();
   setInterval(checkOnline, 20000);
-  setInterval(function () {
-    checkReloadContent(<?= $content->id; ?>, <?= $content->serial_no; ?>);
-  }, 10000);
+  // setInterval(function () {
+  //   checkReloadContent(<-?= $content->id; ?>, <-?= $content->serial_no; ?>);
+  // }, 10000);
 }
 
 

@@ -80,20 +80,20 @@ class ManagementController extends AppController
     /**
      * ブラウザ上のコンテンツプレビューをリロードするかどうかを判定する
      */
-    public function isReloadContent() {
-        $id = $this->request->getData('id');
-        $serial_no = $this->request->getData('serial_no');
+    // public function isReloadContent() {
+    //     $id = $this->request->getData('id');
+    //     $serial_no = $this->request->getData('serial_no');
 
-        $content = $this->Contents->find()->where(['Contents.id' => $id])->first();
-        if (empty($content)) {
-            return $this->rest_error(200, 1000);
-        }
+    //     $content = $this->Contents->find()->where(['Contents.id' => $id])->first();
+    //     if (empty($content)) {
+    //         return $this->rest_error(200, 1000);
+    //     }
 
-        $reload_flag = ($content->serial_no != $serial_no);
+    //     $reload_flag = ($content->serial_no != $serial_no);
 
-        $result = [
-            'reload_flag' => $reload_flag
-        ];
-        $this->rest_success($result);
-    }
+    //     $result = [
+    //         'reload_flag' => $reload_flag
+    //     ];
+    //     $this->rest_success($result);
+    // }
 }
