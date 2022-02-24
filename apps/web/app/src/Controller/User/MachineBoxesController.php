@@ -270,7 +270,11 @@ class MachineBoxesController extends AppController
             }
 
             foreach ($content_materials as $source_material) {
-                $material = $this->MachineMaterials->newEntity($source_material->material->toArray());
+                $create = $source_material->material->toArray();
+                unset($create['id']);
+                unset($create['created']);
+                unset($create['modified']);
+                $material = $this->MachineMaterials->newEntity($create);
                 $material->machine_content_id = $entity->id;
                 $material->position = $source_material->position;
                 $material->view_second = $source_material->view_second;

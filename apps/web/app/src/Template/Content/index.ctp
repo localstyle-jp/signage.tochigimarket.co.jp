@@ -571,12 +571,13 @@ $(function () {
       // } else if (mp4[i].obj.canPlayType('application/vnd.apple.mpegurl')) {
       //   // mp4[i].obj.src = mp4[i].source;
       // }
-    } else if (val.type == 'page_mp4') {
-      var elem = document.getElementById('iframe_page_mp4_' + val.count);
-      console.log(elem);
-      mp4[i].obj = elem.contentWindow.document.getElementById('page_mp4_' + val.no);
-      console.log(mp4[i].obj);
-    }
+    } 
+    // else if (val.type == 'page_mp4') {
+    //   var elem = document.getElementById('iframe_page_mp4_' + val.count);
+    //   console.log(elem);
+    //   mp4[i].obj = elem.contentWindow.document.getElementById('page_mp4_' + val.no);
+    //   console.log(mp4[i].obj);
+    // }
   });
   // $.each(webm, function(i, val) {
   //   // if (val.type == 'webm') {
