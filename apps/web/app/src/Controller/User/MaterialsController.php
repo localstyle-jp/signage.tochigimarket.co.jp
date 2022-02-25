@@ -49,6 +49,7 @@ class MaterialsController extends AppController
 
         $query['sch_name'] = $this->request->getQuery('sch_name');
         $query['sch_type'] = $this->request->getQuery('sch_type');
+        // 一番下層の（連番が一番大きな）カテゴリを検索するカテゴリIDとする
         $query['sch_category_id'] = 0;
         for ($i=0; true ; $i++) { 
             if( !$this->request->getQuery('sch_category_id' . $i) ) {break;}

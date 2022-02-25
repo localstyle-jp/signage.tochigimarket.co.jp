@@ -194,6 +194,20 @@ class MaterialCategoriesController extends AppController
             return;
         }
 
+        $n_underlayer = $this->MaterialCategories->find()->where(['MaterialCategories.parent_category_id' => $id])->count();
+        if ($n_underlayer > 0) {
+            $this->Flash->set('紐づくカテゴリがあるため削除できません。');
+            $this->redirect(['action' => 'index', '?' => ['parent_id' => $id]]);
+            return;
+        }
+
+        $n_materials = $this->Materials->find()->where(['Materials.category_id' => $id])->count();
+        if ($n_materials > 0) {
+            $this->Flash->set('紐づく素材があるため削除できません。');
+            $this->redirect(['controller' => 'Materials', 'action' => 'index', '?' => ['sch_category_id0' => $id]]);
+            return;
+        }
+
         $redirect = ['action' => 'index'];
         
         $options = ['redirect' => $redirect];
