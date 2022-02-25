@@ -50,7 +50,7 @@
           <div class="card" style="width: 250px;">
             <div class="card-header">
               <div class="btn_area text-center mt-2">
-              <?php if ($data->content_id): ?>
+              <?php if ($data->content_id && $data->content): ?>
                 <?php if (empty($data->machine_content) || $data->content->serial_no != $data->machine_content->serial_no): ?>
                   <a href="javascript:void(0);" class="btn btn-warning btn-sm blinking w-100 btnUpdateContent" style="color:#212529;" data-id="<?= $data->id; ?>"><i class="fas fa-sync-alt"></i> 最新版にする</a>
                   <?= $this->Form->create(false, ['type' => 'get', 'url' => ['controller' => 'machine-boxes','action' => 'update-content', $data->id], 'id' => 'fm_update_'.$data->id]); ?>

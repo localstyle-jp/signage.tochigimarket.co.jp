@@ -107,6 +107,7 @@ class ContentsController extends AppController
 
             if (array_key_exists('content_materials', $this->request->getData())) {
                 $position = 0;
+                // dd($this->request->getData());
                 foreach ($this->request->getData('content_materials') as $k => $v) {
                     if ($v['is_delete'] == 1) {
                         if ($v['id']) {

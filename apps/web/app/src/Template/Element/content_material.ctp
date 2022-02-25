@@ -85,7 +85,7 @@
   <!-- 字幕 -->
   <td>
     <!-- <-?= $this->Form->input("content_materials.{$rownum}.rolling_caption",['type' => 'text','maxlength' => 100, 'value' => $material['rolling_caption'], 'readonly' => false]); ?> -->
-    <?= $this->Form->input('content_materials.{$rownum}.rolling_caption', ['type' => 'textarea', 'style' => 'height:auto;', 'maxlength' => 1000, 'readonly' => false, 'value' => $material['rolling_caption']]); ?>
+    <?= $this->Form->input("content_materials.{$rownum}.rolling_caption", ['type' => 'textarea', 'style' => 'height:auto;', 'maxlength' => 1000, 'readonly' => false, 'value' => $material['rolling_caption']]); ?>
   </td>
 
   <td>
