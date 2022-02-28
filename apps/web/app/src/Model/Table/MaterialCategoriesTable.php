@@ -30,7 +30,7 @@ class MaterialCategoriesTable extends AppTable {
             ]);
 
         // アソシエーション
-        $this->hasMany('Materials');
+        $this->hasMany('Materials')->setDependent(false);
 
         parent::initialize($config);
         

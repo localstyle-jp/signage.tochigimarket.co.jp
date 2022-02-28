@@ -47,7 +47,6 @@ class ContentsController extends AppController
     protected function _getQuery() {
         $query = [];
 
-
         return $query;
     }
 
@@ -89,6 +88,11 @@ class ContentsController extends AppController
         $this->checkLogin();
 
         $this->setList();
+
+        $query_param = [];
+        $query_param['mode'] = ( empty($this->request->getQuery('mode')) ? '' : $this->request->getQuery('mode') );
+        $this->set(compact('query_param'));
+
         $get_callback = null;
         $error_callback = null;
         $callback = null;
@@ -232,6 +236,11 @@ class ContentsController extends AppController
         $this->checkLogin();
         
         $options = [];
+
+        // リダイレクト
+        if ($this->request->getQuery('mode') == 'machine') {
+            $options['redirect'] = ['controller' => 'machine-boxes', 'action' => 'index', '?' => ['sch_content' => $id]];
+        }
 
         return parent::_delete($id, $type, $columns, $options);
     }

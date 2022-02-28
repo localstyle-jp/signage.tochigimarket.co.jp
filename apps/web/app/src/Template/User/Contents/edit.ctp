@@ -107,7 +107,7 @@
           <?php if (!empty($data['id']) && $data['id'] > 0){ ?>
               <a href="#" class="btn btn-primary w-20 rounded-pill submitButton"><i class="fas fa-check"></i> 変更する</a>
             <?php if (empty($is_import_data)): ?>
-              <a href="javascript:kakunin('データを完全に削除します。よろしいですか？','<?= $this->Url->build(array('action' => 'delete', $data['id'], 'content'))?>')" class="btn btn-danger">
+              <a href="javascript:kakunin('データを完全に削除します。よろしいですか？','<?= $this->Url->build(array('action' => 'delete', $data['id'], 'content', '?' => ['mode' => $query_param['mode']]))?>')" class="btn btn-danger">
                 <i class="far fa-trash-alt"></i> 削除する</a>
             <?php else: ?>
               <a href="#" class="btn btn-danger disabled" role="button" aria-disabled="true">
