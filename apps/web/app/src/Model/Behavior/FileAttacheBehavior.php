@@ -358,7 +358,7 @@ class FileAttacheBehavior extends Behavior
         $last_line = exec(escapeshellcmd($command), $out);
         $time = preg_match('/^duration=([0-9]+)\.([0-9]+)/', $out[1], $matches);
 
-        return $matches[1] + 1;
+        return $matches[1];
     }
 
     /**

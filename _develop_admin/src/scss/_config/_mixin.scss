@@ -1,0 +1,53 @@
+$col_text: #282828;
+$col_text_l: #767676;
+$col_bg: #e2e2e2;
+$col_hover: #c4c4c4;
+$col_hr: #cbcbcb;
+$col_unvisible: #a7a7a7;
+$col_base: #505050;
+$col_base_l: #828282;
+$col_disble: #ededed;
+$col_accent: #ab3030;
+
+// /* そのまま幅と高さが入る */
+// @define-mixin bg ($path) {
+//   display: block;
+//   background-image: url($path);
+//   width: width($path);
+//   height: height($path);
+//   background-size: cover;
+//   box-sizing: border-box;
+//   padding-top: height($path);
+//   overflow: hidden;
+//   font-size: 0;
+// }
+
+// /* vw */
+// @define-mixin bgV $path {
+//   display: block;
+//   background-image: url($path);
+//   width: widthV($path);
+//   height: heightV($path);
+//   background-size: cover;
+//   padding-top: heightV($path);
+//   box-sizing: border-box;
+//   overflow: hidden;
+//   font-size: 0;
+// }
+
+// /* 同一アスペクト比 by width */
+// @define-mixin bgR $path {
+//   display: block;
+//   background-image: url($path);
+//   background-size: cover;
+//   width: 100%;
+//   max-width: width($path);
+//   overflow: hidden;
+//   font-size: 0;
+//   &:before {
+//     content: '';
+//     display: block;
+//     width: 100%;
+//     padding-top: aspect($path);
+//   }
+// }

@@ -10,24 +10,28 @@ class User extends AppEntity
     const ROLE_DEVELOP = 0;
     const ROLE_ADMIN = 1;
     const ROLE_CMS = 10;
+    const ROLE_SHOP = 20;
     const ROLE_DEMO = 90;
 
     static $role_list = [
         self::ROLE_DEVELOP => '開発者',
         self::ROLE_ADMIN => 'システム管理',
         self::ROLE_CMS => 'CMS登録権限',
+        self::ROLE_SHOP => 'SHOP'
     ];
 
     static $role_key_list = [
         self::ROLE_DEVELOP => 'develop',
         self::ROLE_ADMIN => 'admin',
-        self::ROLE_CMS => 'staff'
+        self::ROLE_CMS => 'staff',
+        self::ROLE_SHOP => 'shop'
     ];
 
     static $role_key_values = [
         'admin' => self::ROLE_ADMIN,
         'staff' => self::ROLE_CMS,
-        'cms' => self::ROLE_CMS
+        'cms' => self::ROLE_CMS,
+        'shop' => self::ROLE_SHOP
     ];
 
     static $status_list = [

@@ -72,6 +72,16 @@ class UserAdminHelper extends AppHelper
                 //     ]
                 // ]
             ],
+            'shop' => [
+                'メインメニュー' => [
+                    ' ' => [
+                        '素材' => [
+                            'icon' => '',
+                            'link' => '/shop/materials'
+                        ]
+                    ]
+                ]
+                ],
             'staff' => [
                 'メインメニュー' => [
                     // 'ブース管理' => [
@@ -109,6 +119,11 @@ class UserAdminHelper extends AppHelper
             'side_staff' => [
                 '商談資料管理' => [
                     '一覧表示' => '/user/folders'
+                ]
+                ],
+            'side_shop' => [
+                'コンテンツ' => [
+                    '素材' => '/shop_user/materials'
                 ]
             ]
         ];

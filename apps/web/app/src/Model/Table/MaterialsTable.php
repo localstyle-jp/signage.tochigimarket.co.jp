@@ -31,7 +31,7 @@ class MaterialsTable extends AppTable {
                                 ),
                             'files' => array(
                                 'file' => array(
-                                    'extensions' => array('mp4'),
+                                    'extensions' => array('mp4','mp3'),
                                     'file_name' => 'e_f_%d_%s'
                                     )
                                 // file_1
@@ -90,6 +90,27 @@ class MaterialsTable extends AppTable {
 
         $validator
             ->notEmpty('_old_image', '選択してください')
+        ;
+
+        return $validator;
+    }
+    // 音楽
+    public function validationSoundNew(Validator $validator) {
+
+        $validator = $this->validationDefault($validator);
+
+        $validator
+            ->notEmpty('file', '選択してください')
+        ;
+
+        return $validator;
+    }
+
+    public function validationSoundUpdate(Validator $validator) {
+        $validator = $this->validationDefault($validator);
+
+        $validator
+            ->notEmpty('_old_file', '選択してください')
         ;
 
         return $validator;

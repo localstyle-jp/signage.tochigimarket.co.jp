@@ -384,6 +384,10 @@ class MaterialsController extends AppController
         $cond = [];
 
         $cond = $this->_getConditions($query);
+        $cnt = count($cond);
+        if (!$query['sch_type']) {
+            $cond[$cnt++]['Materials.type !='] = Material::TYPE_SOUND;
+        }
         return $cond;
     }
 

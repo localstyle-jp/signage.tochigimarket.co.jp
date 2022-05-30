@@ -233,3 +233,25 @@ ALTER TABLE machine_boxes ADD COLUMN rolling_caption text NOT NULL;
 
 -- 2022/02/15
 ALTER TABLE machine_boxes ADD COLUMN caption_flg enum('machine', 'content') DEFAULT 'machine' NOT NULL;
+
+-- 2022/04/18
+ALTER TABLE materials ADD COLUMN is_vertical decimal(1) NOT NULL DEFAULT 0;
+
+-- 2022/04/27
+ALTER TABLE content_materials ADD COLUMN sound varchar(100) NOT NULL DEFAULT 0;
+ALTER TABLE machine_materials ADD COLUMN sound varchar(100) NOT NULL DEFAULT 0;
+
+-- 2022/05/20
+
+-- ユーザー機械箱
+CREATE TABLE machine_boxes_users
+(
+	id int unsigned NOT NULL AUTO_INCREMENT,
+	created datetime NOT NULL,
+	modified datetime NOT NULL,
+	user_id int unsigned DEFAULT 0 NOT NULL,
+	machine_box_id int unsigned DEFAULT 0 NOT NULL,
+	PRIMARY KEY (id)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+ALTER TABLE materials ADD COLUMN user_id int unsigned NOT NULL DEFAULT 0;

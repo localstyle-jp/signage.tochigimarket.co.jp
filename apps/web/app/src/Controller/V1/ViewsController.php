@@ -76,6 +76,7 @@ class ViewsController extends AppController
             'width' => $machine_box->width,
             'height' => $machine_box->height,
             'caption' => '',
+            'is_vertical' => $machine_box->is_vertical,
             'materials' => [],
         ]; 
         if ($machine_box->is_vertical == 1) {
@@ -176,7 +177,7 @@ class ViewsController extends AppController
             'source' => '',
             'movie_tag' => '',
             'time_sec' => $material->view_second,
-            'caption' => '',
+            'caption' => ''
         ];
 
         if ($machine->caption_flg == 'content') {
@@ -187,6 +188,9 @@ class ViewsController extends AppController
             $data['source'] = Router::url(DS . UPLOAD_MOVIE_BASE_URL . DS . $material->url, true);
         } elseif ($material->type == Material::TYPE_IMAGE) {
             $data['source'] = Router::url($material->attaches['image']['0'], true);
+            if ($material->sound) {
+                $data['sound'] = "https://test-signage.caters.jp/upload/Materials/files/{$material->sound}";
+            }
         } elseif ($material->type == Material::TYPE_URL) {
             $data['source'] = $material->url;
         }

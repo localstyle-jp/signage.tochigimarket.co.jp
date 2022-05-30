@@ -83,6 +83,13 @@
             </tr>
 
             <tr>
+              <td>管理する端末</td>
+              <td>
+                <?= $this->Form->control("machine_boxes._ids", ['type' => 'multiCheckbox', 'options' => $machine_list, 'label' => false]); ?>
+              </td>
+            </tr>
+
+            <tr>
               <td>権限</td>
               <td>
                 <?= $this->Form->input("role", ['type' => 'select', 'options' => $role_list]); ?>

@@ -259,6 +259,12 @@ class ContentsController extends AppController
 
         $list['category_list'] = $category_list;
 
+        $sound_list = [];
+        $sound_list = $this->Materials->find('list', ['keyField' => 'file', 'valueField' => 'name'])->where(['Materials.type' => Material::TYPE_SOUND])->order(['Materials.position' => 'ASC']);
+        if (!$sound_list->isEmpty()) {
+            $list['sound_list'] = $sound_list->toArray();
+        }
+
         if (!empty($list)) {
             $this->set(array_keys($list),$list);
         }

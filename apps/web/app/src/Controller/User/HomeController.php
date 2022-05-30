@@ -21,8 +21,9 @@ use Cake\View\Exception\MissingTemplateException;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
-
 use Cake\Auth\DefaultPasswordHasher;
+
+use App\Model\Entity\User;
 /**
  * Static content controller
  *
@@ -70,7 +71,10 @@ class HomeController extends AppController
                                                          'limit' => 1));
                 $r = $query->first();
                 $is_login = false;
-                if ($r) {
+                if (!empty($r) && $r->role == User::ROLE_SHOP) {
+                    $is_login = false;
+                }
+                elseif ($r && $r->role != User::ROLE_SHOP) {
                     
                     $hasher = new DefaultPasswordHasher();
                     if ($hasher->check($data['password'], $r->password)) {

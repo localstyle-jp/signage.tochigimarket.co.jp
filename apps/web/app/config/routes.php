@@ -112,6 +112,17 @@ Router::prefix('user', function ($routes) {
     $routes->fallbacks('DashedRoute');
 });
 
+Router::prefix('shop_user', function ($routes) {
+
+    $routes->connect('/', ['controller' => 'Home', 'action' => 'index', 'prefix' => 'shop_user'], ['_name' => 'shopAdmin']);
+    $routes->connect('/logout', ['controller' => 'Home', 'action' => 'logout', 'prefix' => 'shop_user'], ['_name' => 'shopLogout']);
+
+    // user
+    $routes->connect('/*', ['controller' => 'Home', 'action' => 'index', 'prefix' => 'shop_user']);
+  
+    $routes->fallbacks('DashedRoute');
+});
+
 
 Router::prefix('v1', function ($routes) {
   

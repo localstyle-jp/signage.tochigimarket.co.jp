@@ -66,7 +66,9 @@ class AppController extends BaseController
 
         $primary_key = $this->{$this->modelName}->getPrimaryKey();
 
-
+        if (empty($contain) && !empty($associated)) {
+            $contain = $associated;
+        }
 
         if ($this->request->is(array('post', 'put'))
             && $this->request->getData() //post_max_sizeを越えた場合の対応(空になる)
@@ -154,7 +156,7 @@ class AppController extends BaseController
                 $entity = $this->{$this->modelName}->newEntity();
                 $entity->{$this->{$this->modelName}->getPrimaryKey()} = null;
                 $request = $this->getRequest()->withParsedBody($this->{$this->modelName}->toFormData($entity));
-                $this->setRequest($request);;
+                $this->setRequest($request);
                 if (property_exists($this->{$this->modelName}, 'defaultValues')) {
                     $request = $this->getRequest()->withParsedBody(array_merge($this->request->getData(), $this->{$this->modelName}->defaultValues));
                     $this->setRequest($request);

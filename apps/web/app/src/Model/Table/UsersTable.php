@@ -22,6 +22,8 @@ class UsersTable extends AppTable {
     {
         $this->hasMany('UserSites')->setDependent(true);
 
+        $this->belongsToMany('MachineBoxes')->setDependent(true);
+
         parent::initialize($config);
         
     }

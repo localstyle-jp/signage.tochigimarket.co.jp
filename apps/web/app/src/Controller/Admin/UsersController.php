@@ -27,6 +27,7 @@ class UsersController extends AppController
 
         $this->SiteConfigs = $this->getTableLocator()->get('SiteConfigs');
         $this->UserSites = $this->getTableLocator()->get('UserSites');
+        $this->MachineBoxes = $this->getTableLocator()->get('MachineBoxes');
 
         $this->modelName = $this->name;
         $this->set('ModelName', $this->modelName);
@@ -148,7 +149,17 @@ class UsersController extends AppController
 
         $this->set(compact('site_config_ids'));
 
-        return parent::_edit($id, ['callback' => $callback, 'validate' => $validate]);
+        $contain = [
+            'MachineBoxes'
+        ];
+
+        $options = [
+            'callback' => $callback,
+            'validate' => $validate,
+            'contain' => $contain
+        ];
+
+        return parent::_edit($id, $options);
     }
 
     public function delete($id, $type, $columns = null) {
@@ -176,6 +187,12 @@ class UsersController extends AppController
         $list['site_list'] = $this->SiteConfigs->getList();
 
         $list['role_list'] = User::$role_list;
+
+        $list['machine_list'] = [];
+        $machine_list = $this->MachineBoxes->find('list')->all();
+        if (!$machine_list->isEmpty()) {
+            $list['machine_list'] = $machine_list->toArray();
+        }
 
 
         if (!empty($list)) {
