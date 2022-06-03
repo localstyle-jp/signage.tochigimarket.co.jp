@@ -122,8 +122,29 @@ class UserAdminHelper extends AppHelper
                 ]
                 ],
             'side_shop' => [
-                'コンテンツ' => [
-                    '素材' => '/shop_user/materials'
+                '管理' => [
+                    [
+                        'title' => '素材',
+                        'link' => '/shop_user/materials',
+                        'icon' => 'nav-icon fas fa-image'
+                    ],
+                    [
+                        'title' => 'コンテンツ管理',
+                        'link' => '/shop_user/contents',
+                        'icon' => 'nav-icon far fa-copy'
+                    ]
+                ],
+                '表示端末' => [
+                    [
+                        'title' => 'コンテンツ切替',
+                        'link' => '/shop_user/machine-boxes',
+                        'icon' => ''
+                    ],
+                    [
+                        'title' => '現在のコンテンツ編集',
+                        'link' => '/shop_user/machine',
+                        'icon' => ''
+                    ]
                 ]
             ]
         ];

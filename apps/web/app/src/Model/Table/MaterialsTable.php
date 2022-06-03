@@ -55,7 +55,7 @@ class MaterialsTable extends AppTable {
         
         $this->hasMany('ContentMaterials')->setDependent(true);
         $this->belongsTo('MaterialCategories')->setForeignKey('category_id');
-
+        $this->belongsTo('Users');
 
         parent::initialize($config);
     }

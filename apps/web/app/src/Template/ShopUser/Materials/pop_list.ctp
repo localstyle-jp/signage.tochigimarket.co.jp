@@ -1,22 +1,42 @@
 <?php use App\Model\Entity\Material; ?>
-<div class="title_area">
-  <h1>素材リスト</h1>
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0">素材リスト</h1>
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+  </div><!-- /.container-fluid -->
 </div>
+<!-- /.content-header -->
 
-    <?= $this->element('error_message'); ?>
-    
-    <div class="content_inr">
+<!-- Main content -->
+<div class="content">
 
-      <div class="box">
-          <h3>検索条件</h3>
-          <div class="table_area form_area">
-<?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'class' => '')); ?>
-              <table class=" table border-0">
-                <!-- 素材カテゴリ -->
-                  <tr>
-                    <td class="border-0" style="white-space: nowrap; text-align: center; vertical-align: middle;">素材カテゴリ</td>
-                    <td class="border-0" colspan="11" id="category_input">
-                    <?php foreach ($category_list as $n => $clist): ?>
+  <?= $this->element('error_message'); ?>
+
+  <div class="container-fluid">
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card collapsed-card">
+          <div class="card-header bg-gray-dark">
+            <h2 class="card-title">検索条件</h2>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+            </div>
+          </div>
+
+          <div class="card-body">
+          <?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'class' => '', 'templates' => $search_templates)); ?>
+            <div class="table__search">
+                <ul class="search__row">
+                    <li>
+                        <div class="search__title">素材カテゴリ</div>
+                        <div class="search__column" id="category_input">
+                        <?php foreach ($category_list as $n => $clist): ?>
                       <div class="breadcrumb-item" style="display: inline-block;">
                         <?= $this->Form->input('sch_category_id' . $n, ['type' => 'select',
                                                                       'options' => $clist['list'],
@@ -26,161 +46,146 @@
                                                                     ]); ?>
                       </div>
                     <?php endforeach; ?>
-                    </td>
-                  </tr>
-                
-                  <tr>
-                    <!-- 素材名 -->
-                    <td class="border-0" style="white-space: nowrap; text-align: center; vertical-align: middle;">素材名</td>
-                    <td class="border-0">
-                      <?= $this->Form->input('sch_name', ['type' => 'text',
-                                                             'value' => $query['sch_name'],
-                                                             'class' => 'w-100',
-                                                             'placeholder' => 'あいまい検索',
-                                                             'max-length' => 40
-                                                           ]); ?>
-                    </td>
-                    <!-- 素材タイプ -->
-                    <td class="border-0 head" style="white-space: nowrap; text-align: center; vertical-align: middle;">タイプ</td>
-                    <td class="border-0">
-                      <?= $this->Form->input('sch_type', ['type' => 'select',
-                                                          'options' => $type_list,
-                                                          'empty' => ['0' => '全て'],
-                                                          'value' => $query['sch_type']
-                                                        ]); ?>
-                    </td>
-                  </tr>
-                  <!-- 登録日時 -->
-                  <tr>
-                    <td class="border-0" style="white-space: nowrap; text-align: center; vertical-align: middle;">登録日時</td>
-                    <td class="border-0" colspan="3">
-                      <?= $this->Form->input('sch_created_start', array(
-                        'type' => 'text', 
-                        'class' => 'datepicker',
-                        'value' => $query['sch_created_start'], 
-                        'style' => 'width: 120px;'));?> 
-                      　～　 
-                      <?= $this->Form->input('sch_created_end', array(
-                        'type' => 'text', 
-                        'class' => 'datepicker',
-                        'value' => $query['sch_created_end'],  
-                        'style' => 'width: 120px;'));?>
-                    </td>
-                  </tr>
-                  <!-- 更新日時 -->
-                  <tr>
-                    <td class="border-0" style="white-space: nowrap; text-align: center; vertical-align: middle;">更新日時</td>
-                    <td class="border-0" colspan="3">
-                      <?= $this->Form->input('sch_modified_start', array(
-                        'type' => 'text', 
-                        'class' => 'datepicker',
-                        'value' => $query['sch_modified_start'],  
-                        'style' => 'width: 120px;'));?> 
-                      　～　 
-                      <?= $this->Form->input('sch_modified_end', array(
-                        'type' => 'text', 
-                        'class' => 'datepicker',
-                        'value' => $query['sch_modified_end'],  
-                        'style' => 'width: 120px;'));?>                      
-                    </td>
-                  </tr>
-                  
-              </table>
+                        </div>
+                    </li>
+                </ul>
 
-              <div class="btn_area">
-                <a class="btn btn-secondary" href="<?= $this->Url->build(['action' => 'pop-list']); ?>"><i class="fas fa-eraser"></i> クリア</a>
-                <button class="btn btn-primary" onclick="document.fm_search.submit();"><i class="fas fa-search"></i> 検索開始</button>
-              </div>
+                <ul class="search__row">
+                  <li>
+                    <div class="search__title">素材所有者</div>
+                    <div class="search__column">
+                      <div class="">
+                      <?= $this->Form->input('sch_user_type', ['type' => 'radio',
+                                                              'options' => $user_type_list,
+                                                              'value' => $query['sch_user_type']
+                                                    ]); ?>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+                <ul class="search__row">
+                    <li>
+                      <div class="search__title">素材名</div>
+                      <div class="search__column">
+                        <?= $this->Form->input('sch_name', ['type' => 'text',
+                                                          'value' => $query['sch_name'],
+                                                          'class' => 'w-100',
+                                                          'placeholder' => 'あいまい検索',
+                                                          'max-length' => 40
+                                                        ]); ?>
+                      </div>
+                    </li>
+
+                    <li>
+                      <div class="search__title">タイプ</div>
+                      <div class="search__column">
+                        <?= $this->Form->input('sch_type', ['type' => 'select',
+                                                         'value' => $query['sch_type'],
+                                                         'options' => $type_list,
+                                                         'empty' => ['0' => '全て']
+                                                       ]); ?>
+                      </div>
+                    </li>
+                </ul>
+
+                <ul class="search__row">
+                  <li>
+                    <div class="search__title">登録日時</div>
+                    <div class="search__column">
+                      <?= $this->Form->input('sch_created_start', array(
+                      'type' => 'text', 
+                      'class' => 'datepicker',
+                      'value' => $query['sch_created_start'], 
+                      'style' => 'width: 120px;'));?> 
+                    ～ 
+                    <?= $this->Form->input('sch_created_end', array(
+                      'type' => 'text', 
+                      'class' => 'datepicker',
+                      'value' => $query['sch_created_end'],  
+                      'style' => 'width: 120px;'));?>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="search__title">更新日時</div>
+                    <div class="search__column">
+                      <?= $this->Form->input('sch_modified_start', array(
+                      'type' => 'text', 
+                      'class' => 'datepicker',
+                      'value' => $query['sch_modified_start'],  
+                      'style' => 'width: 120px;'));?> 
+                    ～ 
+                    <?= $this->Form->input('sch_modified_end', array(
+                      'type' => 'text', 
+                      'class' => 'datepicker',
+                      'value' => $query['sch_modified_end'],  
+                      'style' => 'width: 120px;'));?>
+                    </div>
+                  </li>
+                </ul>
+            </div>
+
+            <div class="btn_area center">
+              <a class="btn btn-secondary" href="<?= $this->Url->build(['action' => 'index']); ?>"><i class="fas fa-eraser"></i> クリア</a>
+              <button class="btn btn-primary" onclick="document.fm_search.submit();"><i class="fas fa-search"></i> 検索開始</button>
+            </div>
 <?= $this->Form->end(); ?>
           </div>
-      </div>
-
-      <div class="box">
-        <h3 class="box__caption--count"><span>登録一覧</span><span class="count"><?= $this->Paginator->param('count'); ?>件の登録</span></h3>      
-
-        <div class="table_area">
-          <?= $this->element('pagination')?>
-
-          <table class="table__list table-hover" style="table-layout: fixed;">
-          <colgroup>
-            <col style="width: 70px;">
-            <col style="width: 60px;">
-            <col>
-            <col style="width: 70px;">
-            <col style="width: 100px;">
-            <col style="width: 100px;">
-          </colgroup>
-
-            <tr>
-              <th >選択</th>
-              <th >ID</th>
-              <th style="text-align:left;">カテゴリ / 素材名</th>
-              <th >タイプ</th>
-              <th >登録日時</th>
-              <th >更新日時</th>
-            </tr>
-
-<?php
-foreach ($data_query->toArray() as $key => $data):
-
-$id = $data->id;
-
-?>
-            <a name="m_<?= $id ?>"></a>
-            <tr class="visible" id="content-<?= $data->id ?>">
-
-              <td class="text-center">
-                <div class="btn_area">
-                  <a href="#" class="btn btn-danger btn-sm" onClick="parent.pop_box.select('<?= $data->id;?>');">選択</a>
-                </div>
-              </td>
-
-              <td style="padding: 0;padding-left: 10px;">
-                <?= $data->id; ?>
-              </td>
-
-              <td style="padding: 0;padding-left: 10px;">
-                【<?= h($data->material_category->name); ?>】<br>
-                <?= h($data->name); ?>
-              </td>
-
-              <td>
-                <?= Material::$type_list[$data->type]; ?>
-                <?php if (Material::$type_list[$data->type] == 'mp4') : ?>
-                <span class='badge <?= $data->status_mp4 == 'converting' ? 'badge-danger' : 'badge-success' ;?>'>
-                  <?= $data->status_mp4 == 'converting' ? '配信不可' : '配信可' ;?>
-                </span>
-                <?php endif; ?>
-              </td>
-
-              <td style="padding: 0;padding-left: 10px;">
-                <?= $data->created; ?>
-              </td>
-
-              <td style="padding: 0;padding-left: 10px;">
-                <?= $data->modified; ?>
-              </td>
-
-            </tr>
-
-<?php endforeach; ?>
-
-          </table>
 
         </div>
-
-
+      </div>
+      <!-- /.col-md-6 -->
     </div>
+    <!-- /.row -->
+
+
+<?php
+//データの位置まで走査
+$count = array('total' => 0,
+           'enable' => 0,
+           'disable' => 0);
+// $count['total'] = $data_query->count();
+$count['total'] = $numrows;
+?>
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-gray-dark">
+            <h2 class="card-title">登録一覧　<span class="count"><?php echo $count['total']; ?>件の登録</span></h2>
+
+          </div>
+
+          <div class=" card-body">
+            <div class="btn_area center">
+              <a href="<?= $this->Url->build(array('action' => 'edit', '?' => ['sch_type' => $query['sch_type'], 'sch_category_id' => $query['sch_category_id']])); ?>" class="btn btn_post w-20 rounded-pill"><i class="far fa-plus-square"></i> 新規登録</a>
+            </div>
+            
+            <div style="" class="mb-2 mt-2 text-center"><?= $this->element('pagination');?></div>
+
+            <?= $this->element('pop_list-materials', ['count' => $count]); ?>
+
+            <div style="" class="mb-2 mt-2 text-center"><?= $this->element('pagination');?></div>
+
+            <div class="btn_area center">
+              <a href="<?= $this->Url->build(array('action' => 'edit', '?' => ['sch_type' => $query['sch_type'], 'sch_category_id' => $query['sch_category_id']])); ?>" class="btn btn_post w-20 rounded-pill"><i class="far fa-plus-square"></i> 新規登録</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <!-- /.col-md-6 -->
+    </div>
+    <!-- /.row -->
+
+  </div><!-- /.container-fluid -->
 </div>
-<?php $this->start('beforeBodyClose');?>
-<link rel="stylesheet" href="/admin/common/css/cms.css">
+<!-- /.content -->
+
+<?php $this->start('beforeBodyClose'); ?>
 <script src="/user/common/js/jquery.ui.datepicker-ja.js"></script>
 <?= $this->Html->script('/user/common/js/materials/index') ?>
+
 <script>
-// function change_category(elm) {
-//   $("#" + elm).submit();
-    
-// }
 
 function change_category_input(layer) {
     var category_id = $('[name="sch_category_id'+layer+'"] option:selected').val();
@@ -197,10 +202,11 @@ function change_category_input(layer) {
         $("#category_input").replaceWith($(a));
     }, false);
 }
+
 $(function () {
 
 
-
-})
+});
 </script>
-<?php $this->end();?>
+
+<?php $this->end(); ?>

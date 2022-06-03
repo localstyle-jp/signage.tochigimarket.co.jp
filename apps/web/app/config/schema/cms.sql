@@ -188,6 +188,7 @@ CREATE TABLE users
   name varchar(60) DEFAULT '' NOT NULL,
   status enum('publish','draft') DEFAULT 'publish' NOT NULL,
   role int DEFAULT 1 NOT NULL,
+  face_image varchar(100) NOT NULL DEFAULT '',
   PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
@@ -255,3 +256,5 @@ CREATE TABLE machine_boxes_users
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 ALTER TABLE materials ADD COLUMN user_id int unsigned NOT NULL DEFAULT 0;
+ALTER TABLE contents ADD COLUMN user_id int unsigned NOT NULL DEFAULT 0 AFTER name;
+ALTER TABLE machine_contents ADD COLUMN user_id int unsigned NOT NULL DEFAULT 0 AFTER name;

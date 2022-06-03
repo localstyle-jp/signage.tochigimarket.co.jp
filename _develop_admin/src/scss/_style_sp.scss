@@ -1,0 +1,148 @@
+.table__search {
+  /* 非table */
+font-size: 0.9rem;
+ul.search__row {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 3px;
+  li {
+    display: block;
+
+    .search__title {
+      vertical-align: middle;
+      background-color: #cbcbcb;
+      border: none;
+      text-align: center;
+      display: block;
+      width: 100%;
+      padding: 3px 5px;
+    }
+    .search__column {
+      display: block;
+      vertical-align: middle;
+      width: 100%;
+      select, input, textarea {
+        padding: 2px 5px;
+        border: solid 1px #343a40;
+      }
+    }
+  }
+}
+}
+
+.table_list_area {
+    table {
+        border: none;
+        thead {
+            display: none;
+        }
+        tr {
+            width: 100%;
+            margin-bottom: 10px;
+            display: block;
+        }
+        td {
+            display: block;
+            text-align: right;
+            width: 100%;
+
+            &:not(.show_pc):first-child {
+                background-color: #6c757d;
+                color: #FFF;
+                font-weight: bold;
+                text-align: center;
+            }
+
+            &:before {
+                content: attr(data-label);
+                float: left;
+                font-weight: bold;
+                margin-right: 10px;
+            }
+
+            .val_block {
+                width: 100%;
+            }
+        }
+    }
+}
+
+.btn_area {
+    &.center {
+        flex-wrap: nowrap;
+    }
+}
+/* 詳細・編集 */
+.table_edit_area {
+    // padding: 20px;
+  
+    .form-group {
+      margin-bottom: 0;
+      border: 1px solid #d9e3ed;
+      border-top: none;
+      &:first-child {
+        border-top: 1px solid #d9e3ed;
+      }
+    }
+  
+  
+    .control_title {
+      display: flex;
+      align-items: center;
+      background-color: #ededed;
+      span {
+        &.attent {
+          font-size: 12px;
+          color: #ab3030;
+          font-weight: normal;
+          border: 1px solid currentColor;
+          border-radius: 3px;
+          padding: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 .5em;
+          margin-left: 10px;
+        }
+      }
+    }
+    .control_value {
+      // display: flex;
+      padding: 10px;
+    }
+  
+    table {
+      width: 100%;
+      box-sizing: border-box;
+  
+      th,
+      td:first-child {
+        font-weight: bold;
+        background-color: #ededed;
+        width: 100%;
+      }
+  
+      td {
+        border: solid 1px #d9e3ed;
+        padding: 10px;
+  
+      }
+  
+      span {
+        &.attent {
+          font-size: 12px;
+          color: #ab3030;
+          font-weight: normal;
+          border: 1px solid currentColor;
+          border-radius: 3px;
+          padding: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 .5em;
+          margin-left: 10px;
+        }
+      }
+  
+    }
+  }

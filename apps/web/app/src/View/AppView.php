@@ -55,5 +55,27 @@ class AppView extends View
             'cms' => User::ROLE_CMS
         ];
         $this->set(compact('user_roles'));
+
+        $this->setOptions();
+
+    }
+
+    private function setOptions() {
+        $search_templates = [
+            'inputContainer' => '{{content}}',
+            'inputContainerError' => '{{content}}{{error}}',
+            'nestingLabel' => '{{input}}<label{{attrs}} class="form-check-label">{{text}}</label>',
+            
+            'radio' => '<input type="radio" name="{{name}}" value="{{value}}"{{attrs}}>',
+            'radioWrapper' => '<div class="radio icheck-midnightblue d-inline mr-2">{{label}}</div>',
+
+            'error' => '<p class="error-msg">{{content}}</p>',
+            
+            'checkbox' => '<input type="checkbox" name="{{name}}" value="{{value}}"{{attrs}}>',
+            'checkboxFormGroup' => '{{label}}',
+            'checkboxWrapper' => '<div class="checkbox-item checkbox-item--small checkbox-item--white">{{label}}</div>',
+         ];
+         
+         $this->set(compact('search_templates'));
     }
 }

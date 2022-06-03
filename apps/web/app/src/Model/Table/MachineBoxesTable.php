@@ -29,6 +29,8 @@ class MachineBoxesTable extends AppTable {
 
         $this->belongsTo('MachineContents');
 
+        $this->belongsToMany('Users')->setDependent(true);
+
 
         parent::initialize($config);
     }

@@ -1,5 +1,5 @@
 <?php $role_key = $this->Common->getUserRoleKey(); ?>
-<?php $menu_list = $this->UserAdmin->getUserMenu('side_' . $role_key); ?>
+<?php $menu_list = $this->Common->getAdminMenu(); ?>
 
 <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
@@ -15,7 +15,11 @@
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+        <?php if ($this->Session->read('data.face_image')): ?>
+          <img src="<?= $this->Session->read('data.face_image'); ?>" class="img-circle elevation-2" alt="User Image">
+        <?php else: ?>
+          <img src="/shop_user/dist/img/avatar5.png" class="img-circle elevation-2" alt="User Image">
+        <?php endif; ?>
         </div>
         <div class="info">
           <a href="#" class="d-block"><?= $this->Session->read('data.name'); ?></a>
@@ -23,7 +27,7 @@
       </div>
 
       <!-- SidebarSearch Form -->
-      <div class="form-inline">
+      <!-- <div class="form-inline">
         <div class="input-group" data-widget="sidebar-search">
           <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
           <div class="input-group-append">
@@ -32,7 +36,7 @@
             </button>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
@@ -40,12 +44,19 @@
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
 
-        <?php foreach ($menu_list as $name => $sub): ?>
+        <?php foreach ($menu_list['side'] as $m): ?>
+          <?php $role_only = false; ?>
+          <?php if (!empty($m['role']) && !empty($m['role']['role_only'])) {
+            $role_key = $m['role']['role_only'];
+          } ?>
+
+          <?php if ( empty($m['role']) || empty($m['role']['role_type']) || 
+            (!empty($m['role']) && !empty($m['role']['role_type']) && $this->Common->isUserRole($m['role']['role_type'], $role_only))): ?>
           <li class="nav-header">
-            <?= $name; ?>
+            <?= $m['title']; ?>
           </li>  
 
-          <?php foreach($sub as $sub_name => $link): ?>
+          <?php foreach($m['buttons'] as $sub): ?>
           <!-- <li class="nav-item menu-open">
             <a href="#" class="nav-link active">
               <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -70,15 +81,26 @@
             </ul>
           </li> -->
           <li class="nav-item">
-            <a href="<?= $link; ?>" class="nav-link" class="">
-              <i class="nav-icon fas fa-th"></i>
+            <?php 
+            $current_path = $this->Url->build(); 
+            $side_menu_class = '';
+            $pattern = '^' . $sub['link'] . '$|^' . $sub['link'] . '\/';
+            $pattern = str_replace("?", "\?", $pattern);
+            ?>
+            <?php if (preg_match('{'. $pattern .'}', $current_path)): $side_menu_class = 'active'; ?>
+            <?php endif; ?>
+            <a href="<?= $sub['link']; ?>" class="nav-link <?= $side_menu_class; ?>">
+            <?php if (!empty($sub['icon'])): ?>
+              <i class="<?= $sub['icon'];?>"></i>
+            <?php endif; ?>
               <p>
-                <?= $sub_name; ?>
+                <?= $sub['name']; ?>
                 <!-- <span class="right badge badge-danger">New</span> -->
               </p>
+              <i class="btn-icon-right fas fa-angle-right"></i>
             </a>
           </li>
-          <?php endforeach; ?>
+          <?php endforeach; endif;  ?>
         <?php endforeach; ?>
         </ul>
       </nav>

@@ -13,6 +13,15 @@ class AppController extends BaseController
         'Paginator' => ['templates' => 'paginator-user']
     ];
 
+    public function initialize()
+    {
+
+        parent::initialize();
+
+        $this->loadComponent('AdminMenu');
+
+
+    }
 
     protected function _lists($cond = array(), $options = array()) {
         
@@ -153,7 +162,7 @@ class AppController extends BaseController
                 
                 if ($r) {
                     if ($success_message) {
-                        $this->Flash->set($success_message);
+                        $this->Flash->success($success_message);
                     }
                     if ($callback) {
                         $callback_options = $callback($entity->id);
@@ -178,7 +187,7 @@ class AppController extends BaseController
                 }
                 
                 $this->set('data', $data);
-                $this->Flash->set('正しく入力されていない項目があります');
+                $this->Flash->error('正しく入力されていない項目があります');
             }
         } else {
 
@@ -272,7 +281,7 @@ class AppController extends BaseController
     }
 
     public function checkLogin(){
-        return parent::checkUserLogin();
+        return parent::checkShopLogin();
     }
 
     /**

@@ -85,6 +85,12 @@ class CommonHelper extends AppHelper
         elseif ($role < 10) {
             $res = 'admin';
         } 
+        elseif ($role < 20) {
+            $res = 'staff';
+        }
+        elseif ($role < 30) {
+            $res = 'shop';
+        }
         else if ($role >= 90) {
             $res = 'demo';
         }
@@ -98,6 +104,8 @@ class CommonHelper extends AppHelper
                 $role_key = array('develop', 'admin');
             } elseif ($role_key == 'staff') {
                 $role_key = array('develop', 'admin', 'staff');
+            } elseif ($role_key == 'shop') {
+                $role_key = ['develop', 'admin', 'staff', 'shop'];
             }
         } 
 
@@ -121,5 +129,9 @@ class CommonHelper extends AppHelper
 
         return Util::Round($number, $decimal, $type);
 
+    }
+
+    public function getAdminMenu() {
+        return $this->session_read('admin_menu.menu_list');
     }
 }

@@ -5,6 +5,8 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\ORM\TableRegistry;
 
+use App\Model\Entity\User;
+
 class UsersTable extends AppTable {
 
     // テーブルの初期値を設定する
@@ -13,7 +15,20 @@ class UsersTable extends AppTable {
     ];
 
     public $attaches = array('images' =>
-                            array(),
+                            array('face_image' => array('extensions' => array('jpg', 'jpeg', 'gif', 'png'),
+                            'width' => 1200,
+                            'height' => 1200,
+                            'file_name' => 'img_%d_%s',
+                            'thumbnails' => array(
+                                's' => array(
+                                    'prefix' => 's_',
+                                    'width' => 215,
+                                    'height' => 215
+                                    )
+                                ),
+                            )
+                            //image_1),
+                            ),
                             'files' => array(),
                             );
     
@@ -23,6 +38,8 @@ class UsersTable extends AppTable {
         $this->hasMany('UserSites')->setDependent(true);
 
         $this->belongsToMany('MachineBoxes')->setDependent(true);
+
+        $this->addBehavior('FileAttache');
 
         parent::initialize($config);
         
@@ -139,5 +156,18 @@ class UsersTable extends AppTable {
         }
 
         return $site_config_ids;
+    }
+
+    public function getAdminIds() {
+        $cond = [
+            'Users.role in' => [User::ROLE_DEVELOP, User::ROLE_ADMIN]
+        ];
+        $users = $this->find()->where($cond)->all();
+        if ($users->isEmpty()) {
+            return null;
+        }
+        $user_ids = $users->extract('id')->toArray();
+
+        return $user_ids;
     }
 }

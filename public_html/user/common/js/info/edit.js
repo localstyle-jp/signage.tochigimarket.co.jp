@@ -365,3 +365,49 @@ $(function () {
     setWysiwyg('#blockTable textarea.editor');
 
 });
+
+function clickSort(row, mode) {
+  var item = $("#block_no_" + row);
+  // var section_no = item.find('.section_no').val();
+  // var wakuId = '#wakuId_' + section_no;
+  // if (section_no == 0) {
+    wakuId = '#blockArea';
+  // }
+
+  if (mode == 'up') {
+    item.prev().before(item);
+  } else if (mode == 'down') {
+    item.next().after(item);
+  } else if (mode == 'first') {
+    $(wakuId + ' .item_block:first').before(item);
+  } else if (mode == 'last') {
+    $(wakuId).append(item);
+  }
+}
+function clickItemConfig(elm) {
+  // var section_no = $(elm).closest('.item_block').find('.section_no').val();
+  // var wakuId = '#wakuId_' + section_no;
+  // if (section_no == 0) {
+    wakuId = '#blockArea';
+  // }
+
+  // var type = $(elm).closest('.item_block').find('.block_type').val();
+  // if (type in block_type_waku_list !== false) {
+    // wakuId = '#blockArea';
+  // }  
+console.log(elm);
+console.log($(elm).closest('.item_block').attr('id'));
+  // 枠内の最初
+  if ($(wakuId).find('> .item_block:first').attr('id') == $(elm).closest('.item_block').attr('id')) {
+    $(elm).next().find('.up').hide();
+  } else {
+    $(elm).next().find('.up').show();
+  }
+
+  // 枠内の最後
+  if ($(wakuId).find('> .item_block:last').attr('id') == $(elm).closest('.item_block').attr('id')) {
+    $(elm).next().find('.down').hide();
+  } else {
+    $(elm).next().find('.down').show();
+  }
+}

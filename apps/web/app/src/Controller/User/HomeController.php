@@ -94,10 +94,10 @@ class HomeController extends AppController
                 }
             }
             if (empty($r)) {
-                $this->Flash->set('アカウント名またはパスワードが違います');
+                $this->Flash->error('アカウント名またはパスワードが違います');
             }
         }
-        if (0 < $this->Session->read('userid')) {
+        if (0 < $this->Session->read('userid') && $this->Session->read('user_role') < User::ROLE_SHOP) {
             $this->viewBuilder()->setLayout("user");
             $view = "index";
 

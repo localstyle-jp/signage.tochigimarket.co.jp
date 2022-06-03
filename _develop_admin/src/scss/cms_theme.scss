@@ -1,5 +1,203 @@
+@charset "utf-8";
+// ===================================================================
+//  use toppage
+// ===================================================================
+
+@import "./_config/_mixin";
+
+/* 共通 */
+html {
+  font-size: 16px;
+}
+
+.content {
+  overflow:overlay;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  li {
+    padding: 0;
+    list-style-type: none;
+  }
+}
+
+.message {
+  &.hidden {
+    display: none;
+  }
+}
+
+/* Login */
+body {
+  &.login-page {
+    background-color: #e2e2e2;
+    height: 80vh;
+
+    .alert {
+      font-size: 0.8rem;
+    }
+
+  }
+}
+
+/* ボタン装飾用 */
+.btn_area {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  
+  &.center {
+    justify-content: center;
+    a,
+    button {
+      margin-right: 10px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+  &.right {
+    justify-content: right;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+  }
+
+  .btn_post {
+    width: 300px;
+    height: 50px;
+    border-radius: 5px;
+    background-color: $col_accent;
+    color: #fff;
+    border: none;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 500;
+    justify-content: center;
+    // margin: 0px auto;
+    i {
+      margin-right: 2px;
+    }
+    &:hover {
+      background-color: $col_hover;
+    }
+
+    &.btn_delete {
+      background-color: #828282;
+      &:hover {
+        background-color: $col_hover;
+      }
+    }
+  }
+
+}
 .btn-icon-right {
   position: absolute;
   right: 20px;
   line-height: 1.5;
+}
+
+/* 一覧 */
+.table_area {
+  font-size: 0.9rem;
+}
+ul.ctrlis {
+	display:block;
+	width:105px;
+	margin:0 auto;
+	list-style-type:none;
+  min-height: 25px;
+  li {
+    display:block;
+    margin:2px;
+    float:left;
+    font-size:0;
+    text-indent:-9999px;
+
+    a,&.non {
+      display:block;
+      width:22px;
+      height:22px;
+      text-decoration:none;
+    }
+  }
+
+  @mixin position_style {
+    background:url(/admin/common/images/ctr.gif) no-repeat;
+  }
+
+  .cttop {
+    a {
+      @include position_style;
+      &:hover {
+        background-position:0 -22px;
+      }
+      &:active {
+        background-position:0 -44px;
+      }
+    }
+  }
+  .ctup {
+    a {
+      @include position_style;
+      background-position:-22px 0;
+      &:hover {
+        background-position:-22px -22px;
+      }
+      &:active {
+        background-position:-22px -44px;
+      }
+    }
+  }
+  .ctdown {
+    a {
+      @include position_style;
+      background-position:-44px 0;
+      &:hover {
+        background-position:-44px -22px;
+      }
+      &:active {
+        background-position:-44px -44px;
+      }
+    }
+  }
+  .ctend {
+    a {
+      @include position_style;
+      background-position:-66px 0;
+      &:hover {
+        background-position:-66px -22px;
+      }
+      &:active {
+        background-position:-66px -44px;
+      }
+    }
+  }
+}
+
+/* 一覧　検索条件 */
+
+
+
+//---------------------------------------------------------------------------
+@include min-screen() {
+  @import "./_style_pc.scss";
+  .show_sp {
+    display: none !important;
+  }
+}
+
+@include max-screen() {
+  @import "./_style_sp.scss";
+  .show_pc {
+    display: none !important;
+  }
 }

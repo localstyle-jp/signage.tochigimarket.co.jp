@@ -11,7 +11,7 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="index3.html" class="nav-link">Home</a>
+        <a href="<?= $this->Url->build(['_name' => 'shopAdmin']); ?>" class="nav-link">Home</a>
       </li>
       <!-- <li class="nav-item d-none d-sm-inline-block">
         <a href="#" class="nav-link">Contact</a>
@@ -72,14 +72,24 @@
       <li class="nav-item">
         <span class="link_logout nav-link">サーバー空き容量:<?= $this->Html->free_space(); ?></span>
       </li>
+
+    <?php if (false): ?>
+      <li class="nav-item">
+        <a href="<?= $this->Url->build('/', true); ?>" class="nav-link" target="_blank">
+        <i class="fas fa-desktop"></i>
+        <span class="show_pc">サイト表示</span>
+        </a>
+      </li>
+    <?php endif; ?>
       
       <li class="nav-item">
         <a href="<?= $this->Url->build(['_name' => 'shopLogout']); ?>" class="nav-link">
-          <i class="glyphs-logout"></i><span class="link_logout"><i class="fas fa-sign-out-alt"></i> ログアウト</span>
+          <i class="glyphs-logout"></i><span class="link_logout"><i class="fas fa-sign-out-alt"></i> <span class="show_pc">ログアウト</span></span>
         </a>
       </li>
 
-      <li class="nav-item">
+      <!-- フルスクリーン -->
+      <li class="nav-item show_pc">
         <a class="nav-link" data-widget="fullscreen" href="#" role="button">
           <i class="fas fa-expand-arrows-alt"></i>
         </a>

@@ -17,6 +17,7 @@ namespace App\Controller;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
 use App\Model\Entity\Info;
+use App\Model\Entity\User;
 /**
  * Application Controller
  *
@@ -159,6 +160,13 @@ class AppController extends Controller
     }
     public function isUserLogin() {
         $userid = $this->Session->read('userid');
+        if ($this->Session->read('user_role') >= User::ROLE_SHOP) {
+            $userid = 0;
+        }
+        return $userid;
+    }
+    public function isShopLogin() {
+        $userid = $this->Session->read('userid');
         return $userid;
     }
     public function isCustomerLogin() {
@@ -175,8 +183,14 @@ class AppController extends Controller
         }
     }
     public function checkUserLogin(){
-        if (!$this->isLogin()) {
+        if (!$this->isUserLogin()) {
             return $this->redirectWithException('/user/');
+            // return $this->redirect('/user/');
+        }
+    }
+    public function checkShopLogin(){
+        if (!$this->isShopLogin()) {
+            return $this->redirectWithException('/shop_user/');
             // return $this->redirect('/user/');
         }
     }

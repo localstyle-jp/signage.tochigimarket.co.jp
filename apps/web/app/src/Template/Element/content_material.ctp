@@ -51,7 +51,7 @@
       </div>
 
     <?php elseif ($material['material']['type'] == Material::TYPE_MOVIE_MP4): ?>
-      <video width="300px;" id="mate_mp4_<?= $material['id'] ?>">
+      <video width="300px;" id="mate_mp4_<?= $material['id'] ?>" playsinline>
         <source src="<?= $material['material']['attaches']['file']['src']; ?>">
       </video>
 

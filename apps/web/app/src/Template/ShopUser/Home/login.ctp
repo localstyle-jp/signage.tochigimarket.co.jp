@@ -1,84 +1,112 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="<?php include WWW_ROOT.'admin/common/include/viewport.inc' ?>">
-<link rel="stylesheet" href="/user/common/css/normalize.css">
-<link rel="stylesheet" href="/user/common/css/font.css">
-<link rel="stylesheet" href="/user/common/css/common.css">
-<!-- <link rel="stylesheet" href="./common/css/cms_theme.css"> -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script> -->
-<script src="https://kit.fontawesome.com/7a9d7e5bcd.js" crossorigin="anonymous"></script>
-<!--[if lt IE 9]>
-<script src='./common/js/html5shiv.js'></script>
-<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HOMEPAGE MANAGER | Log in</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/shop_user/plugins/fontawesome-free/css/all.min.css">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="/shop_user/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/shop_user/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="/shop_user//dist/css/cms_theme.css">
 </head>
-
-<body class="login">
-
-<div id="container">
-<header class="login__header">
-  <div class="status">
+<body class="hold-transition login-page">
+<div class="login-box">
+  <div class="login-logo">
+    <b>HOMEPAGE MANAGER</b>
+    <div>CATERS</div>
   </div>
-</header>
-
-  <div id="content" class="login__content">
-    <div class="title_area login__title-area">
-      <h1>HOMEPAGE MANAGER</h1>
-    </div>
-    <!-- div class="error">error messeages error messeages error messeages error messeages error messeages</div -->
+  <!-- /.login-logo -->
+  <div class="card">
+    <div class="card-body login-card-body">
+      <p class="login-box-msg"></p>
       <?= $this->element('error_message'); ?>
-    <div class="content_inr login__inner">
-      <div class="box login__box" style="max-width:600px;margin-left:auto;margin-right:auto;">
-      <h3 class="login__caption">ログイン</h3>
-<?= $this->Form->create('Admin', array('id' => 'AdminIndexForm'));?>
-        <div class="table_area form_area login__table-area">
-          <table class="vertical_table login__table">
-            <tr>
-              <td>ユーザーID</td>
-              <td><input name="username" type="text" id="id" placeholder="ユーザーID" style="width:100%;" /></td>
-            </tr>
-            <tr>
-              <td>パスワード</td>
-              <td><input name="password" type="password" id="pw"  placeholder="パスワード" style="width: 100%;" /></td>
-            </tr>
-           </table> 
-          <div class="btn_area">
-            <a href="javascript:void(0);" class="btn_confirm text-white">ログイン<i class="icon-icn_arrow_rt"></i></a>
-            <a href="javascript:void(0);" class="btn_back">リセット<i class="icon-icn_arrow_rt"></i></a>
+
+<?= $this->Form->create(null, array('id' => 'AdminIndexForm'));?>
+        <div class="input-group mb-3">
+          <input type="text" name="username" class="form-control" placeholder="ユーザー名">
+          <div class="input-group-append">
+            <div class="input-group-text">
+            <span class="fas fa-user"></span>
+            </div>
           </div>
         </div>
+        <div class="input-group mb-3">
+          <input type="password" name="password" class="form-control" placeholder="パスワード">
+          <div class="input-group-append">
+            <div class="input-group-text">
+            <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+
+    <?php if (false): ?>
+        <div class="row">
+          <div class="col-8">
+            <div class="icheck-primary">
+              <input type="checkbox" id="remember">
+              <label for="remember">
+                Remember Me
+              </label>
+            </div>
+          </div>
+          <!-- /.col -->
+          <div class="col-4">
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+          </div>
+          <!-- /.col -->
+        </div>
+    <?php endif; ?>
+        
+        <div class="row">
+            <div class="col-12">
+            <button type="submit" class="btn btn-dark btn-block">ログイン</button>
+            </div>
+        </div>
+
 <?= $this->Form->end();?>
+
+    <?php if (false): ?>
+      <div class="social-auth-links text-center mb-3">
+        <p>- OR -</p>
+        <a href="#" class="btn btn-block btn-primary">
+          <i class="fab fa-facebook mr-2"></i> Sign in using Facebook
+        </a>
+        <a href="#" class="btn btn-block btn-danger">
+          <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
+        </a>
       </div>
+    <?php endif; ?>
+      <!-- /.social-auth-links -->
+
+    <?php if (false): ?>
+      <p class="mb-1">
+        <a href="forgot-password.html">I forgot my password</a>
+      </p>
+      <p class="mb-0">
+        <a href="register.html" class="text-center">Register a new membership</a>
+      </p>
+    <?php endif; ?>
     </div>
-<?php include WWW_ROOT.'admin/common/include/footer.inc' ?>
+    <!-- /.login-card-body -->
   </div>
 </div>
+<!-- /.login-box -->
 
-<script src="/user/common/js/jquery.js"></script>
-<script src="/user/common/js/base.js"></script>
-<script>
-$(function () {
-    $('a.btn_confirm').on('click', function () {
-        $('#AdminIndexForm').submit();
-    });
-    $('a.btn_back').on('click', function () {
-       document.getElementById("AdminIndexForm").reset();
-        //$('#AdminIndexForm').reset();
-    });
-})
-</script>
+<div class="login-box">
 
+</div>
+
+<!-- jQuery -->
+<script src="/shop_user/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/shop_user/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/shop_user/dist/js/adminlte.min.js"></script>
 </body>
 </html>
-
-
-
-
-</table>
-
-<?php $this->start('afterContent');?>
-
-<?php $this->end();?>

@@ -36,6 +36,22 @@
               </td>
             </tr>
 
+            <tr class="changeArea imageArea contentArea">
+              <td>画像</td>
+              <td>
+                <?php if (!empty($data['attaches']['face_image']['0'])) :?>
+                <img src="<?= $this->Url->build($entity['attaches']['face_image']['0'])?>" style="width: 300px;">
+                <?= $this->Form->input("attaches.face_image.0", ['type' => 'hidden']); ?>
+                <?= $this->Form->input("_old_face_image", ['type' => 'hidden', 'value' => $entity->face_image]); ?>
+              <?php endif;?>
+
+              <?= $this->Form->input('face_image', array('type' => 'file','accept' => 'image/jpeg,image/png,image/gif', 'id' => 'idMainImage', 'class' => 'attaches'));?>
+                <br><span>※jpeg , jpg , gif , png ファイルのみ</span>
+                <br><span class="changeArea imageArea">正方形の画像を推奨します</span>
+              </td>
+
+            </tr>
+
             <tr>
               <td>ユーザーID<span class="attent">*</span></td>
               <td>

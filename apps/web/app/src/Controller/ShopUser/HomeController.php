@@ -79,16 +79,18 @@ class HomeController extends AppController
                 if ($r && $is_login) {
                     $this->Session->write(array('userid' => $r->id,
                                                 'data' => array(
-                                                    'name' => $r->name
+                                                    'name' => $r->name,
+                                                    'face_image' => $r->attaches['face_image']['s']
                                                 ),
                                                 'user_role' => $r->role
                                             ));
+                    $this->AdminMenu->init();
                 } else {
                     $r = false;
                 }
             }
             if (empty($r)) {
-                $this->Flash->set('アカウント名またはパスワードが違います');
+                $this->Flash->error('ユーザー名またはパスワードが違います');
             }
         }
         if (0 < $this->Session->read('userid')) {
@@ -135,7 +137,7 @@ class HomeController extends AppController
             $this->Session->delete('role');
             $this->Session->destroy();
         }
-        $this->redirect(['_name' => 'shopAdminshop']);
+        $this->redirect(['_name' => 'shopAdmin']);
     }
 
     public function setList() {

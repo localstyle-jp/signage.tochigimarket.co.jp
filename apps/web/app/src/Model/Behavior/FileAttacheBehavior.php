@@ -373,6 +373,30 @@ class FileAttacheBehavior extends Behavior
      * */
     public function convert_img($size, $source, $dist, $method = 'fit') {
         list($ow, $oh, $info) = getimagesize($source);
+        $exif = @exif_read_data($source);
+        $option_rotate = '';
+        $deg = 0;
+        $convertParams = $this->convertParams;
+        if (!empty($exif) && is_array($exif) && array_key_exists('Orientation', $exif)) {
+            switch ($exif['Orientation']){
+                case 1:
+                    break;
+                case 8:
+                    $deg = 270;
+                    break;
+                case 3:
+                    $deg = 180;
+                    break;
+                case 6:
+                    $deg = 90;
+                    break;
+            }
+            if ($deg) {
+                $option_rotate = '-rotate ' . $deg;
+                $convertParams = $option_rotate . ' ' . $this->convertParams;
+            }
+        }
+        
         $sz = explode('x', $size);
         $cmdline = $this->convertPath;
         //サイズ指定ありなら
@@ -380,7 +404,7 @@ class FileAttacheBehavior extends Behavior
             if ($ow <= $sz[0] && $oh <= $sz[1]) {
                 //枠より完全に小さければ、ただのコピー
                 $size = $ow . 'x' . $oh;
-                $option = $this->convertParams . ' ' . $size . '>';
+                $option = $convertParams . ' ' . $size . '>';
             } else {
                 //枠をはみ出していれば、縮小
                 if($method === 'cover' || $method === 'crop'){
@@ -403,13 +427,13 @@ class FileAttacheBehavior extends Behavior
                     }
                 } else {
                     //通常の縮小 拡大なし
-                    $option = $this->convertParams . ' ' . $size . '>';
+                    $option = $convertParams . ' ' . $size . '>';
                 }
             }
         } else {
             //サイズ指定なしなら 単なるコピー
             $size = $ow . 'x' . $oh;
-            $option = $this->convertParams . ' ' . $size . '>';
+            $option = $convertParams . ' ' . $size . '>';
         }
         $a = system(escapeshellcmd($cmdline . ' ' . $option . ' ' . $source . ' ' . $dist));
         @chmod($dist, $this->uploadFileMask);

@@ -20,6 +20,8 @@ class MachineBoxesUsersTable extends AppTable {
     public function initialize(array $config)
     {
 
+        $this->belongsTo('Users');
+        $this->belongsTo('MachineBoxes');
 
         parent::initialize($config);
     }

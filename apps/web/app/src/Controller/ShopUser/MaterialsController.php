@@ -26,6 +26,7 @@ class MaterialsController extends AppController
     public function initialize()
     {
         $this->MaterialCategories = $this->getTableLocator()->get('MaterialCategories');
+        $this->Users = $this->getTableLocator()->get('Users');
 
         parent::initialize();
     }
@@ -49,6 +50,7 @@ class MaterialsController extends AppController
 
         $query['sch_name'] = $this->request->getQuery('sch_name');
         $query['sch_type'] = $this->request->getQuery('sch_type');
+        $query['sch_user_type'] = $this->request->getQuery('sch_user_type');
         // 一番下層の（連番が一番大きな）カテゴリを検索するカテゴリIDとする
         $query['sch_category_id'] = 0;
         for ($i=0; true ; $i++) { 
@@ -115,6 +117,18 @@ class MaterialsController extends AppController
             $cond[$cnt++]['Materials.created <= '] = $query['sch_created_end'] . ' 23:59:59';
         }
 
+        $ids = $this->Users->getAdminIds();
+        $ids[] = 0;
+        if ($query['sch_user_type'] == 'admin') {
+
+        } elseif ($query['sch_user_type'] == 'shop') {
+            $ids = [$this->Session->read('userid')];
+        } else {
+            $ids[] = $this->Session->read('userid');
+        }
+        $cond[$cnt++]['Materials.user_id in'] = $ids;
+
+
         return $cond;
     }
 
@@ -143,7 +157,7 @@ class MaterialsController extends AppController
 
         $options = [
             'contain' => ['MaterialCategories'],
-            'order' => ['position' => 'ASC'],
+            'order' => ['Materials.position' => 'ASC'],
             'limit' => 20
         ];
 
@@ -178,6 +192,7 @@ class MaterialsController extends AppController
                     $validate .= 'Update';
                 } else {
                     $validate .= 'New';
+                    $this->request->data['user_id'] = $this->isLogin();
                 }
             }
 
@@ -214,13 +229,17 @@ class MaterialsController extends AppController
         };
 
         $associated = [];
+        $contain = [
+            'Users'
+        ];
 
         $options = [
             'callback' => $callback,
             'get_callback' => $get_callback,
             'redirect' => $redirect,
             'associated' => $associated,
-            'validate' => $validate
+            'validate' => $validate,
+            'contain' => $contain
         ];
 
         parent::_edit($id, $options);
@@ -259,6 +278,22 @@ class MaterialsController extends AppController
         $list = array(
             'type_list' => Material::$type_list,
         );
+
+        $list['user_type_list'] = [
+            [
+                'value' => 'all',
+                'text' => '全て',
+                'checked' => true
+            ],
+            [
+                'value' => 'admin',
+                'text' => '共有素材',
+            ],
+            [
+                'value' => 'shop',
+                'text' => '自店舗素材',
+            ],
+        ];
 
         if (!empty($list)) {
             $this->set(array_keys($list),$list);
@@ -388,6 +423,18 @@ class MaterialsController extends AppController
         if (!$query['sch_type']) {
             $cond[$cnt++]['Materials.type !='] = Material::TYPE_SOUND;
         }
+
+        $ids = $this->Users->getAdminIds();
+        $ids[] = 0;
+        if ($query['sch_user_type'] == 'admin') {
+
+        } elseif ($query['sch_user_type'] == 'shop') {
+            $ids = [$this->Session->read('userid')];
+        } else {
+            $ids[] = $this->Session->read('userid');
+        }
+        $cond[$cnt++]['Materials.user_id in'] = $ids;
+
         return $cond;
     }
 

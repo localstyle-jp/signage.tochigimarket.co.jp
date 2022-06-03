@@ -51,3 +51,23 @@ $col_accent: #ab3030;
 //     padding-top: aspect($path);
 //   }
 // }
+
+// breakpoint ---------------------------------------------------------------------------
+$breakpoint-pc: 769px;
+$breakpoint-sp: 768px;
+$open: 'Open Sans', sans-serif;
+$osw: 'Oswald', sans-serif;
+$color1: #c01920;
+$color2: #000000;
+$color3: #f5c51e;
+$c_text: #000000;
+@mixin min-screen() {
+  @media screen and (min-width: $breakpoint-pc), print {
+    @content;
+  }
+}
+@mixin max-screen() {
+  @media screen and (max-width: $breakpoint-sp) {
+    @content;
+  }
+}
