@@ -8,6 +8,7 @@ use Cake\Network\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
+
 /**
  * Static content controller
  *
@@ -15,12 +16,10 @@ use Cake\ORM\TableRegistry;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class LoggingController extends AppController
-{
+class LoggingController extends AppController {
     private $list = [];
 
-    public function initialize()
-    {
+    public function initialize() {
         parent::initialize();
 
         $this->Customers = $this->getTableLocator()->get('Customers');
@@ -28,15 +27,13 @@ class LoggingController extends AppController
 
         $this->modelName = 'Customers';
         $this->set('ModelName', $this->modelName);
-
     }
-    
+
     public function beforeFilter(Event $event) {
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("simple");
+        $this->viewBuilder()->setLayout('simple');
 
         $this->getEventManager()->off($this->Csrf);
-
     }
 
     public function write() {
@@ -55,5 +52,4 @@ class LoggingController extends AppController
 
         $this->rest_success([]);
     }
-
 }

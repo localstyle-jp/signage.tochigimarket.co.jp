@@ -8,7 +8,6 @@ use Cake\Network\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
-
 use App\Model\Entity\Media;
 use App\Model\Entity\Material;
 use App\Model\Entity\MachineBox;
@@ -20,13 +19,10 @@ use App\Model\Entity\MachineBox;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class MachineBoxesController extends AppController
-{
+class MachineBoxesController extends AppController {
     private $list = [];
 
-    public function initialize()
-    {
-
+    public function initialize() {
         $this->Contents = $this->getTableLocator()->get('Contents');
         $this->ContentMaterials = $this->getTableLocator()->get('ContentMaterials');
         $this->SiteConfigs = $this->getTableLocator()->get('SiteConfigs');
@@ -36,23 +32,19 @@ class MachineBoxesController extends AppController
         $this->Materials = $this->getTableLocator()->get('Materials');
         $this->MachineBoxesUsers = $this->getTableLocator()->get('MachineBoxesUsers');
 
-
-
         parent::initialize();
     }
-    
-    public function beforeFilter(Event $event) {
 
+    public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("shop");
+        $this->viewBuilder()->setLayout('shop');
 
         $this->setCommon();
         $this->getEventManager()->off($this->Csrf);
 
         $this->modelName = $this->name;
         $this->set('ModelName', $this->modelName);
-
     }
 
     protected function _getQuery() {
@@ -60,7 +52,6 @@ class MachineBoxesController extends AppController
 
         $query['sch_name'] = $this->request->getQuery('sch_name');
         $query['sch_content'] = $this->request->getQuery('sch_content');
-
 
         return $query;
     }
@@ -96,7 +87,7 @@ class MachineBoxesController extends AppController
         return $this->redirect(['action' => 'edit', $machine_id]);
     }
 
-    public function edit($id=0) {
+    public function edit($id = 0) {
         $this->checkLogin();
         $this->viewBuilder()->setClassName('FormIcheck');
 
@@ -122,7 +113,7 @@ class MachineBoxesController extends AppController
             }
         }
 
-        $callback = function($id) {
+        $callback = function ($id) {
             // MachineContentsなければ作る
             $entity = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $id])->first();
             if (empty($entity->machine_content_id)) {
@@ -150,11 +141,9 @@ class MachineBoxesController extends AppController
         $this->set(compact('site_config'));
 
         parent::_edit($id, $options);
-
     }
 
     public function updateContent($id) {
-
         $box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $id])->first();
 
         if (!empty($box)) {
@@ -166,7 +155,6 @@ class MachineBoxesController extends AppController
 
         return $this->redirect(['controller' => 'home', 'action' => 'index']);
     }
-
 
     public function position($id, $pos) {
         $this->checkLogin();
@@ -180,22 +168,19 @@ class MachineBoxesController extends AppController
         $this->checkLogin();
 
         $options = [];
-        
-        parent::_enable($id, $options);
 
+        parent::_enable($id, $options);
     }
 
     public function delete($id, $type, $columns = null) {
         $this->checkLogin();
-        
+
         $options = [];
 
         return parent::_delete($id, $type, $columns, $options);
     }
 
-
     public function setList() {
-        
         $list = array();
 
         $config_id = $this->getSiteId();
@@ -204,7 +189,7 @@ class MachineBoxesController extends AppController
         $list['resolution_list'] = MachineBox::$resolution_list;
 
         if (!empty($list)) {
-            $this->set(array_keys($list),$list);
+            $this->set(array_keys($list), $list);
         }
 
         $this->list = $list;
@@ -222,60 +207,57 @@ class MachineBoxesController extends AppController
             return false;
         }
         // try {
-            $source = $this->Contents->get($source_id);
-            if (empty($source)) {
-                return false;
+        $source = $this->Contents->get($source_id);
+        if (empty($source)) {
+            return false;
+        }
+
+        $update = $source->toArray();
+        unset($update['id'], $update['created'], $update['modified']);
+
+        // 転送先
+        $dest = $this->MachineContents->find()->where(['MachineContents.id' => $dest_id])->first();
+        if (empty($dest)) {
+            return false;
+        }
+
+        // 転送先コンテンツ素材を削除
+        $dest_materials = $this->MachineMaterials->find()->where(['MachineMaterials.machine_content_id' => $dest_id])->all();
+        if (!empty($dest_materials)) {
+            foreach ($dest_materials as $data) {
+                $this->modelName = 'MachineMaterials';
+                $this->_delete($data->id, 'content', null, ['redirect' => false]);
             }
+        }
 
-            $update = $source->toArray();
-            unset($update['id']);
-            unset($update['created']);
-            unset($update['modified']);
+        $entity = $this->MachineContents->patchEntity($dest, $update);
 
-            // 転送先
-            $dest = $this->MachineContents->find()->where(['MachineContents.id' => $dest_id])->first();
-            if (empty($dest)) {
-                return false;
-            }
+        $r = $this->MachineContents->save($entity);
 
-            // 転送先コンテンツ素材を削除
-            $dest_materials = $this->MachineMaterials->find()->where(['MachineMaterials.machine_content_id' => $dest_id])->all();
-            if (!empty($dest_materials)) {
-                foreach ($dest_materials as $data) {
-                    $this->modelName = 'MachineMaterials';
-                    $this->_delete($data->id, 'content', null, ['redirect' => false]);
-                }
-            }
+        if (!$r) {
+            return false;
+        }
 
-            $entity = $this->MachineContents->patchEntity($dest, $update);
+        $content_materials = $this->ContentMaterials->find()->where(['ContentMaterials.content_id' => $source_id])->contain(['Materials'])->all();
+        if ($content_materials->isEmpty()) {
+            return false;
+        }
 
-            $r = $this->MachineContents->save($entity);
+        foreach ($content_materials as $source_material) {
+            $create = $source_material->material->toArray();
+            unset($create['id'], $create['created'], $create['modified']);
 
-            if (!$r) {
-                return false;
-            }
+            $material = $this->MachineMaterials->newEntity($create);
+            $material->machine_content_id = $entity->id;
+            $material->position = $source_material->position;
+            $material->view_second = $source_material->view_second;
+            $material->rolling_caption = $source_material->rolling_caption;
+            $material->sound = $source_material->sound;
+            $this->MachineMaterials->save($material);
 
-            $content_materials = $this->ContentMaterials->find()->where(['ContentMaterials.content_id' => $source_id])->contain(['Materials'])->all();
-            if ($content_materials->isEmpty()) {
-                return false;
-            }
-
-            foreach ($content_materials as $source_material) {
-                $create = $source_material->material->toArray();
-                unset($create['id']);
-                unset($create['created']);
-                unset($create['modified']);
-                $material = $this->MachineMaterials->newEntity($create);
-                $material->machine_content_id = $entity->id;
-                $material->position = $source_material->position;
-                $material->view_second = $source_material->view_second;
-                $material->rolling_caption = $source_material->rolling_caption;
-                $material->sound = $source_material->sound;
-                $this->MachineMaterials->save($material);
-
-                // 画像コピー
-                $this->Materials->copyAttachement($source_material->material->id, 'MachineMaterials');
-            }
+            // 画像コピー
+            $this->Materials->copyAttachement($source_material->material->id, 'MachineMaterials');
+        }
         // } catch (Exception $e) {
 
         // }

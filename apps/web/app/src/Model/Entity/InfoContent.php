@@ -2,8 +2,5 @@
 
 namespace App\Model\Entity;
 
-class InfoContent extends AppEntity
-{
-
-
+class InfoContent extends AppEntity {
 }

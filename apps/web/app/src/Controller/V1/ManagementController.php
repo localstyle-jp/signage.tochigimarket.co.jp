@@ -10,6 +10,7 @@ use Cake\Event\Event;
 // use Cake\ORM\TableRegistry;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Utility\Hash;
+
 /**
  * Static content controller
  *
@@ -17,12 +18,10 @@ use Cake\Utility\Hash;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class ManagementController extends AppController
-{
+class ManagementController extends AppController {
     private $list = [];
 
-    public function initialize()
-    {
+    public function initialize() {
         parent::initialize();
 
         $this->MachineBoxes = $this->getTableLocator()->get('MachineBoxes');
@@ -31,15 +30,13 @@ class ManagementController extends AppController
 
         $this->modelName = 'MachineBoxes';
         $this->set('ModelName', $this->modelName);
-
     }
-    
+
     public function beforeFilter(Event $event) {
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("plain");
+        $this->viewBuilder()->setLayout('plain');
 
         $this->getEventManager()->off($this->Csrf);
-    
     }
 
     public function isReload() {

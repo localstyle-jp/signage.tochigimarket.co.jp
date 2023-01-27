@@ -20,19 +20,18 @@ use Cake\Database\Expression\QueryExpression;
  *
  */
 class PositionBehavior extends Behavior {
-
-/**
- * Defaults
- *
- * @var array
- */
-	protected $_defaultConfig = array(
+    /**
+     * Defaults
+     *
+     * @var array
+     */
+    protected $_defaultConfig = array(
         'field' => 'position',
         'group' => array(),
         'groupMove' => false,
         'order' => 'ASC',
         'contain' => []
-	);
+    );
 
     protected $_old_position = 0;
     protected $_old_group_conditions = array();
@@ -40,17 +39,17 @@ class PositionBehavior extends Behavior {
     public function initialize(array $config) {
         $Model = $this->getTable();
         $this->settings[$Model->getAlias()] = $config + $this->_defaultConfig;
-	}
+    }
     public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options) {
         $Model = $event->getSubject();
-        
+
         extract($this->settings[$Model->getAlias()]);
         if ($this->enablePosition($Model) && !empty($group) && $this->enableGroupMove($Model)) {
             // 保存前のデータ取得
             $primary_key = $Model->getPrimaryKey();
             if ($entity->has($primary_key)) {
                 $query = $Model->find()->where(array($primary_key => $entity->get($primary_key)))->contain([]);
-                
+
                 if (!$query->isEmpty()) {
                     $old = $query->first();
                     // グループ変更チェック
@@ -78,21 +77,21 @@ class PositionBehavior extends Behavior {
 
         return true;
     }
-	public function afterSave(Event $event, EntityInterface $entity, ArrayObject $options) {
-		$Model = $event->getSubject();
-        
+    public function afterSave(Event $event, EntityInterface $entity, ArrayObject $options) {
+        $Model = $event->getSubject();
+
         extract($this->settings[$Model->getAlias()]);
 
         // $Model->eventManager()->dispatch($event);
         // 他のafterSaveが効かないようにする
         // $Model->eventManager()->off('Model.afterSave');
-        
-		if ( $entity->isNew() || (array_key_exists('second', $options) && $options['second'])) {
+
+        if ($entity->isNew() || (array_key_exists('second', $options) && $options['second'])) {
             if ($this->enablePosition($Model)) {
                 $primary_key = $Model->getPrimaryKey();
                 $position_field = $field;
                 $cond = $this->groupConditions($Model, $entity->id);
-                
+
                 $r = false;
 
                 $save = array();
@@ -111,49 +110,50 @@ class PositionBehavior extends Behavior {
                     $r = $Model->updateAll($save, $cond);
                 }
             }
-		} else {          
+        } else {
             if ($this->enablePosition($Model) && !empty($group) && !empty($this->_old_group_conditions)) {
                 $position_field = $field;
                 // 保存前のグループの並び順
-                $this->_old_group_conditions[$position_field.' >'] = $this->_old_position;
-                $expression  = new QueryExpression($position_field . ' = ' . $position_field . ' - 1');
-                $Model->updateAll(array($expression),
-                                  $this->_old_group_conditions);
+                $this->_old_group_conditions[$position_field . ' >'] = $this->_old_position;
+                $expression = new QueryExpression($position_field . ' = ' . $position_field . ' - 1');
+                $Model->updateAll(
+                    array($expression),
+                    $this->_old_group_conditions
+                );
                 // 保存後のグループの並び順
                 $options['second'] = 'on';
                 return $this->afterSave($event, $entity, $options);
             }
         }
-	}
+    }
 
-	public function beforeDelete(Event $event, EntityInterface $entity, ArrayObject $options) {
+    public function beforeDelete(Event $event, EntityInterface $entity, ArrayObject $options) {
         $Model = $event->getSubject();
         extract($this->settings[$Model->getAlias()]);
         if ($this->enablePosition($Model)) {
             $r = $this->movePosition($entity->id, 'bottom');
         }
-		return true;
-	}
+        return true;
+    }
     /**
      * グループ設定ありの並び順変更の有無
      * @param  Model  $Model [description]
      * @return [type]        [description]
      */
     public function enableGroupMove(Table $Model) {
-        
         extract($this->settings[$Model->getAlias()]);
         return $groupMove;
     }
     /**
      * 並び替えの有無
-     * 
+     *
      * */
     public function enablePosition(Table $Model) {
         extract($this->settings[$Model->getAlias()]);
 
         $columns = $Model->schema()->columns();
 
-        return ($field && in_array($field,$columns));
+        return ($field && in_array($field, $columns));
     }
 
     /**
@@ -201,7 +201,7 @@ class PositionBehavior extends Behavior {
         if (!$this->enablePosition($Model)) {
             return false;
         }
-        
+
         $conditions = $this->groupConditions($Model, $id);
 
         $model_name = $Model->getAlias();
@@ -212,33 +212,30 @@ class PositionBehavior extends Behavior {
             $position = $data[$field];
 
             if ($dir === 'top') {
-                $expression  = new QueryExpression($position_field . ' = ' . $position_field . ' + 1');
-                $Model->updateAll(array($expression), array_merge(array($position_field.' < ' => $position), $conditions));
+                $expression = new QueryExpression($position_field . ' = ' . $position_field . ' + 1');
+                $Model->updateAll(array($expression), array_merge(array($position_field . ' < ' => $position), $conditions));
                 $Model->updateAll(array($field => 1), array($primary_key => $id));
-
-            } else if ($dir === 'bottom') {
+            } elseif ($dir === 'bottom') {
                 $query = $Model->find()->where($conditions)->contain($contain);
                 $count = $query->count();
 
-                $expression  = new QueryExpression($position_field . ' = ' . $position_field . ' - 1');
-                $Model->updateAll(array($expression), array_merge(array($position_field.' >' => $position), $conditions));
+                $expression = new QueryExpression($position_field . ' = ' . $position_field . ' - 1');
+                $Model->updateAll(array($expression), array_merge(array($position_field . ' >' => $position), $conditions));
                 $Model->updateAll(array($field => $count), array($primary_key => $id));
-
-            } else if ($dir === 'up') {
+            } elseif ($dir === 'up') {
                 $position = $data[$field];
                 if (1 < $position) {
-                    $expression  = new QueryExpression($position_field . ' = ' . $position_field . ' + 1');
+                    $expression = new QueryExpression($position_field . ' = ' . $position_field . ' + 1');
                     $Model->updateAll(array($expression), array_merge(array($position_field => $position - 1), $conditions));
                     $Model->updateAll(array($field => $position - 1), array($primary_key => $id));
                 }
-
-            } else if ($dir === 'down') {
+            } elseif ($dir === 'down') {
                 $query = $Model->find()->where($conditions)->contain($contain);
                 $count = $query->count();
 
                 $position = $data[$field];
                 if ($position < $count) {
-                    $expression  = new QueryExpression($position_field . ' = ' . $position_field . ' - 1');
+                    $expression = new QueryExpression($position_field . ' = ' . $position_field . ' - 1');
                     $Model->updateAll(array($expression), array_merge(array($position_field => $position + 1), $conditions));
                     $Model->updateAll(array($field => $position + 1), array($primary_key => $id));
                 }
@@ -271,10 +268,9 @@ class PositionBehavior extends Behavior {
                 if (!empty($value[$Model->getPrimaryKey()])) {
                     $conditions[$primary_key] = $value[$Model->primaryKey];
                     $Model->updateAll(array($position_field => $position), $conditions);
-                    ++ $position;
+                    ++$position;
                 }
             }
         }
     }
-
 }

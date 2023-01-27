@@ -7,24 +7,20 @@ use Cake\Datasource\ModelAwareTrait;
 use Cake\Utility\Inflector;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Text;
-
 use App\Model\Entity\User;
+
 /**
  * OutputHtml component
  */
-class AdminMenuComponent extends Component
-{
+class AdminMenuComponent extends Component {
     public $menu_list = [];
 
     public function initialize(array $config) {
-    
         $this->Controller = $this->_registry->getController();
         $this->Session = $this->Controller->getRequest()->getSession();
-
     }
 
     public function init() {
-
         if ($this->Session->check('admin_menu.menu_list')) {
             $this->menu_list = $this->Session->read('admin_menu.menu_list');
         } else {
@@ -37,13 +33,12 @@ class AdminMenuComponent extends Component
                     // ],
                     [
                         'title' => __('コンテンツ'),
-                        'role' => [ 'role_type' => 'staff'],
+                        'role' => ['role_type' => 'staff'],
                         'buttons' => [
                             [ // １行目
                                 ['name' => __('スポット'), 'link' => '/user_admin/infos/?page_slug=spot'],
                                 ['name' => __('イベント'), 'link' => '/user_admin/infos/?page_slug=event'],
                             ],
-                            
                         ],
                         'footer' => [
                             // 'function' => 'getLastUpdate'
@@ -51,7 +46,7 @@ class AdminMenuComponent extends Component
                     ],
                     [
                         'title' => __('各種設定'),
-                        'role' => [ 'role_type' => 'admin'],
+                        'role' => ['role_type' => 'admin'],
                         'buttons' => [
                             [
                                 ['name' => __('コンテンツ設定'), 'link' => '/user_admin/page-configs/'],
@@ -68,7 +63,7 @@ class AdminMenuComponent extends Component
                     // ],
                     [
                         'title' => __('管理'),
-                        'role' => [ 'role_type' => 'shop', 'role_only' => true],
+                        'role' => ['role_type' => 'shop', 'role_only' => true],
                         'buttons' => [
                             ['name' => __('素材'), 'link' => '/shop_user/materials', 'icon' => 'nav-icon fas fa-image'],
                             ['name' => __('コンテンツ管理'), 'link' => '/shop_user/contents', 'icon' => 'nav-icon far fa-copy'],
@@ -83,7 +78,6 @@ class AdminMenuComponent extends Component
                         ]
                     ]
                 ]
-
             ];
 
             $this->Session->write('admin_menu.menu_list', $this->menu_list);
@@ -91,7 +85,6 @@ class AdminMenuComponent extends Component
     }
 
     public function setMyContent() {
-        
         $this->MachineBoxes = TableRegistry::get('MachineBoxes');
         $this->MachineBoxesUsers = TableRegistry::get('MachineBoxesUsers');
 
@@ -111,11 +104,9 @@ class AdminMenuComponent extends Component
             return '';
         }
 
-
         $link = '/shop_user/contents/edit/' . $machine->content_id . '?mode=machine';
 
         return $link;
-
     }
 
     public function setContent($type = 'main') {
@@ -158,13 +149,11 @@ class AdminMenuComponent extends Component
                             ['name' => __('一覧'), 'link' => '/infos/?sch_page_id=' . $config->id],
                         ]
                     ];
-                    $content_buttons[] = $menu;                }
+                    $content_buttons[] = $menu;
+                }
             }
         }
 
-
         return $content_buttons;
     }
-
 }
-

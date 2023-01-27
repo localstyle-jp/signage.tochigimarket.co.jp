@@ -1,40 +1,36 @@
-<?php 
+<?php
 namespace App\Model\Table;
 
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\ORM\TableRegistry;
-
 use App\Model\Entity\User;
 
 class UsersTable extends AppTable {
-
     // テーブルの初期値を設定する
     public $defaultValues = [
-        "id" => null
+        'id' => null
     ];
 
-    public $attaches = array('images' =>
-                            array('face_image' => array('extensions' => array('jpg', 'jpeg', 'gif', 'png'),
-                            'width' => 1200,
-                            'height' => 1200,
-                            'file_name' => 'img_%d_%s',
-                            'thumbnails' => array(
-                                's' => array(
-                                    'prefix' => 's_',
-                                    'width' => 215,
-                                    'height' => 215
-                                    )
-                                ),
-                            )
-                            //image_1),
-                            ),
-                            'files' => array(),
-                            );
-    
-                            // 
-    public function initialize(array $config)
-    {
+    public $attaches = array('images' => array('face_image' => array('extensions' => array('jpg', 'jpeg', 'gif', 'png'),
+        'width' => 1200,
+        'height' => 1200,
+        'file_name' => 'img_%d_%s',
+        'thumbnails' => array(
+            's' => array(
+                'prefix' => 's_',
+                'width' => 215,
+                'height' => 215
+            )
+        ),
+    )
+        //image_1),
+    ),
+        'files' => array(),
+    );
+
+                            //
+    public function initialize(array $config) {
         $this->hasMany('UserSites')->setDependent(true);
 
         $this->belongsToMany('MachineBoxes')->setDependent(true);
@@ -42,7 +38,6 @@ class UsersTable extends AppTable {
         $this->addBehavior('FileAttache');
 
         parent::initialize($config);
-        
     }
 
     public function validationNew(Validator $validator) {
@@ -57,7 +52,7 @@ class UsersTable extends AppTable {
 
         return $validator;
     }
-    
+
     public function validationModifyIsPass(Validator $validator) {
         $validator = $this->validationDefault($validator);
         $validator = $this->validationUserRegist($validator);
@@ -66,8 +61,7 @@ class UsersTable extends AppTable {
     }
 
     // Validation
-    public function validationDefault(Validator $validator)
-    {
+    public function validationDefault(Validator $validator) {
         $validator->setProvider('User', 'App\Validator\UserValidation');
 
         $validator
@@ -96,9 +90,8 @@ class UsersTable extends AppTable {
             ->add('username', 'unique', [
                 'rule' => ['isUnique'],
                 'provider' => 'User',
-                'message' => 'ご希望のアカウントは既に使われております'])
-            ;
-        
+                'message' => 'ご希望のアカウントは既に使われております']);
+
         return $validator;
     }
 
@@ -108,26 +101,22 @@ class UsersTable extends AppTable {
         $validator
             ->notEmpty('temp_password', '入力してください')
             ->add('temp_password', 'maxlength', ['rule' => ['maxLength', 30], 'message' => '30文字以内で入力してください'])
-            ->add('temp_password', 'check_password', ['rule' => ['checkPasswordRule'], 'provider' => 'User', 'message' => 'このパスワードは使えません'])
-            ;
-        
+            ->add('temp_password', 'check_password', ['rule' => ['checkPasswordRule'], 'provider' => 'User', 'message' => 'このパスワードは使えません']);
+
         return $validator;
     }
 
-    public function validationUserRegist(validator $validator)
-    {
+    public function validationUserRegist(validator $validator) {
         $validator->setProvider('User', 'App\Validator\UserValidation');
 
         $validator
             ->add('password', 'comWith', ['rule' => ['compareWith', 'password_confirm'], 'message' => 'パスワードが一致しません'])
-            ->add('password', 'check_password', ['rule' => ['checkPasswordRule'], 'provider' => 'User', 'message' => 'このパスワードは使えません'])
-            ;
+            ->add('password', 'check_password', ['rule' => ['checkPasswordRule'], 'provider' => 'User', 'message' => 'このパスワードは使えません']);
 
         return $validator;
     }
 
-    public function getList($cond=[])
-    {
+    public function getList($cond = []) {
         $query = $this->find()->where($cond);
         $list = [];
 
@@ -141,7 +130,6 @@ class UsersTable extends AppTable {
         }
 
         return $list;
-
     }
 
     public function getUserSite($user_id) {

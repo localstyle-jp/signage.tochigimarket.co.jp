@@ -18,8 +18,8 @@ use Cake\Core\Configure;
 use Cake\Network\Exception\ForbiddenException;
 use Cake\Network\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
-
 use Cake\Auth\DefaultPasswordHasher;
+
 /**
  * Static content controller
  *
@@ -27,11 +27,8 @@ use Cake\Auth\DefaultPasswordHasher;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class HomesController extends AppController
-{
-    public function initialize()
-    {
-
+class HomesController extends AppController {
+    public function initialize() {
         $this->Departments = $this->getTableLocator()->get('Departments');
         $this->Categories = $this->getTableLocator()->get('Categories');
         $this->Documents = $this->getTableLocator()->get('Documents');
@@ -44,23 +41,21 @@ class HomesController extends AppController
     }
 
     public function index() {
-
         $this->Customers = $this->getTableLocator()->get('Customers');
-        
-        $this->viewBuilder()->setLayout("simple");
-        $view = "login";
+
+        $this->viewBuilder()->setLayout('simple');
+        $view = 'login';
         $r = array();
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData();
             if (!empty($data['username']) && !empty($data['password'])) {
                 $query = $this->Customers->find('all', array('conditions' => array('Customers.username' => $data['username'],
-                                                                              'Customers.status' => 'publish'
-                                                                             ),
-                                                         'limit' => 1));
+                    'Customers.status' => 'publish'
+                ),
+                    'limit' => 1));
                 $r = $query->first();
                 $is_login = false;
                 if ($r) {
-                    
                     $hasher = new DefaultPasswordHasher();
                     if ($hasher->check($data['password'], $r->password)) {
                         $is_login = true;
@@ -69,10 +64,10 @@ class HomesController extends AppController
 
                 if ($r && $is_login) {
                     $this->Session->write(array('customer_id' => $r->id,
-                                                'data' => array(
-                                                    'name' => $r->name
-                                                )
-                                            ));
+                        'data' => array(
+                            'name' => $r->name
+                        )
+                    ));
                 } else {
                     $r = false;
                 }
@@ -83,7 +78,7 @@ class HomesController extends AppController
         }
         if (0 < $this->Session->read('customer_id')) {
             // $this->viewBuilder()->setLayout("user");
-            $view = "index";
+            $view = 'index';
         }
         $this->render($view);
     }

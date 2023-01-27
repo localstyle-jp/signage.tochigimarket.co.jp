@@ -11,6 +11,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Mailer\Email;
 use App\Form\ContactForm;
+
 /**
  * Static content controller
  *
@@ -18,31 +19,24 @@ use App\Form\ContactForm;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class ContactController extends AppController
-{
+class ContactController extends AppController {
     private $list = [];
 
-    public function initialize()
-    {
+    public function initialize() {
         parent::initialize();
-
-
 
         $this->modelName = 'Infos';
         $this->set('ModelName', $this->modelName);
-
     }
-    
+
     public function beforeFilter(Event $event) {
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("simple");
+        $this->viewBuilder()->setLayout('simple');
 
         $this->getEventManager()->off($this->Csrf);
-
     }
 
     public function index() {
-        
     }
 
     /**
@@ -51,9 +45,7 @@ class ContactController extends AppController
      * @return [type] [description]
      */
     public function confirm() {
-
         if ($this->request->is(['post', 'put'])) {
-            
             $data = $this->_checkForm();
 
             if ($data['is_valid'] == 1) {
@@ -73,9 +65,7 @@ class ContactController extends AppController
      * @return [type] [description]
      */
     public function post() {
-
         if ($this->request->is(['post', 'put'])) {
-
             $data = $this->_checkForm();
 
             if ($data['is_valid'] == 1) {
@@ -88,7 +78,7 @@ class ContactController extends AppController
                     $this->rest_success(['is_valid' => 1]);
                     return;
                 } else {
-                    $this->rest_error(200,1000, '送信できませんでした');
+                    $this->rest_error(200, 1000, '送信できませんでした');
                     return;
                 }
             }
@@ -129,7 +119,7 @@ class ContactController extends AppController
                     foreach ($errors[$col] as $err) {
                         $errArgs[] = $err;
                     }
-                    
+
                     $form[$col] = [
                         'error' => 1,
                         'message' => implode('、', $errArgs),
@@ -161,10 +151,7 @@ class ContactController extends AppController
     private function _sendmail() {
         $r = false;
 
-
         $form = $this->getJson(null);
-
-
 
         // 管理者へメール
         $email = new Email('default');
@@ -188,8 +175,6 @@ class ContactController extends AppController
                       ->send();
         }
 
-
         return $r;
     }
-
 }

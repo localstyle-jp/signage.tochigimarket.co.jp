@@ -10,6 +10,7 @@ use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Filesystem\Folder;
 use Cake\Routing\RequestActionTrait;
+
 /**
  * Static content controller
  *
@@ -17,34 +18,29 @@ use Cake\Routing\RequestActionTrait;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class SiteConfigsController extends AppController
-{
+class SiteConfigsController extends AppController {
     private $list = [];
 
-    public function initialize()
-    {
+    public function initialize() {
         parent::initialize();
 
         $this->PageConfigs = $this->getTableLocator()->get('PageConfigs');
         $this->Infos = $this->getTableLocator()->get('Infos');
-
 
         $this->modelName = $this->name;
         $this->set('ModelName', $this->modelName);
 
         $this->loadComponent('OutputHtml');
     }
-    
+
     public function beforeFilter(Event $event) {
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("admin");
+        $this->viewBuilder()->setLayout('admin');
         $this->getEventManager()->off($this->Csrf);
-
-
     }
     public function index() {
         $this->checkLogin();
-        
+
         $this->setList();
 
         $query = $this->_getQuery();
@@ -54,9 +50,9 @@ class SiteConfigsController extends AppController
         $cond = array();
 
         $cond = $this->_getConditions($query);
-        
-        return parent::_lists($cond, array('order' => array($this->modelName.'.id' =>  'ASC'),
-                                            'limit' => null));
+
+        return parent::_lists($cond, array('order' => array($this->modelName . '.id' => 'ASC'),
+            'limit' => null));
     }
     private function _getQuery() {
         $query = [];
@@ -69,10 +65,9 @@ class SiteConfigsController extends AppController
 
         extract($query);
 
-
         return $cond;
     }
-    public function edit($id=0) {
+    public function edit($id = 0) {
         $this->checkLogin();
         $validate = 'default';
 
@@ -87,17 +82,15 @@ class SiteConfigsController extends AppController
             }
         }
 
-
         $options['validate'] = $validate;
 
         parent::_edit($id, $options);
         $this->render('edit');
-
     }
 
     public function delete($id, $type, $columns = null) {
         $this->checkLogin();
-        
+
         return parent::_delete($id, $type, $columns);
     }
 
@@ -109,17 +102,15 @@ class SiteConfigsController extends AppController
 
     public function enable($id) {
         $this->checkLogin();
-        
+
         parent::_enable($id);
     }
 
     public function setList() {
-        
         $list = array();
 
-
         if (!empty($list)) {
-            $this->set(array_keys($list),$list);
+            $this->set(array_keys($list), $list);
         }
 
         $this->list = $list;

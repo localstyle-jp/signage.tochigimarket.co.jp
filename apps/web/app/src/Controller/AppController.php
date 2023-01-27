@@ -18,6 +18,7 @@ use Cake\Controller\Controller;
 use Cake\Event\Event;
 use App\Model\Entity\Info;
 use App\Model\Entity\User;
+
 /**
  * Application Controller
  *
@@ -26,9 +27,7 @@ use App\Model\Entity\User;
  *
  * @link https://book.cakephp.org/3.0/en/controllers.html#the-app-controller
  */
-class AppController extends Controller
-{
-
+class AppController extends Controller {
     public $Session;
     public $error_messages;
     /**
@@ -37,11 +36,10 @@ class AppController extends Controller
      * Use this method to add common initialization code like loading components.
      *
      * e.g. `$this->loadComponent('Security');`
-     
+
      * @return void
      */
-    public function initialize()
-    {
+    public function initialize() {
         parent::initialize();
 
         $this->loadComponent('RequestHandler', [
@@ -69,8 +67,7 @@ class AppController extends Controller
      * @param \Cake\Event\Event $event The beforeRender event.
      * @return \Cake\Http\Response|null|void
      */
-    public function beforeRender(Event $event)
-    {
+    public function beforeRender(Event $event) {
         // Note: These defaults are just to get started quickly with development
         // and should not be used in production. You should instead set "_serialize"
         // in each action as required.
@@ -79,16 +76,14 @@ class AppController extends Controller
         ) {
             $this->set('_serialize', true);
         }
-        
+
         $this->set('error_messages', $this->error_messages);
     }
 
     public function beforeFilter(Event $event) {
-
         if ($this->request->getParam('prefix') === 'admin') {
             // $this->viewBuilder()->theme('Admin');
             $this->viewBuilder()->setLayout('admin');
-
         } else {
             //Theme 設定
             $this->viewBuilder()->setLayout('simple');
@@ -97,57 +92,54 @@ class AppController extends Controller
             // 準備
             $this->_prepare();
         }
-
     }
 
     protected function _lists($cond = array(), $options = array()) {
-        
         $primary_key = $this->{$this->modelName}->getPrimaryKey();
 
-        $this->paginate = array_merge(array('order' => $this->modelName . '.' . $primary_key . ' DESC',
-                                            'limit' => 10,
-                                            'contain' => [],
-                                            'paramType' => 'querystring',
-                                            'url' => [
-                                                'sort' => null,
-                                                'direction' => null
-                                            ]
-                                            ),
-                            $options);
+        $this->paginate = array_merge(
+            array('order' => $this->modelName . '.' . $primary_key . ' DESC',
+                'limit' => 10,
+                'contain' => [],
+                'paramType' => 'querystring',
+                'url' => [
+                    'sort' => null,
+                    'direction' => null
+                ]
+            ),
+            $options
+        );
 
         try {
             if ($this->paginate['limit'] === null) {
                 unset($options['limit'],
-                        $options['paramType']);
+                    $options['paramType']);
                 if ($cond) {
                     $options['conditions'] = $cond;
                 }
                 // $datas = $this->{$this->modelName}->find('all', $options);
                 $data_query = $this->{$this->modelName}->find()->where($cond)->order($options['order'])->all();
-
             } else {
                 $data_query = $this->paginate($this->{$this->modelName}->find()->where($cond));
             }
             $datas = $data_query->toArray();
             $count['total'] = $data_query->count();
-
-        } catch (NotFoundException $e)  {
+        } catch (NotFoundException $e) {
             if (!empty($this->request->query['page'])
                 && 1 < $this->request->query['page']) {
                 $this->redirect(array('action' => $this->request->action));
             }
         }
         $numrows = $this->{$this->modelName}->find()->where($cond)->count();
-        
+
         $this->set(compact('datas', 'data_query', 'numrows'));
     }
 
     protected function _setView($lists) {
-        $this->set(array_keys($lists),$lists);
+        $this->set(array_keys($lists), $lists);
     }
 
     private function _prepare() {
-
     }
     /**
      * Actionの後、実行される
@@ -177,18 +169,18 @@ class AppController extends Controller
         return $this->Session->read('userid');
     }
 
-    public function checkLogin(){
+    public function checkLogin() {
         if (!$this->isLogin()) {
             return $this->redirectWithException('/admin/');
         }
     }
-    public function checkUserLogin(){
+    public function checkUserLogin() {
         if (!$this->isUserLogin()) {
             return $this->redirectWithException('/user/');
             // return $this->redirect('/user/');
         }
     }
-    public function checkShopLogin(){
+    public function checkShopLogin() {
         if (!$this->isShopLogin()) {
             return $this->redirectWithException('/shop_user/');
             // return $this->redirect('/user/');
@@ -231,7 +223,7 @@ class AppController extends Controller
      * ハイアラーキゼーションと読む！（階層化という意味だ！）
      * １次元のentityデータを階層化した状態の構造にする
      */
-    public function toHierarchization($id, $entity, $options=[]) {
+    public function toHierarchization($id, $entity, $options = []) {
         // $options = array_merge([
         //     'section_block_ids' => [10]
         // ], $options);
@@ -253,11 +245,11 @@ class AppController extends Controller
                 $v = $val->toArray();
 
                 // 枠ブロックの中にあるブロック以外　（枠ブロックも対象）
-                if (!$v[$sequence_id_name] || ($v[$sequence_id_name] > 0 && in_array($v['block_type'], $options['section_block_ids']) )) {
-                    $contents["contents"][$v['id']] = $v;
-                    $contents["contents"][$v['id']]['_block_no'] = $block_count;
+                if (!$v[$sequence_id_name] || ($v[$sequence_id_name] > 0 && in_array($v['block_type'], $options['section_block_ids']))) {
+                    $contents['contents'][$v['id']] = $v;
+                    $contents['contents'][$v['id']]['_block_no'] = $block_count;
                 } else {
-                // 枠ブロックの中身
+                    // 枠ブロックの中身
                     if (!array_key_exists($sequence_table, $v)) {
                         continue;
                     }
@@ -265,11 +257,11 @@ class AppController extends Controller
                     if (!array_key_exists($info_content_id, $contents['contents'])) {
                         continue;
                     }
-                    if (!array_key_exists('sub_contents', $contents["contents"][$info_content_id])) {
-                        $contents["contents"][$info_content_id]['sub_contents'] = null;
+                    if (!array_key_exists('sub_contents', $contents['contents'][$info_content_id])) {
+                        $contents['contents'][$info_content_id]['sub_contents'] = null;
                     }
-                    $contents["contents"][$info_content_id]['sub_contents'][$v['id']] = $v;
-                    $contents["contents"][$info_content_id]['sub_contents'][$v['id']]['_block_no'] = $block_count;
+                    $contents['contents'][$info_content_id]['sub_contents'][$v['id']] = $v;
+                    $contents['contents'][$info_content_id]['sub_contents'][$v['id']]['_block_no'] = $block_count;
                 }
                 $block_count++;
             }
@@ -283,29 +275,26 @@ class AppController extends Controller
             'contents' => $contents,
             'content_count' => $content_count
         ];
-
     }
 
     /**
      * 正常時のレスポンス
      */
     protected function rest_success($datas) {
-
         $data = array(
             'result' => array('code' => 0),
             'data' => $datas
         );
-        
+
         $this->set(compact('data'));
-        $this->set('_serialize','data');
+        $this->set('_serialize', 'data');
     }
     /**
      * エラーレスポンス
      */
     protected function rest_error($code = '', $message = '') {
-
         $http_status = 200;
-        
+
         $state_list = array(
             '200' => 'empty',
             '400' => 'Bad Request', // タイプミス等、リクエストにエラーがあります。
@@ -316,7 +305,7 @@ class AppController extends Controller
             '500' => 'Internal Server Error', // CGIスクリプトなどでエラーが出た。
             '501' => 'Not Implemented', // リクエストを実行するための必要な機能をサポートしていない。
             '509' => 'Other', // オリジナルコード　例外処理
-            );
+        );
 
         $code2messages = array(
             '1000' => 'パラメーターエラー',
@@ -326,17 +315,16 @@ class AppController extends Controller
             '2001' => '取得データがありませんでした',
             '9000' => '認証に失敗しました',
             '9001' => '',
-            );
-        
+        );
+
         if (!array_key_exists($http_status, $state_list)) {
             $http_status = '509';
         }
-        
 
-        if ($message == "") {
+        if ($message == '') {
             if (array_key_exists($code, $code2messages)) {
                 $message = $code2messages[$code];
-            }elseif (array_key_exists($http_status, $state_list)) {
+            } elseif (array_key_exists($http_status, $state_list)) {
                 $message = $state_list[$http_status];
             }
         }
@@ -346,7 +334,7 @@ class AppController extends Controller
         $data['result'] = array(
             'code' => intval($code),
             'message' => $message
-            );
+        );
 
         // セットヘッダー
         // $this->header("HTTP/1.1 " . $http_status . ' ' . $state_list[$http_status], $http_status);
@@ -354,7 +342,7 @@ class AppController extends Controller
         // $this->header("Content-Type: application/json;");
 
         $this->set(compact('data'));
-        $this->set('_serialize','data');
+        $this->set('_serialize', 'data');
 
         return;
     }
@@ -367,7 +355,6 @@ class AppController extends Controller
     }
 
     public function isCategoryEnabled($page_config) {
-
         if (!$this->getCategoryEnabled()) {
             return false;
         }
@@ -400,10 +387,9 @@ class AppController extends Controller
         return false;
     }
 
-    public function isViewSort($page_config, $category_id=0) {
-
+    public function isViewSort($page_config, $category_id = 0) {
         if ($this->getCategoryEnabled() && $page_config->is_category === 'Y'
-             && ($this->isCategorySort($page_config->id)) || (!$this->isCategorySort($page_config->id) && !$category_id) ) {
+             && ($this->isCategorySort($page_config->id)) || (!$this->isCategorySort($page_config->id) && !$category_id)) {
             return true;
         }
 
@@ -411,7 +397,6 @@ class AppController extends Controller
     }
 
     public function isRoleDocument($document_id) {
-
         $customer_id = $this->isCustomerLogin();
         $customer = $this->Customers->find()->where(['Customers.id' => $customer_id])->first();
 
@@ -449,7 +434,6 @@ class AppController extends Controller
         // if (!empty($entity)) {
         //     return;
         // }
-        
 
         if ($model == 'folder') {
             $action = 'view';
@@ -457,15 +441,15 @@ class AppController extends Controller
             $action = 'download';
         } else {
             if (empty($action)) {
-                $action = 'view';                
+                $action = 'view';
             }
         }
 
         $save = [
-            'session_id' => ($session_id?:''),
-            "model_name" => $model,
-            "model_id" => $id,
-            "customer_id" => ($customer_id?:0),
+            'session_id' => ($session_id ?: ''),
+            'model_name' => $model,
+            'model_id' => $id,
+            'customer_id' => ($customer_id ?: 0),
             'department_id' => ($department_id ?: 0),
             'ip' => $this->request->clientIp(),
             'log_date' => $now->format('Y-m-d'),

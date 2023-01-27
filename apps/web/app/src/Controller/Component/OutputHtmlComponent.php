@@ -8,9 +8,7 @@ use Cake\Datasource\ModelAwareTrait;
 /**
  * OutputHtml component
  */
-class OutputHtmlComponent extends Component
-{
-
+class OutputHtmlComponent extends Component {
     /**
      * Default configuration.
      *
@@ -21,20 +19,19 @@ class OutputHtmlComponent extends Component
     use ModelAwareTrait;
 
     public function index($slug) {
-
         $dir = USER_PAGES_DIR . $slug;
-        $file = $dir . DS . "index.html";
+        $file = $dir . DS . 'index.html';
 
         $params = explode('/', $slug); // [0]=site_name [1]=page_name
 
         $html = $this->_registry->getController()->requestAction(
             ['controller' => 'Contents', 'action' => 'index', 'pass' => ['site_slug' => $params[0], 'slug' => $params[1]]],
-            ['return', 'bare' => false]);
+            ['return', 'bare' => false]
+        );
 
         file_put_contents($file, $html);
 
         chmod($file, 0666);
-
     }
 
     /**
@@ -52,7 +49,6 @@ class OutputHtmlComponent extends Component
         $params = explode('/', $slug);
 
         $info = $this->{$model}->find()->contain(['Categories'])->where([$model . '.id' => $info_id])->first();
-        
 
         if (empty($info)) {
             $dir = USER_PAGES_DIR . $slug;
@@ -75,10 +71,10 @@ class OutputHtmlComponent extends Component
                 @unlink($file);
             }
         } else {
-
             $html = $this->_registry->getController()->requestAction(
                 ['controller' => 'Contents', 'action' => 'detail', 'pass' => ['site_slug' => $params[0], 'slug' => $params[1], 'id' => $info_id]],
-                ['return', 'bare' => false]);
+                ['return', 'bare' => false]
+            );
 
             file_put_contents($file, $html);
 
@@ -101,12 +97,10 @@ class OutputHtmlComponent extends Component
                 @unlink($file);
             }
         } else {
-
             file_put_contents($file, $json);
 
             chmod($file, 0666);
         }
-
     }
 
     public function _existsJson($info_id, $slug) {

@@ -17,31 +17,27 @@ use App\Model\Entity\Material;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class ContentsController extends AppController
-{
+class ContentsController extends AppController {
     private $list = [];
 
-    public function initialize()
-    {
+    public function initialize() {
         $this->Materials = $this->getTableLocator()->get('Materials');
         $this->ContentMaterials = $this->getTableLocator()->get('ContentMaterials');
         $this->MaterialCategories = $this->getTableLocator()->get('MaterialCategories');
 
         parent::initialize();
     }
-    
-    public function beforeFilter(Event $event) {
 
+    public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("user");
+        $this->viewBuilder()->setLayout('user');
 
         $this->setCommon();
         $this->getEventManager()->off($this->Csrf);
 
         $this->modelName = $this->name;
         $this->set('ModelName', $this->modelName);
-
     }
 
     protected function _getQuery() {
@@ -53,8 +49,6 @@ class ContentsController extends AppController
     protected function _getConditions($query) {
         $cond = [];
         $cnt = 0;
-
-
 
         return $cond;
     }
@@ -81,16 +75,16 @@ class ContentsController extends AppController
         $this->set(compact('query', 'is_search'));
 
         $this->_lists($cond, ['order' => 'position ASC',
-                              'limit' => null]);
+            'limit' => null]);
     }
 
-    public function edit($id=0) {
+    public function edit($id = 0) {
         $this->checkLogin();
 
         $this->setList();
 
         $query_param = [];
-        $query_param['mode'] = ( empty($this->request->getQuery('mode')) ? '' : $this->request->getQuery('mode') );
+        $query_param['mode'] = (empty($this->request->getQuery('mode')) ? '' : $this->request->getQuery('mode'));
         $this->set(compact('query_param'));
 
         $get_callback = null;
@@ -128,10 +122,10 @@ class ContentsController extends AppController
         }
 
         // 成功時のコールバック
-        $callback = function($id) use($delete_ids) {
+        $callback = function ($id) use ($delete_ids) {
             // 削除
             if (!empty($delete_ids)) {
-                $this->ContentMaterials->deleteAll(['ContentMaterials.content_id' => $id, function($exp) use($delete_ids) {
+                $this->ContentMaterials->deleteAll(['ContentMaterials.content_id' => $id, function ($exp) use ($delete_ids) {
                     return $exp->in('id', $delete_ids);
                 }]);
             }
@@ -140,9 +134,9 @@ class ContentsController extends AppController
         };
 
         // エラー時のコールバック
-        $error_callback = function($datas) {
+        $error_callback = function ($datas) {
             if (!empty($datas['content_materials'])) {
-                foreach ($datas['content_materials'] as $k =>  $data) {
+                foreach ($datas['content_materials'] as $k => $data) {
                     if (empty($data['material']) && $data['material_id']) {
                         $datas['content_materials'][$k]['material'] = $this->Materials->find()->where(['Materials.id' => $data['material_id']])->first()->toArray();
                     }
@@ -153,18 +147,18 @@ class ContentsController extends AppController
             }
             return $datas;
         };
-        
-        $contain =[
-            'ContentMaterials'=> function($q){
+
+        $contain = [
+            'ContentMaterials' => function ($q) {
                 return $q->contain(['Materials'])->order(['ContentMaterials.position' => 'ASC']);
-            } 
+            }
         ];
 
         // リダイレクト
         if ($this->request->getQuery('mode') == 'machine') {
             $redirect = ['controller' => 'machine-boxes', 'action' => 'index', '?' => ['sch_content' => $id]];
         }
-        
+
         $options = [
             'callback' => $callback,
             'get_callback' => $get_callback,
@@ -173,13 +167,12 @@ class ContentsController extends AppController
             'associated' => $associated,
             'contain' => $contain
         ];
-        
-        parent::_edit($id, $options);
 
+        parent::_edit($id, $options);
     }
 
     public function addMaterial() {
-        $this->viewBuilder()->setLayout("plain");
+        $this->viewBuilder()->setLayout('plain');
         $this->setList();
 
         $rownum = $this->request->getData('rownum');
@@ -195,7 +188,7 @@ class ContentsController extends AppController
                 'position' => 0,
                 'view_second' => $master->view_second,
                 'rolling_caption' => $master->rolling_caption,
-                'material' =>[
+                'material' => [
                     'type' => $master->type,
                     'name' => $master->name,
                     'image' => $master->image,
@@ -214,7 +207,6 @@ class ContentsController extends AppController
         $this->set(compact('rownum', 'material'));
     }
 
-
     public function position($id, $pos) {
         $this->checkLogin();
 
@@ -227,14 +219,13 @@ class ContentsController extends AppController
         $this->checkLogin();
 
         $options = [];
-        
-        parent::_enable($id, $options);
 
+        parent::_enable($id, $options);
     }
 
     public function delete($id, $type, $columns = null) {
         $this->checkLogin();
-        
+
         $options = [];
 
         // リダイレクト
@@ -245,9 +236,7 @@ class ContentsController extends AppController
         return parent::_delete($id, $type, $columns, $options);
     }
 
-
     public function setList() {
-        
         $list = array(
             'type_list' => Material::$type_list
         );
@@ -266,12 +255,10 @@ class ContentsController extends AppController
         }
 
         if (!empty($list)) {
-            $this->set(array_keys($list),$list);
+            $this->set(array_keys($list), $list);
         }
 
         $this->list = $list;
         return $list;
     }
-
-
 }

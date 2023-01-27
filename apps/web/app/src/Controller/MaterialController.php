@@ -8,8 +8,8 @@ use Cake\Network\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
-
 use App\Model\Entity\Material;
+
 /**
  * Static content controller
  *
@@ -17,12 +17,10 @@ use App\Model\Entity\Material;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class MaterialController extends AppController
-{
+class MaterialController extends AppController {
     private $list = [];
 
-    public function initialize()
-    {
+    public function initialize() {
         parent::initialize();
 
         $this->SiteConfigs = $this->getTableLocator()->get('SiteConfigs');
@@ -30,20 +28,16 @@ class MaterialController extends AppController
 
         $this->MachineBoxes = $this->getTableLocator()->get('MachineBoxes');
 
-
         $this->modelName = 'Infos';
         $this->set('ModelName', $this->modelName);
 
         $this->uid = $this->Session->read('uid');
-
-
     }
-    
+
     public function beforeFilter(Event $event) {
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("simple");
+        $this->viewBuilder()->setLayout('simple');
         $this->getEventManager()->off($this->Csrf);
-
     }
     public function detail($id) {
         $material = $this->Materials->find()->where(['Materials.id' => $id])->first();
@@ -62,13 +56,11 @@ class MaterialController extends AppController
 
         $this->set(compact('material', 'video'));
         $this->render('detail_' . Material::TYPE_PAGE_MOVIE);
-        
     }
 
     public function error() {
         throw new NotFoundException('ページが見つかりません');
     }
-
 
     private function _getQuery() {
         $query = [];
@@ -76,26 +68,16 @@ class MaterialController extends AppController
         return $query;
     }
 
-
-
-  
-
     public function setList() {
-        
         $list = array();
 
         $list['block_type_list'] = Info::getBlockTypeList();
 
         if (!empty($list)) {
-            $this->set(array_keys($list),$list);
+            $this->set(array_keys($list), $list);
         }
 
         $this->list = $list;
         return $list;
     }
-
-
-
- 
-
 }

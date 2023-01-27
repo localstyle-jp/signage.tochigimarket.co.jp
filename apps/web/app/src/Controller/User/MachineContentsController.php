@@ -17,34 +17,29 @@ use App\Model\Entity\Material;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class MachineContentsController extends AppController
-{
+class MachineContentsController extends AppController {
     private $list = [];
 
-    public function initialize()
-    {
+    public function initialize() {
         $this->MachineMaterials = $this->getTableLocator()->get('MachineMaterials');
 
         parent::initialize();
     }
-    
-    public function beforeFilter(Event $event) {
 
+    public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("user");
+        $this->viewBuilder()->setLayout('user');
 
         $this->setCommon();
         $this->getEventManager()->off($this->Csrf);
 
         $this->modelName = $this->name;
         $this->set('ModelName', $this->modelName);
-
     }
 
     protected function _getQuery() {
         $query = [];
-
 
         return $query;
     }
@@ -53,8 +48,6 @@ class MachineContentsController extends AppController
         $cond = [];
         $cnt = 0;
 
-
-
         return $cond;
     }
 
@@ -62,7 +55,7 @@ class MachineContentsController extends AppController
         return $this->redirect(['controller' => 'machine-boxes', 'action' => 'index']);
     }
 
-    public function edit($id=0) {
+    public function edit($id = 0) {
         $this->checkLogin();
 
         $this->setList();
@@ -98,10 +91,10 @@ class MachineContentsController extends AppController
         }
 
         // 成功時のコールバック
-        $callback = function($id) use($delete_ids) {
+        $callback = function ($id) use ($delete_ids) {
             // 削除
             if (!empty($delete_ids)) {
-                $this->ContentMaterials->deleteAll(['ContentMaterials.content_id' => $id, function($exp) use($delete_ids) {
+                $this->ContentMaterials->deleteAll(['ContentMaterials.content_id' => $id, function ($exp) use ($delete_ids) {
                     return $exp->in('id', $delete_ids);
                 }]);
             }
@@ -110,9 +103,9 @@ class MachineContentsController extends AppController
         };
 
         // エラー時のコールバック
-        $error_callback = function($datas) {
+        $error_callback = function ($datas) {
             if (!empty($datas['content_materials'])) {
-                foreach ($datas['content_materials'] as $k =>  $data) {
+                foreach ($datas['content_materials'] as $k => $data) {
                     if (empty($data['material']) && $data['material_id']) {
                         $datas['content_materials'][$k]['material'] = $this->Materials->find()->where(['Materials.id' => $data['material_id']])->first()->toArray();
                     }
@@ -123,13 +116,13 @@ class MachineContentsController extends AppController
             }
             return $datas;
         };
-        
-        $contain =[
-            'ContentMaterials'=> function($q){
+
+        $contain = [
+            'ContentMaterials' => function ($q) {
                 return $q->contain(['Materials'])->order(['ContentMaterials.position' => 'ASC']);
-            } 
+            }
         ];
-        
+
         $options = [
             'callback' => $callback,
             'get_callback' => $get_callback,
@@ -138,13 +131,12 @@ class MachineContentsController extends AppController
             'associated' => $associated,
             'contain' => $contain
         ];
-        
-        parent::_edit($id, $options);
 
+        parent::_edit($id, $options);
     }
 
     public function addMaterial() {
-        $this->viewBuilder()->setLayout("plain");
+        $this->viewBuilder()->setLayout('plain');
         $this->setList();
 
         $rownum = $this->request->getData('rownum');
@@ -159,7 +151,7 @@ class MachineContentsController extends AppController
                 'material_id' => $master->id,
                 'position' => 0,
                 'view_second' => $master->view_second,
-                'material' =>[
+                'material' => [
                     'type' => $master->type,
                     'name' => $master->name,
                     'image' => $master->image,
@@ -176,7 +168,6 @@ class MachineContentsController extends AppController
         $this->set(compact('rownum', 'material'));
     }
 
-
     public function position($id, $pos) {
         $this->checkLogin();
 
@@ -189,35 +180,28 @@ class MachineContentsController extends AppController
         $this->checkLogin();
 
         $options = [];
-        
-        parent::_enable($id, $options);
 
+        parent::_enable($id, $options);
     }
 
     public function delete($id, $type, $columns = null) {
         $this->checkLogin();
-        
+
         $options = [];
 
         return parent::_delete($id, $type, $columns, $options);
     }
 
-
     public function setList() {
-        
         $list = array(
             'type_list' => Material::$type_list
         );
 
-
-
         if (!empty($list)) {
-            $this->set(array_keys($list),$list);
+            $this->set(array_keys($list), $list);
         }
 
         $this->list = $list;
         return $list;
     }
-
-
 }

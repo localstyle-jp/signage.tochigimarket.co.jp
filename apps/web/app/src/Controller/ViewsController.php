@@ -16,12 +16,10 @@ use Cake\ORM\TableRegistry;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class ViewsController extends AppController
-{
+class ViewsController extends AppController {
     private $list = [];
 
-    public function initialize()
-    {
+    public function initialize() {
         parent::initialize();
 
         $this->SiteConfigs = $this->getTableLocator()->get('SiteConfigs');
@@ -29,23 +27,18 @@ class ViewsController extends AppController
         $this->UserSites = $this->getTableLocator()->get('UserSites');
         $this->MachineBoxes = $this->getTableLocator()->get('MachineBoxes');
 
-
         $this->modelName = 'Infos';
         $this->set('ModelName', $this->modelName);
 
         $this->uid = $this->Session->read('uid');
-
-
     }
-    
+
     public function beforeFilter(Event $event) {
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("simple");
+        $this->viewBuilder()->setLayout('simple');
         $this->getEventManager()->off($this->Csrf);
-
     }
     public function index($slug, $path) {
-
         $site_config = $this->SiteConfigs->find()->where(['SiteConfigs.slug' => $slug])->first();
         if (empty($site_config)) {
             throw new NotFoundException('ページが見つかりません');
@@ -70,7 +63,7 @@ class ViewsController extends AppController
 
         // コンテンツ
         $content = $this->Contents->find()->where(['Contents.id' => $machine->content_id])
-                                    ->contain(['ContentMaterials' => function($q) {
+                                    ->contain(['ContentMaterials' => function ($q) {
                                         return $q->contain(['Materials'])->order(['ContentMaterials.position' => 'ASC']);
                                     }])
                                     ->first();
@@ -86,15 +79,11 @@ class ViewsController extends AppController
         }
 
         $this->set(compact('site_config', 'machine', 'content', 'query', 'width', 'height'));
-
-
-        
     }
 
     public function error() {
         throw new NotFoundException('ページが見つかりません');
     }
-
 
     private function _getQuery() {
         $query = [];
@@ -102,26 +91,16 @@ class ViewsController extends AppController
         return $query;
     }
 
-
-
-  
-
     public function setList() {
-        
         $list = array();
 
         $list['block_type_list'] = Info::getBlockTypeList();
 
         if (!empty($list)) {
-            $this->set(array_keys($list),$list);
+            $this->set(array_keys($list), $list);
         }
 
         $this->list = $list;
         return $list;
     }
-
-
-
- 
-
 }

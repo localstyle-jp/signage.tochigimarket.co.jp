@@ -11,6 +11,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
 use Cake\Utility\Hash;
 use App\Model\Entity\Material;
+
 /**
  * Static content controller
  *
@@ -18,12 +19,10 @@ use App\Model\Entity\Material;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class ViewsController extends AppController
-{
+class ViewsController extends AppController {
     private $list = [];
 
-    public function initialize()
-    {
+    public function initialize() {
         parent::initialize();
 
         $this->SiteConfigs = $this->getTableLocator()->get('SiteConfigs');
@@ -34,15 +33,13 @@ class ViewsController extends AppController
 
         // $this->modelName = 'Infos';
         // $this->set('ModelName', $this->modelName);
-
     }
-    
+
     public function beforeFilter(Event $event) {
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("simple");
+        $this->viewBuilder()->setLayout('simple');
 
         $this->getEventManager()->off($this->Csrf);
-
     }
 
     public function index() {
@@ -60,7 +57,7 @@ class ViewsController extends AppController
 
         // コンテンツ
         $content = $this->MachineContents->find()->where(['MachineContents.id' => $machine_box->machine_content_id])
-                                    ->contain(['MachineMaterials' => function($q) {
+                                    ->contain(['MachineMaterials' => function ($q) {
                                         return $q->order(['MachineMaterials.position' => 'ASC']);
                                     }])
                                     ->first();
@@ -78,7 +75,7 @@ class ViewsController extends AppController
             'caption' => '',
             'is_vertical' => $machine_box->is_vertical,
             'materials' => [],
-        ]; 
+        ];
         if ($machine_box->is_vertical == 1) {
             $item['width'] = $machine_box->height;
             $item['height'] = $machine_box->width;
@@ -94,14 +91,14 @@ class ViewsController extends AppController
             $materials_output[$item_count] = $this->setMaterial($item_count, $material, $machine_box);
         }
         $item['materials'] = Hash::combine($materials_output, '{n}.no', '{n}');
-        
+
         $status_options = ['material_rows' => $item_count];
 
         $this->rest_custom(200, $status_options, $item);
     }
 
     public function isReload() {
-        $machine_id = ( empty($this->request->getData('id')) ? 0 : $this->request->getData('id') );
+        $machine_id = (empty($this->request->getData('id')) ? 0 : $this->request->getData('id'));
         // $content_id = ( empty($this->request->getData('content_id')) ? 0 : $this->request->getData('content_id') );
         // $content_serial_no = ( empty($this->request->getData('serial_no')) ? 0 : $this->request->getData('serial_no') );
 
@@ -197,5 +194,4 @@ class ViewsController extends AppController
 
         return $data;
     }
-
 }

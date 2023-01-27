@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace App\Model\Behavior;
 
 use ArrayObject;
@@ -11,8 +11,7 @@ use Cake\Utility\Text;
 use Cake\Filesystem\Folder;
 use Cake\Event\EventManager;
 
-class FileAttacheBehavior extends Behavior 
-{
+class FileAttacheBehavior extends Behavior {
     public $uploadDirCreate = true;
     public $uploadDirMask = 0777;
     public $uploadFileMask = 0666;
@@ -27,26 +26,23 @@ class FileAttacheBehavior extends Behavior
     // cake command configure
     // public $cakeCommPath = ROOT . DS . 'bin/cake';
 
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         $entity = $this->getTable()->newEntity();
         $entity->setVirtual(['attaches']);
     }
 
-    public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
-    {
-        
+    public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) {
         $table = $event->getSubject();
         // images
         if (array_key_exists('images', $table->attaches)) {
             $attache_image_columns = $table->attaches['images'];
             foreach ($attache_image_columns as $column => $val) {
-                if (array_key_exists($column,$data)) {
-                    $data['_'.$column] = $data[$column];
+                if (array_key_exists($column, $data)) {
+                    $data['_' . $column] = $data[$column];
                     // $data['_old_'.$column] = $event->getData($column);
                 }
-                if ((empty($data[$column]) || $data[$column] != UPLOAD_ERR_OK) && array_key_exists('_old_'.$column,$data) && $data['_old_'.$column] != "") {
-                    $data[$column] = $data['_old_'.$column];
+                if ((empty($data[$column]) || $data[$column] != UPLOAD_ERR_OK) && array_key_exists('_old_' . $column, $data) && $data['_old_' . $column] != '') {
+                    $data[$column] = $data['_old_' . $column];
                 }
             }
         }
@@ -54,34 +50,32 @@ class FileAttacheBehavior extends Behavior
         if (array_key_exists('files', $table->attaches)) {
             $attache_image_columns = $table->attaches['files'];
             foreach ($attache_image_columns as $column => $val) {
-                if (array_key_exists($column,$data)) {
-                    $data['_'.$column] = $data[$column];
-                    // $data['_old_'.$column] = $event->getData($column);                    
+                if (array_key_exists($column, $data)) {
+                    $data['_' . $column] = $data[$column];
+                    // $data['_old_'.$column] = $event->getData($column);
                 }
-                if ((empty($data[$column]) || $data[$column] != UPLOAD_ERR_OK) && array_key_exists('_old_'.$column,$data) && $data['_old_'.$column] != "") {
-                    $data[$column] = $data['_old_'.$column];
+                if ((empty($data[$column]) || $data[$column] != UPLOAD_ERR_OK) && array_key_exists('_old_' . $column, $data) && $data['_old_' . $column] != '') {
+                    $data[$column] = $data['_old_' . $column];
                 }
             }
         }
     }
 
-    public function beforeFind(Event $event, Query $query, ArrayObject $options, $primary)
-    {
+    public function beforeFind(Event $event, Query $query, ArrayObject $options, $primary) {
         $table = $event->getSubject();
 
         // afterFindの代わり
-        $query->formatResults(function($results) use($table, $primary) {
-            return $results->map(function($row) use($table, $primary) {
+        $query->formatResults(function ($results) use ($table, $primary) {
+            return $results->map(function ($row) use ($table, $primary) {
                 if (is_object($row) && !array_key_exists('existing', $row)) {
                     $results = $this->_attachesFind($table, $row, $primary);
                 }
                 return $row;
             });
-         });
+        });
     }
 
-    public function afterSave(Event $event, EntityInterface $entity, ArrayObject $options)
-    {   
+    public function afterSave(Event $event, EntityInterface $entity, ArrayObject $options) {
         // pr($event);
         // pr($entity);
         // pr($options);
@@ -89,35 +83,30 @@ class FileAttacheBehavior extends Behavior
         $this->_uploadAttaches($event, $entity);
     }
 
-    public function checkUploadDirectory($table) 
-    {
+    public function checkUploadDirectory($table) {
         $Folder = new Folder();
 
         if ($this->uploadDirCreate) {
-            $dir = UPLOAD_DIR . $table->getAlias() . DS .'images';
+            $dir = UPLOAD_DIR . $table->getAlias() . DS . 'images';
             if (!is_dir($dir) && !empty($table->attaches['images'])) {
-                if (!$Folder->create(UPLOAD_DIR . $table->getAlias() . DS .'images', $this->uploadDirMask)) {
-
+                if (!$Folder->create(UPLOAD_DIR . $table->getAlias() . DS . 'images', $this->uploadDirMask)) {
                 }
             }
 
-            $dir = UPLOAD_DIR . $table->getAlias() . DS .'files';
+            $dir = UPLOAD_DIR . $table->getAlias() . DS . 'files';
             if (!is_dir($dir) && !empty($table->attaches['files'])) {
                 if (!$Folder->create($dir, $this->uploadDirMask)) {
-
                 }
             }
         }
     }
 
-    public function checkConvertDirectoryMp4($dir) 
-    {
+    public function checkConvertDirectoryMp4($dir) {
         $Folder = new Folder();
 
         if ($this->uploadDirCreate) {
             if (!is_dir($dir)) {
                 if (!$Folder->create($dir, $this->uploadDirMask)) {
-
                 }
             }
         }
@@ -135,55 +124,55 @@ class FileAttacheBehavior extends Behavior
         }
         $entity = $results;
         // foreach ($results as $entity) {
-            $columns = null;
+        $columns = null;
 
-            $entity->setVirtual(['attaches']);
-            $_ = $entity->toArray();
-            $entity_attaches = [];
-// pr($_);
-            //image
-            foreach ($_att_images as $columns => $_att) {
-                $_attaches = array();
-                if (isset($_[$columns])) {
-                    $_attaches['0'] = '';
-                    $_file = '/' . UPLOAD_BASE_URL . '/' . $table->getAlias() . '/images/' . $_[$columns];
-                    if (is_file(WWW_ROOT . $_file)) {
-                        $_attaches['0'] = $_file;
-                    }
-                    if (!empty($_att['thumbnails'])) {
-                        foreach ($_att['thumbnails'] as $_name => $_val) {
-                            $key_name = (!is_int($_name))? $_name: $_val['prefix'];
-                            $_attaches[$key_name] = '';
-                            $_file = '/' . UPLOAD_BASE_URL . '/' . $table->getAlias() . '/images/' . $_val['prefix'] . $_[$columns];
-                            if (!empty($_[$columns]) && is_file(WWW_ROOT . $_file)) {
-                                $_attaches[$key_name] = $_file;
-                            }
+        $entity->setVirtual(['attaches']);
+        $_ = $entity->toArray();
+        $entity_attaches = [];
+        // pr($_);
+        //image
+        foreach ($_att_images as $columns => $_att) {
+            $_attaches = array();
+            if (isset($_[$columns])) {
+                $_attaches['0'] = '';
+                $_file = '/' . UPLOAD_BASE_URL . '/' . $table->getAlias() . '/images/' . $_[$columns];
+                if (is_file(WWW_ROOT . $_file)) {
+                    $_attaches['0'] = $_file;
+                }
+                if (!empty($_att['thumbnails'])) {
+                    foreach ($_att['thumbnails'] as $_name => $_val) {
+                        $key_name = (!is_int($_name)) ? $_name : $_val['prefix'];
+                        $_attaches[$key_name] = '';
+                        $_file = '/' . UPLOAD_BASE_URL . '/' . $table->getAlias() . '/images/' . $_val['prefix'] . $_[$columns];
+                        if (!empty($_[$columns]) && is_file(WWW_ROOT . $_file)) {
+                            $_attaches[$key_name] = $_file;
                         }
                     }
-    // pr($_attaches);
-                    $entity_attaches[$columns] = $_attaches;
                 }
+                // pr($_attaches);
+                $entity_attaches[$columns] = $_attaches;
             }
-            //file
-            foreach ($_att_files as $columns => $_att) {
-                $def = array('0', 'src', 'extention', 'name', 'download');
-                $def = array_fill_keys($def, null);
+        }
+        //file
+        foreach ($_att_files as $columns => $_att) {
+            $def = array('0', 'src', 'extention', 'name', 'download');
+            $def = array_fill_keys($def, null);
 
-                if (isset($_[$columns])) {
-                    $_attaches = $def;
-                    $_file = '/' . UPLOAD_BASE_URL . '/' . $table->getAlias (). '/files/' . $_[$columns];
-                    if (is_file(WWW_ROOT . $_file)) {
-                        $_attaches['0'] = $_file;
-                        $_attaches['src'] = $_file;
-                        $_attaches['extention'] = $this->getExtension($_[$columns . '_name']);
-                        $_attaches['name'] = $_[$columns . '_name'];
-                        $_attaches['size'] = $_[$columns . '_size'];
-                        $_attaches['download'] = '/file/' . $_[$table->getPrimaryKey()] . '/' . $columns . '/';
-                    }
-                    $entity_attaches[$columns] = $_attaches;
+            if (isset($_[$columns])) {
+                $_attaches = $def;
+                $_file = '/' . UPLOAD_BASE_URL . '/' . $table->getAlias() . '/files/' . $_[$columns];
+                if (is_file(WWW_ROOT . $_file)) {
+                    $_attaches['0'] = $_file;
+                    $_attaches['src'] = $_file;
+                    $_attaches['extention'] = $this->getExtension($_[$columns . '_name']);
+                    $_attaches['name'] = $_[$columns . '_name'];
+                    $_attaches['size'] = $_[$columns . '_size'];
+                    $_attaches['download'] = '/file/' . $_[$table->getPrimaryKey()] . '/' . $columns . '/';
                 }
+                $entity_attaches[$columns] = $_attaches;
             }
-            $entity->attaches = $entity_attaches;
+        }
+        $entity->attaches = $entity_attaches;
         // }
         return $results;
     }
@@ -199,7 +188,7 @@ class FileAttacheBehavior extends Behavior
         if (!empty($entity)) {
             $_data = $entity->toArray();
             $id = $entity->id;
-            $query = $table->find()->where([$table->getAlias().'.'.$table->getPrimaryKey() => $id]);
+            $query = $table->find()->where([$table->getAlias() . '.' . $table->getPrimaryKey() => $id]);
             $old_entity = $query->first();
             $old_data = $old_entity->toArray();
 
@@ -214,8 +203,8 @@ class FileAttacheBehavior extends Behavior
             //upload images
             foreach ($_att_images as $columns => $val) {
                 $image_name = array();
-                if (!empty($_data['_'.$columns])) {
-                    $image_name = $_data['_'.$columns];
+                if (!empty($_data['_' . $columns])) {
+                    $image_name = $_data['_' . $columns];
                 }
                 if (!empty($image_name['tmp_name']) && $image_name['error'] === UPLOAD_ERR_OK) {
                     $basedir = WWW_ROOT . UPLOAD_BASE_URL . DS . $table->getAlias() . DS . 'images' . DS;
@@ -223,30 +212,34 @@ class FileAttacheBehavior extends Behavior
                     $ext = $this->getExtension($image_name['name']);
                     $filepattern = $imageConf['file_name'];
                     $file = $image_name;
-                    if ($info = getimagesize($file['tmp_name'])){
+                    if ($info = getimagesize($file['tmp_name'])) {
                         //画像 処理方法
-                        $convert_method = (!empty($imageConf['method']))? $imageConf['method']: null;
-                        
+                        $convert_method = (!empty($imageConf['method'])) ? $imageConf['method'] : null;
+
                         if (in_array($ext, $imageConf['extensions'])) {
                             $newname = sprintf($filepattern, $id, $uuid) . '.' . $ext;
-                            $this->convert_img($imageConf['width'].'x'.$imageConf['height'],
-                                               $file['tmp_name'],
-                                               $basedir . $newname,
-                                               $convert_method);
+                            $this->convert_img(
+                                $imageConf['width'] . 'x' . $imageConf['height'],
+                                $file['tmp_name'],
+                                $basedir . $newname,
+                                $convert_method
+                            );
 
                             //サムネイル
                             if (!empty($imageConf['thumbnails'])) {
                                 foreach ($imageConf['thumbnails'] as $suffix => $val) {
                                     //画像処理方法
-                                    $convert_method = (!empty($val['method']))? $val['method']: null;
+                                    $convert_method = (!empty($val['method'])) ? $val['method'] : null;
                                     //ファイル名
-                                    $prefix = (!empty($val['prefix']))? $val['prefix']: $suffix;
-                                    $_newname = $prefix.$newname;
+                                    $prefix = (!empty($val['prefix'])) ? $val['prefix'] : $suffix;
+                                    $_newname = $prefix . $newname;
                                     //変換
-                                    $this->convert_img($val['width'].'x'.$val['height'],
-                                                       $file['tmp_name'],
-                                                       $basedir . $_newname,
-                                                       $convert_method);
+                                    $this->convert_img(
+                                        $val['width'] . 'x' . $val['height'],
+                                        $file['tmp_name'],
+                                        $basedir . $_newname,
+                                        $convert_method
+                                    );
                                 }
                             }
                             //
@@ -271,8 +264,8 @@ class FileAttacheBehavior extends Behavior
                 //upload files
                 foreach ($_att_files as $columns => $val) {
                     $file_name = array();
-                    if (!empty($_data['_'.$columns])) {
-                        $file_name = $_data['_'.$columns];
+                    if (!empty($_data['_' . $columns])) {
+                        $file_name = $_data['_' . $columns];
                     }
                     if (!empty($file_name['tmp_name']) && $file_name['error'] === UPLOAD_ERR_OK) {
                         $basedir = WWW_ROOT . UPLOAD_BASE_URL . DS . $table->getAlias() . DS . 'files' . DS;
@@ -285,8 +278,8 @@ class FileAttacheBehavior extends Behavior
                             $newname = sprintf($filepattern, $id, $uuid) . '.' . $ext;
                             move_uploaded_file($file['tmp_name'], $basedir . $newname);
                             chmod($basedir . $newname, $this->uploadFileMask);
-                            
-                            if ($ext=='mp4') {
+
+                            if ($ext == 'mp4') {
                                 $newdist = WWW_ROOT . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS;
                                 $this->checkConvertDirectoryMp4($newdist);
                                 // // tsファイルへの分割
@@ -299,21 +292,21 @@ class FileAttacheBehavior extends Behavior
                                 // // マスターファイルの作成
                                 // $this->create_master_m3u8($newdist, $id, $bitrates);
                                 // DBへの記録準備
-                                $old_entity->set('view_second', $this->getViewSeconds($basedir.$newname));
+                                $old_entity->set('view_second', $this->getViewSeconds($basedir . $newname));
                                 // $newname = '';
-                                $filenameMaster = 'm'.$id.'.m3u8';
-                                $old_entity->set('url', 'm'.$id.DS.$filenameMaster);
+                                $filenameMaster = 'm' . $id . '.m3u8';
+                                $old_entity->set('url', 'm' . $id . DS . $filenameMaster);
                             }
 
                             // $_data[$columns] = $newname;
                             // $_data[$columns.'_name'] = $file_name['name'];
                             // $_data[$columns.'_size'] = $file_name['size'];
                             $old_entity->set($columns, $newname);
-                            if (empty($old_entity->{$columns."_name"})) {
-                                $old_entity->set($columns.'_name', $this->getFileName($file_name['name'], $ext));
+                            if (empty($old_entity->{$columns . '_name'})) {
+                                $old_entity->set($columns . '_name', $this->getFileName($file_name['name'], $ext));
                             }
-                            $old_entity->set($columns.'_size', $file_name['size']);
-                            $old_entity->set($columns.'_extension', $ext);
+                            $old_entity->set($columns . '_size', $file_name['size']);
+                            $old_entity->set($columns . '_extension', $ext);
                             // $table->patchEntity($entity, $_data, ['validate' => false]);
                             $table->save($old_entity);
 
@@ -330,10 +323,8 @@ class FileAttacheBehavior extends Behavior
                             //     @unlink($basedir.$newname);
                             // }
                         }
-
                     }
                 }
-
             }
             // $table->addBehavior('Position');
         }
@@ -378,7 +369,7 @@ class FileAttacheBehavior extends Behavior
         $deg = 0;
         $convertParams = $this->convertParams;
         if (!empty($exif) && is_array($exif) && array_key_exists('Orientation', $exif)) {
-            switch ($exif['Orientation']){
+            switch ($exif['Orientation']) {
                 case 1:
                     break;
                 case 8:
@@ -396,7 +387,7 @@ class FileAttacheBehavior extends Behavior
                 $convertParams = $option_rotate . ' ' . $this->convertParams;
             }
         }
-        
+
         $sz = explode('x', $size);
         $cmdline = $this->convertPath;
         //サイズ指定ありなら
@@ -407,10 +398,10 @@ class FileAttacheBehavior extends Behavior
                 $option = $convertParams . ' ' . $size . '>';
             } else {
                 //枠をはみ出していれば、縮小
-                if($method === 'cover' || $method === 'crop'){
+                if ($method === 'cover' || $method === 'crop') {
                     //中央切り取り
                     $crop = $size;
-                    if(($ow / $oh) <= ($sz[0] / $sz[1])){
+                    if (($ow / $oh) <= ($sz[0] / $sz[1])) {
                         //横を基準
                         $size = $sz[0] . 'x';
                     } else {
@@ -462,8 +453,8 @@ class FileAttacheBehavior extends Behavior
     //     $dist = "-hls_segment_filename \"" . $dist_dir . "v1_".$n_bitrate."k_%4d.ts\" " . $dist_dir . $filenameM3u8;
 
     //     // コマンド実行
-    //     $command = $cmdline . ' ' . $src . ' ' . $codec . ' ' . $bitrate . 
-    //                 // ' ' . $scale . 
+    //     $command = $cmdline . ' ' . $src . ' ' . $codec . ' ' . $bitrate .
+    //                 // ' ' . $scale .
     //                 ' ' . $format . ' ' . $dist;
     //     $a = system(escapeshellcmd($command));
     //     // パーミッション
@@ -496,12 +487,11 @@ class FileAttacheBehavior extends Behavior
     //         $contents .= '#EXT-X-STREAM-INF:BANDWIDTH='.$bitrate*1000*1.2.',RESOLUTION=1920x1080,CODECS="avc1.42e00a,mp4a.40.2"'."\n";
     //         $contents .= DS . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS.$filenameM3u8."\n";
     //     }
-        
+
     //     // マスターファイル作成
     //     $filenameMaster = $dist_dir.'m'.$id.'.m3u8';
     //     file_put_contents($filenameMaster, $contents);
     //     // パーミッション
     //     @chmod($dist_dir.'m'.$id.'.m3u8', $this->uploadFileMask);
     // }
-
 }

@@ -100,17 +100,13 @@ try {
     } elseif (env('HTTP_HOST') === 'localhost') {
         Configure::load('app_develop', 'default');
     } else {
-        
     }
-    
 } catch (\Exception $e) {
     exit($e->getMessage() . "\n");
 }
 
 if (strpos(env('HTTP_HOST'), 'test') !== false || strpos(env('HTTP_HOST'), 'caters') !== false) {
-
 } else {
-
 }
 
 /*

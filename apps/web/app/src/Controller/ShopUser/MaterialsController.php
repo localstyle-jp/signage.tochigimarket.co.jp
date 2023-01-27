@@ -8,7 +8,6 @@ use Cake\Network\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
-
 use App\Model\Entity\Media;
 use App\Model\Entity\Material;
 
@@ -19,30 +18,26 @@ use App\Model\Entity\Material;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class MaterialsController extends AppController
-{
+class MaterialsController extends AppController {
     private $list = [];
 
-    public function initialize()
-    {
+    public function initialize() {
         $this->MaterialCategories = $this->getTableLocator()->get('MaterialCategories');
         $this->Users = $this->getTableLocator()->get('Users');
 
         parent::initialize();
     }
-    
-    public function beforeFilter(Event $event) {
 
+    public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("shop");
+        $this->viewBuilder()->setLayout('shop');
 
         $this->setCommon();
         $this->getEventManager()->off($this->Csrf);
 
         $this->modelName = $this->name;
         $this->set('ModelName', $this->modelName);
-
     }
 
     protected function _getQuery() {
@@ -53,21 +48,23 @@ class MaterialsController extends AppController
         $query['sch_user_type'] = $this->request->getQuery('sch_user_type');
         // 一番下層の（連番が一番大きな）カテゴリを検索するカテゴリIDとする
         $query['sch_category_id'] = 0;
-        for ($i=0; true ; $i++) { 
-            if( !$this->request->getQuery('sch_category_id' . $i) ) {break;}
+        for ($i = 0; true; $i++) {
+            if (!$this->request->getQuery('sch_category_id' . $i)) {
+                break;
+            }
             $query['sch_category_id'] = $this->request->getQuery('sch_category_id' . $i);
         }
         $query['sch_modified_start'] = $this->checkDate($this->request->getQuery('sch_modified_start')) ?
-                                            $this->request->getQuery('sch_modified_start') : 
+                                            $this->request->getQuery('sch_modified_start') :
                                             null;
         $query['sch_modified_end'] = $this->checkDate($this->request->getQuery('sch_modified_end')) ?
-                                            $this->request->getQuery('sch_modified_end') : 
+                                            $this->request->getQuery('sch_modified_end') :
                                             null;
         $query['sch_created_start'] = $this->checkDate($this->request->getQuery('sch_created_start')) ?
-                                            $this->request->getQuery('sch_created_start') : 
+                                            $this->request->getQuery('sch_created_start') :
                                             null;
         $query['sch_created_end'] = $this->checkDate($this->request->getQuery('sch_created_end')) ?
-                                            $this->request->getQuery('sch_created_end') : 
+                                            $this->request->getQuery('sch_created_end') :
                                             null;
 
         return $query;
@@ -75,7 +72,7 @@ class MaterialsController extends AppController
 
     protected function checkDate($date) {
         $is_match = preg_match('/^(\d{4})[\/-](\d{2})[\/-](\d{2})$/', $date, $match);
-        if($is_match && checkdate($match[2], $match[3], $match[1])){
+        if ($is_match && checkdate($match[2], $match[3], $match[1])) {
             return true;
         }
         return false;
@@ -120,14 +117,12 @@ class MaterialsController extends AppController
         $ids = $this->Users->getAdminIds();
         $ids[] = 0;
         if ($query['sch_user_type'] == 'admin') {
-
         } elseif ($query['sch_user_type'] == 'shop') {
             $ids = [$this->Session->read('userid')];
         } else {
             $ids[] = $this->Session->read('userid');
         }
         $cond[$cnt++]['Materials.user_id in'] = $ids;
-
 
         return $cond;
     }
@@ -164,7 +159,7 @@ class MaterialsController extends AppController
         $this->_lists($cond, $options);
     }
 
-    public function edit($id=0) {
+    public function edit($id = 0) {
         $this->checkLogin();
 
         $this->setList();
@@ -195,10 +190,9 @@ class MaterialsController extends AppController
                     $this->request->data['user_id'] = $this->isLogin();
                 }
             }
-
         }
 
-        $callback = function($id) {
+        $callback = function ($id) {
             $entity = $this->Materials->find()->where(['Materials.id' => $id])->first();
             if ($entity->type == Material::TYPE_PAGE_MOVIE) {
                 $material = $this->Materials->patchEntity($entity, ['url' => '/material/detail/' . $id]);
@@ -218,11 +212,11 @@ class MaterialsController extends AppController
                         WWW_ROOT . UPLOAD_BASE_URL . DS . 'Materials' . DS . 'files' . DS . ' ' .
                         WWW_ROOT . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS . ' ' .
                         $entity->file . ' ' .
-                        '1>>' . LOGS . 'mp4_conversion.log ' . 
-                        '2>/dev/null ' . 
+                        '1>>' . LOGS . 'mp4_conversion.log ' .
+                        '2>/dev/null ' .
                         // '2>>' . LOGS . 'mp4_conversion_debug.log ' .
                         '&',
-                    $output, 
+                    $output,
                     $status_code
                 );
             }
@@ -243,9 +237,7 @@ class MaterialsController extends AppController
         ];
 
         parent::_edit($id, $options);
-
     }
-
 
     public function position($id, $pos) {
         $this->checkLogin();
@@ -259,22 +251,19 @@ class MaterialsController extends AppController
         $this->checkLogin();
 
         $options = [];
-        
-        parent::_enable($id, $options);
 
+        parent::_enable($id, $options);
     }
 
     public function delete($id, $type, $columns = null) {
         $this->checkLogin();
-        
+
         $options = [];
 
         return parent::_delete($id, $type, $columns, $options);
     }
 
-
     public function setList() {
-        
         $list = array(
             'type_list' => Material::$type_list,
         );
@@ -296,7 +285,7 @@ class MaterialsController extends AppController
         ];
 
         if (!empty($list)) {
-            $this->set(array_keys($list),$list);
+            $this->set(array_keys($list), $list);
         }
 
         $this->list = $list;
@@ -314,7 +303,7 @@ class MaterialsController extends AppController
 
     public function setCategoryListForSearch($category_id) {
         // 現在カテゴリ情報
-        $category = $this->MaterialCategories->find()->where(['MaterialCategories.id' =>$category_id])->first();
+        $category = $this->MaterialCategories->find()->where(['MaterialCategories.id' => $category_id])->first();
 
         $pankuzu_category = [];
         $category_list = [];
@@ -324,16 +313,15 @@ class MaterialsController extends AppController
             $pankuzu_category[] = $category;
             do {
                 $tmp = $this->MaterialCategories->find()->where([
-                            'MaterialCategories.id' => $_parent_id,
-                        ])->first();
+                    'MaterialCategories.id' => $_parent_id,
+                ])->first();
                 if (!empty($tmp)) {
                     $_parent_id = $tmp->parent_category_id;
                     $pankuzu_category[] = $tmp;
                 }
-                
-            } while(!empty($tmp));
-            
-            while($pcat = array_pop($pankuzu_category)) {
+            } while (!empty($tmp));
+
+            while ($pcat = array_pop($pankuzu_category)) {
                 $category_cond['MaterialCategories.parent_category_id'] = $pcat->parent_category_id;
                 $tmp = $this->MaterialCategories->find('list', ['keyField' => 'id', 'valueField' => 'name'])
                                         ->where($category_cond)
@@ -341,7 +329,7 @@ class MaterialsController extends AppController
                                         ->all();
                 if ($tmp->isEmpty()) {
                     $tmp = null;
-                } elseif ($pcat->parent_category_id===0) {
+                } elseif ($pcat->parent_category_id === 0) {
                     $category_list[] = [
                         'category' => $pcat,
                         'list' => $tmp->toArray(),
@@ -381,31 +369,30 @@ class MaterialsController extends AppController
                 'empty' => ['0' => '全て']
             ];
         }
-        
+
         $this->set(compact('category_list'));
         return $category_list;
     }
 
     public function popList() {
-        $this->viewBuilder()->setLayout("pop");
+        $this->viewBuilder()->setLayout('pop');
 
         $this->setList();
 
         $query = $this->_getQueryPop();
 
         $this->setCategoryListForSearch($query['sch_category_id']);
-        
+
         $cond = $this->_getConditionsPop($query);
         $this->set(compact('query'));
 
         $options = [
             'contain' => ['MaterialCategories'],
-            'limit' => 10, 
+            'limit' => 10,
             'order' => ['Materials.position' => 'ASC']
         ];
 
         $this->_lists($cond, $options);
-
     }
     private function _getQueryPop() {
         $query = [];
@@ -427,7 +414,6 @@ class MaterialsController extends AppController
         $ids = $this->Users->getAdminIds();
         $ids[] = 0;
         if ($query['sch_user_type'] == 'admin') {
-
         } elseif ($query['sch_user_type'] == 'shop') {
             $ids = [$this->Session->read('userid')];
         } else {
@@ -439,17 +425,17 @@ class MaterialsController extends AppController
     }
 
     public function changeCategoryInput() {
-        $this->viewBuilder()->setLayout("plain");
-        
+        $this->viewBuilder()->setLayout('plain');
+
         $category_id = $this->request->getData('category_id');
 
         $this->setCategoryListForSearch($category_id);
         // $datas = [];
-        
+
         $this->set(compact('category_id'));
     }
 
-    public function getYearList(){
+    public function getYearList() {
         $result = [];
         $first_mate = $this->Materials->find()
                             ->order(['Materials.created' => 'ASC'])
@@ -458,11 +444,10 @@ class MaterialsController extends AppController
         $first_year = (new \DateTime($first_mate['created']))->format('Y');
         $last_year = (new \DateTime('now'))->format('Y');
 
-        for ($i=$first_year; $i <= $last_year; $i++) { 
+        for ($i = $first_year; $i <= $last_year; $i++) {
             $result[$i] = $i;
         }
 
         return $result;
     }
-
 }

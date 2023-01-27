@@ -42,7 +42,6 @@ use Cake\Routing\Route\DashedRoute;
  *
  */
 
-
 Router::defaultRouteClass(DashedRoute::class);
 
 Router::extensions(['json']);
@@ -100,32 +99,27 @@ Router::scope('/', function (RouteBuilder $routes) {
 });
 
 Router::prefix('admin', function ($routes) {
-  
     $routes->fallbacks('DashedRoute');
 });
 
 Router::prefix('user', function ($routes) {
-
     // user
     $routes->connect('/*', ['controller' => 'Home', 'action' => 'topRedirect', 'prefix' => 'user']);
-  
+
     $routes->fallbacks('DashedRoute');
 });
 
 Router::prefix('shop_user', function ($routes) {
-
     $routes->connect('/', ['controller' => 'Home', 'action' => 'index', 'prefix' => 'shop_user'], ['_name' => 'shopAdmin']);
     $routes->connect('/logout', ['controller' => 'Home', 'action' => 'logout', 'prefix' => 'shop_user'], ['_name' => 'shopLogout']);
 
     // user
     $routes->connect('/*', ['controller' => 'Home', 'action' => 'index', 'prefix' => 'shop_user']);
-  
+
     $routes->fallbacks('DashedRoute');
 });
 
-
 Router::prefix('v1', function ($routes) {
-  
     $routes->fallbacks('DashedRoute');
 });
 
@@ -133,4 +127,3 @@ Router::prefix('v1', function ($routes) {
  * Load all plugin routes. See the Plugin documentation on
  * how to customize the loading of plugin routes.
  */
-

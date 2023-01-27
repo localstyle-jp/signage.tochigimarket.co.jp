@@ -8,7 +8,6 @@ use Cake\Network\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
-
 use App\Model\Entity\Material;
 
 /**
@@ -18,12 +17,10 @@ use App\Model\Entity\Material;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class ContentController extends AppController
-{
+class ContentController extends AppController {
     private $list = [];
 
-    public function initialize()
-    {
+    public function initialize() {
         parent::initialize();
 
         $this->SiteConfigs = $this->getTableLocator()->get('SiteConfigs');
@@ -32,28 +29,21 @@ class ContentController extends AppController
         $this->MachineBoxes = $this->getTableLocator()->get('MachineBoxes');
         $this->MachineContents = $this->getTableLocator()->get('MachineContents');
 
-
-
-
         $this->modelName = 'Infos';
         $this->set('ModelName', $this->modelName);
 
         $this->uid = $this->Session->read('uid');
-
-
     }
-    
+
     public function beforeFilter(Event $event) {
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("simple");
+        $this->viewBuilder()->setLayout('simple');
         $this->getEventManager()->off($this->Csrf);
-
     }
     public function index($id) {
-
         // コンテンツ
         $content = $this->Contents->find()->where(['Contents.id' => $id])
-                                    ->contain(['ContentMaterials' => function($q) {
+                                    ->contain(['ContentMaterials' => function ($q) {
                                         return $q->contain(['Materials'])->order(['ContentMaterials.position' => 'ASC']);
                                     }])
                                     ->first();
@@ -80,16 +70,12 @@ class ContentController extends AppController
         foreach ($content->content_materials as $material) {
             $this->setContents($material, $material->material, $items, $scene_list, $materials, $material_youtube, $material_mp4, $material_webm, $material_webpage, $item_count, null, $scene_box_list);
         }
-        
+
         $this->set(compact('content', 'query', 'items', 'scene_list', 'scene_box_list', 'materials', 'material_youtube', 'material_mp4', 'material_webm', 'material_webpage', 'item_count'));
         $this->set(compact('width', 'height'));
-
-
-        
     }
 
     public function machine($id, $machine_id) {
-
         // // 表示端末
         // $machine_box = $this->MachineBoxes->find()->where(['MachineBoxes.id' => $machine_id])->first();
 
@@ -100,12 +86,10 @@ class ContentController extends AppController
         //                             }])
         //                             ->first();
         $content = $this->MachineContents->find()->where(['MachineContents.id' => $id])
-                                    ->contain(['MachineMaterials' => function($q) {
+                                    ->contain(['MachineMaterials' => function ($q) {
                                         return $q->order(['MachineMaterials.position' => 'ASC']);
                                     }, 'MachineBoxes'])
                                     ->first();
-
-        
 
         $query = $this->_getQuery();
 
@@ -124,7 +108,6 @@ class ContentController extends AppController
             $width = $content->machine_box->height;
             $height = $content->machine_box->width;
         }
-
 
         // アイテム
         $items = [];
@@ -147,7 +130,6 @@ class ContentController extends AppController
         $this->set(compact('width', 'height'));
 
         $this->render('index');
-        
     }
 
     private function setContents($material, $detail, &$items, &$scene_list, &$materials, &$material_youtube, &$material_mp4, &$material_webm, &$material_webpage, &$item_count, $machine = null, &$scene_box_list) {
@@ -159,7 +141,7 @@ class ContentController extends AppController
         if (empty($machine) || $machine->caption_flg == 'content') {
             $item['caption'] = $material->rolling_caption;
         }
-        
+
         if ($detail->type == Material::TYPE_MOVIE) {
             $item['action'] = 'play_video_' . $item_count;
         } elseif ($detail->type == Material::TYPE_MOVIE_MP4) {
@@ -200,7 +182,7 @@ class ContentController extends AppController
         $data['class'] = 'box type_' . $item_count;
         if ($detail->type == Material::TYPE_IMAGE) {
             $data['content'] = '<img src="' . $detail->attaches['image']['0'] . '"';
-            $data['content'] .= ' style="width: ' . $width . 'px; height: '. $height .'px; object-fit: cover;"';
+            $data['content'] .= ' style="width: ' . $width . 'px; height: ' . $height . 'px; object-fit: cover;"';
             $data['content'] .= ' alt="">';
             $data['type'] = 'image';
         } elseif ($detail->type == Material::TYPE_URL) {
@@ -229,7 +211,7 @@ class ContentController extends AppController
             // $data['content'] = '<video id="mp4_' . $item_count . '"';
             $data['content'] = '<video id="mp4_video"';
             $data['content'] .= ' muted';
-            $data['content'] .= ($item['time'] == 0 ? ' loop' : '' );
+            $data['content'] .= ($item['time'] == 0 ? ' loop' : '');
             $data['content'] .= '>';
             $data['content'] .= '</video>';
             $data['type'] = 'mp4';
@@ -266,7 +248,7 @@ class ContentController extends AppController
                 'error_flg' => 0,
             ];
         }
-        
+
         $materials[] = $data;
     }
 
@@ -274,33 +256,22 @@ class ContentController extends AppController
         throw new NotFoundException('ページが見つかりません');
     }
 
-
     private function _getQuery() {
         $query = [];
 
         return $query;
     }
 
-
-
-  
-
     public function setList() {
-        
         $list = array();
 
         $list['block_type_list'] = Info::getBlockTypeList();
 
         if (!empty($list)) {
-            $this->set(array_keys($list),$list);
+            $this->set(array_keys($list), $list);
         }
 
         $this->list = $list;
         return $list;
     }
-
-
-
- 
-
 }

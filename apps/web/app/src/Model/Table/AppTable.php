@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace App\Model\Table;
 
 use Cake\ORM\Table;
@@ -6,11 +6,9 @@ use Cake\Filesystem\Folder;
 use Cake\Utility\Text;
 
 class AppTable extends Table {
-
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         // 作成日時と更新日時の自動化
-        $this->addBehavior('Timestamp',[
+        $this->addBehavior('Timestamp', [
             'events' => [
                 'Model.beforeSave' => [
                     'created' => 'new',
@@ -19,16 +17,14 @@ class AppTable extends Table {
             ]
         ]);
     }
-    
+
     // cakePHP2と互換性を保つためにcreateを自前で作る
     public function create($data) {
-
         $entity = $this->createEntity()->toArray();
 
         return $entity;
     }
-    public function createEntity($data=null) {
-
+    public function createEntity($data = null) {
         if (is_null($data)) {
             $data = $this->defaultValues;
         }
@@ -38,21 +34,20 @@ class AppTable extends Table {
     }
 
     public function toFormData($query) {
-        
         $data = $query->toArray();
-        
+
         return $data;
     }
-    
+
     public function copyAttachement($source_id, $distModel) {
         // コピー元
         $source = $this->find()->where([$this->getAlias() . '.id' => $source_id])->first();
 
-        if (empty($source) ) {
+        if (empty($source)) {
             return false;
         }
 
-        // 画像 
+        // 画像
         $basedir = UPLOAD_DIR . $this->getAlias() . DS . 'images' . DS;
         $distDir = UPLOAD_DIR . $distModel . DS . 'images' . DS;
 
@@ -69,7 +64,7 @@ class AppTable extends Table {
                     if (empty($path)) {
                         continue;
                     }
-                    $copy = WWW_ROOT . ltrim($path,'/');
+                    $copy = WWW_ROOT . ltrim($path, '/');
                     $dist = str_replace($basedir, $distDir, $copy);
                     copy($copy, $dist);
                 }
@@ -92,13 +87,12 @@ class AppTable extends Table {
                 if (empty($src)) {
                     continue;
                 }
-                $copy = WWW_ROOT . ltrim($src,'/');
+                $copy = WWW_ROOT . ltrim($src, '/');
                 $dist = str_replace($basedir, $distDir, $copy);
                 copy($copy, $dist);
             }
         }
 
         return $r;
-
     }
 }

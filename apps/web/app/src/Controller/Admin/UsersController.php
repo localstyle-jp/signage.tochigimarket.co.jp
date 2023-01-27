@@ -10,6 +10,7 @@ use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use App\Model\Entity\User;
+
 /**
  * Static content controller
  *
@@ -17,12 +18,10 @@ use App\Model\Entity\User;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class UsersController extends AppController
-{
+class UsersController extends AppController {
     private $list = [];
 
-    public function initialize()
-    {
+    public function initialize() {
         parent::initialize();
 
         $this->SiteConfigs = $this->getTableLocator()->get('SiteConfigs');
@@ -32,17 +31,15 @@ class UsersController extends AppController
         $this->modelName = $this->name;
         $this->set('ModelName', $this->modelName);
     }
-    
+
     public function beforeFilter(Event $event) {
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("admin");
+        $this->viewBuilder()->setLayout('admin');
         $this->getEventManager()->off($this->Csrf);
-
-
     }
     public function index() {
         $this->checkLogin();
-        
+
         $this->setList();
 
         $query = $this->_getQuery();
@@ -52,14 +49,16 @@ class UsersController extends AppController
         $cond = array();
 
         $cond = $this->_getConditions($query);
-        
-        parent::_lists($cond, array('order' => array($this->modelName.'.id' =>  'ASC'),
-                                            'limit' => null));
+
+        parent::_lists($cond, array('order' => array($this->modelName . '.id' => 'ASC'),
+            'limit' => null));
 
         $query = $this->viewVars['query'];
         if (!empty($query)) {
             foreach ($query as $e) {
-                $user_sites = $this->UserSites->find()->where(['UserSites.user_id' => $e->id])->contain(['SiteConfigs' => function($q){return $q->select(['site_name']);}])->all();
+                $user_sites = $this->UserSites->find()->where(['UserSites.user_id' => $e->id])->contain(['SiteConfigs' => function ($q) {
+                    return $q->select(['site_name']);
+                }])->all();
                 $sites = [];
                 if (!empty($user_sites)) {
                     foreach ($user_sites as $s) {
@@ -83,14 +82,12 @@ class UsersController extends AppController
 
         extract($query);
 
-
         return $cond;
     }
     public function edit($id = 0) {
         $this->checkLogin();
 
         $this->setList();
-
 
         $site_config_ids = [];
         $validate = null;
@@ -120,10 +117,9 @@ class UsersController extends AppController
             $site_config_ids = $this->Users->getUserSite($id);
         }
 
-        $callback = function($id) use($site_config_ids) {
+        $callback = function ($id) use ($site_config_ids) {
             $save_ids = [];
             if (!empty($site_config_ids)) {
-                
                 foreach ($site_config_ids as $config_id) {
                     $user_site = $this->UserSites->find()
                                                  ->where(['UserSites.user_id' => $id, 'UserSites.site_config_id' => $config_id])
@@ -164,7 +160,7 @@ class UsersController extends AppController
 
     public function delete($id, $type, $columns = null) {
         $this->checkLogin();
-        
+
         return parent::_delete($id, $type, $columns);
     }
 
@@ -176,12 +172,11 @@ class UsersController extends AppController
 
     public function enable($id) {
         $this->checkLogin();
-        
+
         return parent::_enable($id);
     }
 
     public function setList() {
-        
         $list = array();
 
         $list['site_list'] = $this->SiteConfigs->getList();
@@ -194,9 +189,8 @@ class UsersController extends AppController
             $list['machine_list'] = $machine_list->toArray();
         }
 
-
         if (!empty($list)) {
-            $this->set(array_keys($list),$list);
+            $this->set(array_keys($list), $list);
         }
 
         $this->list = $list;

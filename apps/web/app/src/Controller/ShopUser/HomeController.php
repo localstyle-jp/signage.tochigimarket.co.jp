@@ -21,10 +21,9 @@ use Cake\View\Exception\MissingTemplateException;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
-
 use Cake\Auth\DefaultPasswordHasher;
-
 use App\Model\Entity\User;
+
 /**
  * Static content controller
  *
@@ -32,44 +31,38 @@ use App\Model\Entity\User;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class HomeController extends AppController
-{
-    public function initialize()
-    {
-
+class HomeController extends AppController {
+    public function initialize() {
         $this->MachineBoxes = $this->getTableLocator()->get('MachineBoxes');
         $this->MachineBoxesUsers = $this->getTableLocator()->get('MachineBoxesUsers');
 
         parent::initialize();
-
     }
-    
+
     public function beforeFilter(Event $event) {
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("shop");
+        $this->viewBuilder()->setLayout('shop');
 
         $this->setCommon();
         $this->getEventManager()->off($this->Csrf);
     }
 
     public function index() {
-
         $this->User = $this->getTableLocator()->get('Users');
-        
-        $this->viewBuilder()->setLayout("plain");
-        $view = "login";
+
+        $this->viewBuilder()->setLayout('plain');
+        $view = 'login';
         $r = array();
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData();
             if (!empty($data['username']) && !empty($data['password'])) {
                 $query = $this->User->find('all', array('conditions' => array('username' => $data['username'],
-                                                                              'status' => 'publish'
-                                                                             ),
-                                                         'limit' => 1));
+                    'status' => 'publish'
+                ),
+                    'limit' => 1));
                 $r = $query->first();
                 $is_login = false;
                 if ($r) {
-                    
                     $hasher = new DefaultPasswordHasher();
                     if ($hasher->check($data['password'], $r->password) && $r->role == User::ROLE_SHOP) {
                         $is_login = true;
@@ -78,12 +71,12 @@ class HomeController extends AppController
 
                 if ($r && $is_login) {
                     $this->Session->write(array('userid' => $r->id,
-                                                'data' => array(
-                                                    'name' => $r->name,
-                                                    'face_image' => $r->attaches['face_image']['s']
-                                                ),
-                                                'user_role' => $r->role
-                                            ));
+                        'data' => array(
+                            'name' => $r->name,
+                            'face_image' => $r->attaches['face_image']['s']
+                        ),
+                        'user_role' => $r->role
+                    ));
                     $this->AdminMenu->init();
                 } else {
                     $r = false;
@@ -94,8 +87,8 @@ class HomeController extends AppController
             }
         }
         if (0 < $this->Session->read('userid')) {
-            $this->viewBuilder()->setLayout("shop");
-            $view = "index";
+            $this->viewBuilder()->setLayout('shop');
+            $view = 'index';
 
             $this->setCommon();
 
@@ -124,7 +117,7 @@ class HomeController extends AppController
                                             'SiteConfigs',
                                             'Contents',
                                             'MachineContents',
-                                            ])
+                                        ])
                                         ->order(['MachineBoxes.position' => 'ASC'])
                                         ->all();
 
@@ -141,18 +134,13 @@ class HomeController extends AppController
     }
 
     public function setList() {
-
-        
         $list = array();
-        
 
         if (!empty($list)) {
-            $this->set(array_keys($list),$list);
+            $this->set(array_keys($list), $list);
         }
 
         $this->list = $list;
         return $list;
     }
-
-
 }

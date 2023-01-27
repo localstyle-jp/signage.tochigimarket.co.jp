@@ -20,11 +20,10 @@ use Cake\Network\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
-
 use Cake\Auth\DefaultPasswordHasher;
-
 use App\Model\Entity\User;
 use App\Lib\CsvUtil;
+
 /**
  * Static content controller
  *
@@ -32,27 +31,23 @@ use App\Lib\CsvUtil;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class UsersController extends AppController
-{
-    public function initialize()
-    {
+class UsersController extends AppController {
+    public function initialize() {
         parent::initialize();
         $this->modelName = 'Users';
 
         $this->Companies = $this->getTableLocator()->get('Companies');
-
     }
-    
+
     public function beforeFilter(Event $event) {
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("user");
+        $this->viewBuilder()->setLayout('user');
 
         $this->setCommon();
         $this->getEventManager()->off($this->Csrf);
     }
 
     public function index() {
-
         $this->checkLogin();
 
         $this->setList();
@@ -65,10 +60,10 @@ class UsersController extends AppController
         $cond = $this->_getConditions($query);
         $contain = [];
 
-        return parent::_lists($cond, array('order' => array($this->modelName.'.position' =>  'ASC'),
-                                            'limit' => 20,
-                                            'contain' => $contain
-                                        ));
+        return parent::_lists($cond, array('order' => array($this->modelName . '.position' => 'ASC'),
+            'limit' => 20,
+            'contain' => $contain
+        ));
     }
 
     public function edit($id = 0) {
@@ -79,7 +74,6 @@ class UsersController extends AppController
         $validate = null;
 
         if ($this->request->is(['post', 'put'])) {
-
             if ($id) {
                 if ($this->request->getData('_password')) {
                     $this->request->data['password'] = $this->request->getData('_password');
@@ -93,8 +87,7 @@ class UsersController extends AppController
             }
         }
 
-
-        return parent::_edit($id, [ 'validate' => $validate]);
+        return parent::_edit($id, ['validate' => $validate]);
     }
 
     private function _getQuery() {
@@ -126,8 +119,6 @@ class UsersController extends AppController
     }
 
     public function setList() {
-
-        
         $list = array();
 
         $list['role_list'] = User::$role_list;
@@ -136,7 +127,7 @@ class UsersController extends AppController
         $list['company_list'] = $this->Companies->find('list', ['keyField' => 'id', 'valueField' => 'name'])->order(['Companies.position' => 'ASC'])->all()->toArray();
 
         if (!empty($list)) {
-            $this->set(array_keys($list),$list);
+            $this->set(array_keys($list), $list);
         }
 
         $this->list = $list;
@@ -149,12 +140,11 @@ class UsersController extends AppController
         $options = [];
 
         parent::_enable($id, $options);
-
     }
 
     public function delete($id, $type, $columns = null) {
         $this->checkLogin();
-        
+
         $options = [];
 
         return parent::_delete($id, $type, $columns, $options);
@@ -168,13 +158,13 @@ class UsersController extends AppController
             'errors' => array(),
             'validate_errors' => array(),
             'valid' => false,
-            );
+        );
 
         if ($this->request->is(array('post', 'put'))) {
             $gamen_mode = 'import';
 
             // お知らせデータ
-            if (!empty($this->request->data['info_file']['tmp_name']) && $this->request->data['info_file']['error'] == UPLOAD_ERR_OK){
+            if (!empty($this->request->data['info_file']['tmp_name']) && $this->request->data['info_file']['error'] == UPLOAD_ERR_OK) {
                 $csv = $this->get_csv_info($this->request->data['info_file']['tmp_name']);
                 if ($csv) {
                     $res['info']['valid'] = true;
@@ -185,15 +175,13 @@ class UsersController extends AppController
         }
 
         $this->set(compact('res', 'gamen_mode'));
-        
-
     }
 
     public function get_csv_info($filepath) {
         $csv = new CsvUtil($filepath);
 
         // CSVファイルチェック　インポートに必要なCSVのヘッダー名を指定する
-        if (!$csv->checkHeaderColumn(array("ID","氏名","所属","権限","状態","ユーザーID","パスワード"))) {
+        if (!$csv->checkHeaderColumn(array('ID', '氏名', '所属', '権限', '状態', 'ユーザーID', 'パスワード'))) {
             $this->Flash->set('ユーザーデータのCSVファイルが違います');
             return false;
         }
@@ -209,9 +197,9 @@ class UsersController extends AppController
 
                 if ($id) {
                     // 既存データチェック
-                    $entity = $this->{$this->modelName}->find()->where([$this->modelName.'.id' => $id])->first();
+                    $entity = $this->{$this->modelName}->find()->where([$this->modelName . '.id' => $id])->first();
                     if (empty($entity)) {
-                        $csv->addError('ID:['.$id.']がありませんでした');
+                        $csv->addError('ID:[' . $id . ']がありませんでした');
                         continue;
                     }
                     $data['id'] = $entity->id;
@@ -260,9 +248,9 @@ class UsersController extends AppController
                 if ($user->getErrors()) {
                     $csv->addError('登録できませんでした');
                     foreach ($user->getErrors() as $column => $error) {
-                            $csv->addErrorText($column, $error);
+                        $csv->addErrorText($column, $error);
                     }
-                } else{
+                } else {
                     $this->Users->save($user);
                 }
             }
@@ -270,5 +258,4 @@ class UsersController extends AppController
 
         return $csv;
     }
-
 }

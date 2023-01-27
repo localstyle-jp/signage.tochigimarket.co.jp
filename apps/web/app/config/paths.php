@@ -12,7 +12,7 @@
  * @license       MIT License (https://opensource.org/licenses/mit-license.php)
  */
 
- // コマンドラインから通ってきたよう
+// コマンドラインから通ってきたよう
 if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
@@ -31,7 +31,6 @@ if (!defined('CONFIG')) {
 if (!defined('WWW_ROOT')) {
     define('WWW_ROOT', dirname(__FILE__) . DS);
 }
-
 
 /**
  * Path to the tests directory.
@@ -67,4 +66,3 @@ if (!defined('CAKE_CORE_INCLUDE_PATH')) {
  */
 define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
 define('CAKE', CORE_PATH . 'src' . DS);
-

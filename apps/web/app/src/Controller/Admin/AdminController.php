@@ -21,6 +21,7 @@ use Cake\View\Exception\MissingTemplateException;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Auth\DefaultPasswordHasher;
+
 /**
  * Static content controller
  *
@@ -28,26 +29,23 @@ use Cake\Auth\DefaultPasswordHasher;
  *
  * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
  */
-class AdminController extends AppController
-{
-    
+class AdminController extends AppController {
     public function beforeFilter(Event $event) {
         // $this->viewBuilder()->theme('Admin');
-        $this->viewBuilder()->setLayout("admin");
+        $this->viewBuilder()->setLayout('admin');
     }
     public function index() {
-
         $this->Admin = $this->getTableLocator()->get('Admins');
-        
-        $this->viewBuilder()->setLayout("plain");
-        $view = "login";
+
+        $this->viewBuilder()->setLayout('plain');
+        $view = 'login';
         $r = array();
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData();
             if (!empty($data['username']) && !empty($data['password'])) {
                 $query = $this->Admin->find('all', array('conditions' => array('username' => $data['username'],
-                                                                             ),
-                                                         'limit' => 1));
+                ),
+                    'limit' => 1));
                 $r = $query->first();
 
                 if ($r) {
@@ -56,10 +54,10 @@ class AdminController extends AppController
                         $r = false;
                     }
                 }
-                
+
                 if ($r) {
                     $this->Session->write(array('uid' => $r->id,
-                                                'role' => $r->role));
+                        'role' => $r->role));
                 }
             }
             if (empty($r)) {
@@ -67,11 +65,11 @@ class AdminController extends AppController
             }
         }
         if (0 < $this->Session->read('uid')) {
-            $this->viewBuilder()->setLayout("admin");
-            $view = "index";
+            $this->viewBuilder()->setLayout('admin');
+            $view = 'index';
         }
         $this->render($view);
-	}
+    }
 
     public function logout() {
         if (0 < $this->Session->read('uid')) {
@@ -81,5 +79,4 @@ class AdminController extends AppController
         }
         $this->redirect('/admin/');
     }
-
 }

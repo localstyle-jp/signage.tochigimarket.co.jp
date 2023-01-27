@@ -1,6 +1,5 @@
-<?php 
+<?php
 namespace App\Model\Table;
 
-class AdminsTable extends AppTable{
-    
+class AdminsTable extends AppTable {
 }
