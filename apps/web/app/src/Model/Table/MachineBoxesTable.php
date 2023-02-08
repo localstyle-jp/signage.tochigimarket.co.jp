@@ -45,7 +45,56 @@ class MachineBoxesTable extends AppTable {
 
     /**
      *
-     * オフライン用のJSONデータ
+     *
+     * ビルドデータをZIP出力用に変換
+     *
+     *
+     */
+    public function getBuildZipData($id) {
+        $data = $this->getBuildData($id);
+        if (!$data) {
+            return false;
+        }
+
+        /**
+         *
+         * ビルドjson
+         *
+         */
+        $json = [
+            [
+                'name' => 'build.json',
+                'data' => [
+                    'content' => json_encode($data)
+                ]
+            ]
+        ];
+
+        /**
+         *
+         * ソースデータ
+         *
+         */
+        $public_root = WWW_ROOT;
+        $public_root = rtrim($public_root, '/');
+        $files = array_map(function ($_file) use ($public_root) {
+            return [
+                'name' => 'sources/' . $_file['name'],
+                'data' => [
+                    'path' => $public_root . $_file['path']
+                ]
+            ];
+        }, $data['files'] ?? []);
+
+        //
+        return array_merge($json, $files);
+    }
+
+    /**
+     *
+     *
+     * ビルドデータをまとめる
+     *
      *
      */
     public function getBuildData(int $id):?array {

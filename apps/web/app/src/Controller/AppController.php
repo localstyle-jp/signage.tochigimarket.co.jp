@@ -79,6 +79,77 @@ class AppController extends Controller {
     }
 
     /**
+     *
+     * ZIP出力
+     *
+     * @param datas = 下述
+     * @param zipname = String
+     *
+     */
+    public function output_zip($datas, $zipname) {
+        // $datas = [
+        //     [
+        //         'name' => '/〇〇/filename',
+        //         'data' => [
+        //             'path' => '/〇〇/filename.pdf', // 基本これだけでいい
+        //             'type' => 'json', // 使ってない
+        //             'content' => 'テキストです', // 指定するとテキストファイルになる
+        //         ]
+        //     ]
+        // ];
+        header('Content-Type: text/html; charset=UTF-8');
+
+        $zip = new \ZipArchive();
+
+        //$zipname = mb_convert_encoding( $zipname, 'SJIS-WIN', 'UTF-8' );
+        $tmpZipPath = '/tmp/' . $zipname . '.zip';
+        if (file_exists($tmpZipPath)) {
+            unlink($tmpZipPath);
+        }
+
+        if ($zip->open($tmpZipPath, \ZipArchive::CREATE) === false) {
+            throw new IllegalStateException("failed to create zip file. ${tmpZipPath}");
+        }
+
+        foreach ($datas as $_ => $data) {
+            $filename = $data['name'] ?? '';
+            $filedata = $data['data'] ?? [];
+
+            $zip_filepath = $zipname . '/' . $filename;
+            $zip_filepath = mb_convert_encoding($zip_filepath, 'SJIS-WIN', 'UTF-8');
+
+            // テキスト
+            if ($text = $filedata['content'] ?? '') {
+                $zip->addFromString($zip_filepath, $text);
+            }
+            // ファイル指定
+            if ($file = $filedata['path'] ?? '') {
+                $zip->addFile($file, $zip_filepath);
+            }
+        }
+
+        if ($zip->close() === false) {
+            throw new IllegalStateException("failed to close zip file. ${tmpZipPath}");
+        }
+
+        if (file_exists($tmpZipPath)) {
+            $this->response->type('application/zip');
+            $this->response->file($tmpZipPath, array('download' => true));
+            $this->response->download($zipname . '.zip');
+            $this->response->header('Pragma', 'public');
+            $this->response->header('Expires', '0');
+            $this->response->header('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
+            $this->response->header('Content-Transfer-Encoding', 'binary');
+            $this->response->header('Content-Type', 'application/octet-streams');
+            $this->response->header('Content-Disposition', 'attachment; filename=' . $zipname . '.zip');
+
+            return $this->response;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Before render callback.
      *
      * @param \Cake\Event\Event $event The beforeRender event.

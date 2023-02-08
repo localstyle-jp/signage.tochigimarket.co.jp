@@ -44,20 +44,20 @@ class ViewsController extends AppController {
 
     /**
      *
-     * オフラインビルド用のJSON
+     * ビルドデータをZIPで返す
      *
      */
     public function build() {
         $machine_id = $this->request->getQuery('id');
 
-        // 表示端末
-        $data = $this->MachineBoxes->getBuildData($machine_id);
+        // ZIP用にまとめたビルドデータ
+        $data = $this->MachineBoxes->getBuildZipData($machine_id);
         if (!$data) {
             return $this->setApi(['message' => 'データ取得できませんでした'], 400);
         }
 
-        //　返却
-        return $this->setApi($data);
+        // ZIPで出力
+        return $this->output_zip($data, 'data');
     }
 
     /**
