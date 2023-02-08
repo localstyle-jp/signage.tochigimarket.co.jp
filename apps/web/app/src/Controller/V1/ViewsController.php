@@ -42,6 +42,29 @@ class ViewsController extends AppController {
         $this->getEventManager()->off($this->Csrf);
     }
 
+    /**
+     *
+     * オフラインビルド用のJSON
+     *
+     */
+    public function build() {
+        $machine_id = $this->request->getQuery('id');
+
+        // 表示端末
+        $data = $this->MachineBoxes->getBuildData($machine_id);
+        if (!$data) {
+            return $this->setApi(['message' => 'データ取得できませんでした'], 400);
+        }
+
+        //　返却
+        return $this->setApi($data);
+    }
+
+    /**
+     *
+     *
+     *
+     */
     public function index() {
         $machine_id = $this->request->getData('id');
         if (empty($machine_id)) {

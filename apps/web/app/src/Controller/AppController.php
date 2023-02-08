@@ -62,6 +62,23 @@ class AppController extends Controller {
     }
 
     /**
+     *
+     * API返却
+     *
+     */
+    public function setApi($datas, $code = 200) {
+        $result = array_merge(
+            [
+                'code' => $code
+            ],
+            $datas
+        );
+
+        $this->set($result);
+        $this->set('_serialize', array_keys($result));
+    }
+
+    /**
      * Before render callback.
      *
      * @param \Cake\Event\Event $event The beforeRender event.
