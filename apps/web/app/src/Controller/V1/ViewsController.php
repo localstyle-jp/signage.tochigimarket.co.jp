@@ -30,6 +30,7 @@ class ViewsController extends AppController {
         $this->UserSites = $this->getTableLocator()->get('UserSites');
         $this->MachineBoxes = $this->getTableLocator()->get('MachineBoxes');
         $this->MachineContents = $this->getTableLocator()->get('MachineContents');
+        $this->MachineBoxesUsers = $this->getTableLocator()->get('MachineBoxesUsers');
 
         // $this->modelName = 'Infos';
         // $this->set('ModelName', $this->modelName);
@@ -48,15 +49,22 @@ class ViewsController extends AppController {
      *
      */
     public function build() {
-        $machine_id = $this->request->getQuery('id');
+        $machine_box_id = $this->request->getQuery('id');
 
-        // ZIP用にまとめたビルドデータ
-        $data = $this->MachineBoxes->getBuildZipData($machine_id);
+        // ユーザーID
+        $user_id = $this->getUserId();
+
+        // 端末の表示権限チェック
+        $isSupported = $this->MachineBoxesUsers->isSupported($user_id, $machine_box_id);
+        if (!$isSupported) {
+            return $this->setApi(['message' => '権限がありません'], 400);
+        }
+
+        // ZIP出力
+        $data = $this->MachineBoxes->getBuildZipData($machine_box_id);
         if (!$data) {
             return $this->setApi(['message' => 'データ取得できませんでした'], 400);
         }
-
-        // ZIPで出力
         return $this->output_zip($data, 'data');
     }
 
