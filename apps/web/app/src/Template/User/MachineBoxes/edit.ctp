@@ -151,6 +151,10 @@
           <div class="text-danger"><strong>※「変更する」ボタンを押すと最新版のコンテンツに更新されます。</strong></div>
         <?php endif; ?>
         <?php if (!empty($data['id']) && $data['id'] > 0){ ?>
+
+          <a href="<?= $this->Url->build(array("prefix" => "v1", "controller" => "Views", 'action' => 'build', "?" => ["id" => $data['id']])) ?>" class="btn btn-success btn-sm disabled">
+                    <i class="fas fa-download"></i> ダウンロード</a>
+                    
             <a href="#" class="btn btn-primary w-20 rounded-pill submitButton"><i class="fas fa-check"></i> 変更する</a>
           <?php if (empty($is_import_data)): ?>
             <a href="javascript:kakunin('データを完全に削除します。よろしいですか？','<?= $this->Url->build(array('action' => 'delete', $data['id'], 'content'))?>')" class="btn btn-danger">

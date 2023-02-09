@@ -95,6 +95,10 @@
                         </div>
                         <div class="col-12">
                           <div class="btn_area center">
+
+                          <a href="<?= $this->Url->build(array("prefix" => "v1", "controller" => "Views", 'action' => 'build', "?" => ["id" => $data['id']])) ?>" class="btn btn-success btn-sm">
+                    <i class="fas fa-download"></i> ダウンロード</a>
+
                             <a href="/shop_user/contents/edit/<?= $data->content_id; ?>?mode=machine" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> コンテンツ編集</a>
                           </div>
                         </div>
