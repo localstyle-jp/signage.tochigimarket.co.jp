@@ -65,7 +65,9 @@ class ViewsController extends AppController {
         if (!$data) {
             return $this->setApi(['message' => 'データ取得できませんでした'], 400);
         }
-        return $this->output_zip($data, 'data');
+
+        $name = 'caters-signage';
+        return $this->output_zip($data, $name);
     }
 
     /**
