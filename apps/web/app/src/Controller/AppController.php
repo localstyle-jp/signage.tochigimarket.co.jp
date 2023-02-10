@@ -101,6 +101,8 @@ class AppController extends Controller {
 
         $zip = new \ZipArchive();
 
+        set_time_limit(0);
+
         //$zipname = mb_convert_encoding( $zipname, 'SJIS-WIN', 'UTF-8' );
         $tmpZipPath = '/tmp/' . $zipname . '.zip';
         if (file_exists($tmpZipPath)) {
