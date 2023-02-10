@@ -11,6 +11,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
 use Cake\Utility\Hash;
 use App\Model\Entity\Material;
+use App\Model\Entity\User;
 
 /**
  * Static content controller
@@ -55,8 +56,9 @@ class ViewsController extends AppController {
         $user_id = $this->getUserId();
 
         // 端末の表示権限チェック
+        $isAdmin = $this->Session->read('user_role') <= User::ROLE_ADMIN;
         $isSupported = $this->MachineBoxesUsers->isSupported($user_id, $machine_box_id);
-        if (!$isSupported) {
+        if (!$isAdmin && !$isSupported) {
             return $this->setApi(['message' => '権限がありません'], 400);
         }
 

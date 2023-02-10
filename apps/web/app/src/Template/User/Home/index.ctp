@@ -65,7 +65,7 @@
             <div class="card-body">
               <h5 class="card-title"><?= h($data->name); ?></h5>
               <div class="btn_area">
-              <a href="<?= $this->Url->build(array("prefix" => "v1", "controller" => "Views", 'action' => 'build', "?" => ["id" => $data->id])) ?>" class="btn btn-success btn-sm disabled">
+              <a href="<?= $this->Url->build(array("prefix" => "v1", "controller" => "Views", 'action' => 'build', "?" => ["id" => $data->id])) ?>" class="btn btn-success btn-sm">
                     <i class="fas fa-download"></i> ダウンロード</a>
                 <a href="<?= '/view/' . $data->site_config->slug . '/' . trim($data->url, '/') . '/'; ?>" target="_blank" class="btn btn-info btn-sm"><i class="fas fa-search"></i> プレビュー</a>
                 <a href="<?= $this->Url->build(['controller' => 'machine-boxes','action' => 'edit', $data->id]); ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> 編集</a>
