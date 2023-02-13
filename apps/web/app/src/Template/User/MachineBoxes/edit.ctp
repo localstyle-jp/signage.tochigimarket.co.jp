@@ -152,7 +152,7 @@
         <?php endif; ?>
         <?php if (!empty($data['id']) && $data['id'] > 0){ ?>
 
-          <a href="<?= $this->Url->build(array("prefix" => "v1", "controller" => "Views", 'action' => 'build', "?" => ["id" => $data['id']])) ?>" class="btn btn-success btn-sm disabled">
+          <a href="<?= $this->Url->build(array("prefix" => "v1", "controller" => "Views", 'action' => 'build', "?" => ["id" => $data['id']])) ?>" class="btn btn-success btn-sm">
                     <i class="fas fa-download"></i> ダウンロード</a>
                     
             <a href="#" class="btn btn-primary w-20 rounded-pill submitButton"><i class="fas fa-check"></i> 変更する</a>
