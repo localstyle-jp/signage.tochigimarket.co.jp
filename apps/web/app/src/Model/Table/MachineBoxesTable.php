@@ -99,7 +99,9 @@ class MachineBoxesTable extends AppTable {
      */
     public function getBuildData(int $id):?array {
         // 表示端末
-        $machine_box = $this->find()->where(['MachineBoxes.id' => $id])->contain(['MachineContents' => ['MachineMaterials']])->first();
+        $machine_box = $this->find()->where(['MachineBoxes.id' => $id])->contain(['MachineContents' => ['MachineMaterials' => function ($q) {
+            return $q->order(['MachineMaterials.position' => 'ASC']);
+        }]])->first();
         if (!$machine_box) {
             return null;
         }
