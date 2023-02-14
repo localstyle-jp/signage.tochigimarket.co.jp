@@ -90,7 +90,6 @@
                     <li class="<?= h($entity['attaches'][$_column]['extention']); ?>">
                       <?= $this->Form->input("file_name", ['type' => 'hidden', 'maxlength' => '50', 'style' => 'width:300px;', 'placeholder' => '添付ファイル']); ?>
                       <?= $this->Form->input("file_size", ['type' => 'hidden', 'value' => h($entity['file_size'])]); ?>
-                      <!-- <div><-?= $this->Html->link('ダウンロード', $entity['attaches'][$_column]['0'], array('target' => '_blank'))?></div> -->
                     </li>
                     <?= $this->Form->input("_old_{$_column}", array('type' => 'hidden', 'value' => h($entity[$_column]))); ?>
 
@@ -150,7 +149,6 @@
                   <li class="<?= h($entity['attaches'][$_column]['extention']); ?>">
                     <?= $this->Form->input("file_name", ['type' => 'hidden', 'maxlength' => '50', 'style' => 'width:300px;', 'placeholder' => '添付ファイル']); ?>
                     <?= $this->Form->input("file_size", ['type' => 'hidden', 'value' => h($entity['file_size'])]); ?>
-                    <!-- <div><-?= $this->Html->link('ダウンロード', $entity['attaches'][$_column]['0'], array('target' => '_blank'))?></div> -->
                   </li>
                   <?= $this->Form->input("_old_{$_column}", array('type' => 'hidden', 'value' => h($entity[$_column]))); ?>
 
