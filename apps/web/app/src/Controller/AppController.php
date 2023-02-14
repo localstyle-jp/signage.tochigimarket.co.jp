@@ -95,10 +95,10 @@ class AppController extends Controller {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * Buildデータの保存
-     * 
+     *
      */
     public function uploadBuildZip($machine_box_id) {
         // ZIP用データ
@@ -112,11 +112,20 @@ class AppController extends Controller {
          * ZIP出力
          *
          */
-        // プログレス処理
-        $this->MachineBoxes->updateProgress($machine_box_id, 0);
-        $progressEvent = function ($progress) use ($machine_box_id) {
+        // 初期化処理
+        $this->MachineBoxes->beforeBuild($machine_box_id);
+
+        //　自分のバージョン
+        $build_version = $this->MachineBoxes->getBuildVersion($machine_box_id);
+
+        // プログレス処理 1%ごとに呼ばれる
+        $progressEvent = function ($progress) use ($machine_box_id, $build_version) {
             $progress = round($progress, 2);
             $this->MachineBoxes->updateProgress($machine_box_id, $progress);
+
+             // 自分のバージョンが異なったら中止　多分1%ごとに呼ばれる
+            $_build_version = $this->MachineBoxes->getBuildVersion($machine_box_id);
+            return $build_version == $_build_version;
         };
 
 //
@@ -160,9 +169,14 @@ class AppController extends Controller {
         }
 
         // プログレス
-        $zip->registerProgressCallback(0.01, function ($r) use ($progressEvent) {
+        $zip->registerProgressCallback(0.02, function ($r) use ($progressEvent) {
             if ($progressEvent) {
-                $progressEvent($r * 100);
+                $res = $progressEvent($r * 100);
+                if (!$res) {
+                    $zip->registerCancelCallback(function () {
+                        return true;
+                    });
+                }
             }
         });
 

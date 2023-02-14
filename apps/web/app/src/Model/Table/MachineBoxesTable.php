@@ -58,11 +58,43 @@ class MachineBoxesTable extends AppTable {
 
     /**
      *
+     * ビルド初期化処理
+     *
+     */
+    public function beforeBuild($id) {
+        $entity = $this->find()->where(['id' => $id])->first();
+        if (!$entity) {
+            return false;
+        }
+        // 新しいビルドバージョン
+        $build_version = ($entity->build_version ?? 0) + 1;
+
+        $this->updateAll(['build_progress' => 0, 'build_version' => $build_version], ['id' => $id]);
+        return $build_version;
+    }
+
+    /**
+     *
      * プログレス状況を更新する
      *
      */
     public function updateProgress($id, $progress) {
         $this->updateAll(['build_progress' => $progress], ['id' => $id]);
+    }
+
+    /**
+     *
+     * Builldバージョンを取得する
+     *
+     */
+    public function getBuildVersion($id) {
+        $entity = $this->find()->where(['id' => $id])->first();
+        if (!$entity) {
+            return false;
+        }
+
+        $build_version = $entity->build_version ?? 0;
+        return $build_version;
     }
 
     /**
