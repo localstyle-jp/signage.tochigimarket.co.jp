@@ -43,6 +43,43 @@ class MachineBoxesTable extends AppTable {
         return $validator;
     }
 
+    public function getZipFolderName() {
+        return 'caters-signage.zip';
+    }
+
+    /**
+     *
+     * ZIPの場所
+     *
+     */
+    public function getUploadZipPath($id) {
+        return UPLOAD_DIR . 'MachineBoxes/' . $id . '.zip';
+    }
+
+    /**
+     *
+     * プログレス状況を更新する
+     *
+     */
+    public function updateProgress($id, $progress) {
+        $this->updateAll(['build_progress' => $progress], ['id' => $id]);
+    }
+
+    /**
+     *
+     * プログレス値を取得する
+     *
+     */
+    public function getProgress($id) {
+        $entity = $this->find()->where(['id' => $id])->first();
+        if (!$entity) {
+            return false;
+        }
+
+        $build_progress = $entity->build_progress ?? 0;
+        return $build_progress;
+    }
+
     /**
      *
      *

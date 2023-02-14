@@ -46,30 +46,80 @@ class ViewsController extends AppController {
 
     /**
      *
+     * プログレス状況を返す
+     *
+     */
+    public function progressBuild() {
+        $machine_box_id = $this->request->getQuery('id');
+
+        // 端末の表示権限チェック
+        if (!$this->checkMachineSupported($machine_box_id)) {
+            return $this->setApi(['message' => '権限がありません'], 400);
+        }
+
+        $build_progress = $this->MachineBoxes->getProgress($machine_box_id);
+        return $this->setApi(['data' => ['progress' => $build_progress]]);
+    }
+
+    /**
+     *
+     * ビルドデータをダウンロードする
+     *
+     */
+    public function downloadBuild() {
+        $machine_box_id = $this->request->getQuery('id');
+
+        // 端末の表示権限チェック
+        if (!$this->checkMachineSupported($machine_box_id)) {
+            return $this->setApi(['message' => '権限がありません'], 400);
+        }
+
+        // 生成経過
+        $build_progress = $this->MachineBoxes->getProgress($machine_box_id);
+        if ($build_progress === false) {
+            return $this->setApi(['message' => '存在しません'], 400);
+        }
+        if ($build_progress === 100) {
+            $zipname = $this->MachineBoxes->getZipFolderName();
+            $dest = $this->MachineBoxes->getUploadZipPath($machine_box_id);
+            return $this->downloadZip($dest, $zipname);
+        } else {
+            return $this->setApi(['message' => '生成中です'], 400);
+        }
+    }
+
+    /**
+     *
      * ビルドデータをZIPで返す
      *
      */
     public function build() {
         $machine_box_id = $this->request->getQuery('id');
 
-        // ユーザーID
-        $user_id = $this->getUserId();
-
         // 端末の表示権限チェック
-        $isAdmin = $this->Session->read('user_role') <= User::ROLE_ADMIN;
-        $isSupported = $this->MachineBoxesUsers->isSupported($user_id, $machine_box_id);
-        if (!$isAdmin && !$isSupported) {
+        if (!$this->checkMachineSupported($machine_box_id)) {
             return $this->setApi(['message' => '権限がありません'], 400);
         }
 
-        // ZIP出力
-        $data = $this->MachineBoxes->getBuildZipData($machine_box_id);
-        if (!$data) {
-            return $this->setApi(['message' => 'データ取得できませんでした'], 400);
-        }
+        $this->uploadBuildZip($machine_box_id);
+    }
 
-        $name = 'caters-signage';
-        return $this->output_zip($data, $name);
+
+
+    
+
+    // 端末の表示権限チェック
+    public function checkMachineSupported($machine_box_id) {
+        $user_id = $this->getUserId();  // ユーザーID
+        if (!$user_id) {
+            return false;
+        }
+        $isAdmin = $this->Session->read('user_role') <= User::ROLE_ADMIN;
+        $isSupported = $this->MachineBoxesUsers->isSupported($user_id, $machine_box_id);
+        if (!$isAdmin && !$isSupported) {
+            return false;
+        }
+        return true;
     }
 
     /**

@@ -78,6 +78,53 @@ class AppController extends Controller {
         $this->set('_serialize', array_keys($result));
     }
 
+    public function downloadZip($tmpZipPath, $name) {
+        header('Content-Type: text/html; charset=UTF-8');
+        set_time_limit(0);
+
+        $this->response->type('application/zip');
+        $this->response->file($tmpZipPath, array('download' => true));
+        $this->response->download($name);
+        $this->response->header('Pragma', 'public');
+        $this->response->header('Expires', '0');
+        $this->response->header('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
+        $this->response->header('Content-Transfer-Encoding', 'binary');
+        $this->response->header('Content-Type', 'application/octet-streams');
+        $this->response->header('Content-Disposition', 'attachment; filename=' . $name);
+        return $this->response;
+    }
+
+    /**
+     * 
+     * 
+     * Buildデータの保存
+     * 
+     */
+    public function uploadBuildZip($machine_box_id) {
+        // ZIP用データ
+        $data = $this->MachineBoxes->getBuildZipData($machine_box_id);
+        if (!$data) {
+            return false;
+        }
+
+        /**
+         *
+         * ZIP出力
+         *
+         */
+        // プログレス処理
+        $this->MachineBoxes->updateProgress($machine_box_id, 0);
+        $progressEvent = function ($progress) use ($machine_box_id) {
+            $progress = round($progress, 2);
+            $this->MachineBoxes->updateProgress($machine_box_id, $progress);
+        };
+
+//
+        $name = $this->MachineBoxes->getZipFolderName();
+        $dest = $this->MachineBoxes->getUploadZipPath($machine_box_id);
+        $this->output_zip($data, $name, $dest, $progressEvent);
+    }
+
     /**
      *
      * ZIP出力
@@ -86,7 +133,7 @@ class AppController extends Controller {
      * @param zipname = String
      *
      */
-    public function output_zip($datas, $zipname) {
+    public function output_zip($datas, $zipname, $outputpath = false, $progressEvent = null) {
         // $datas = [
         //     [
         //         'name' => '/〇〇/filename',
@@ -97,7 +144,6 @@ class AppController extends Controller {
         //         ]
         //     ]
         // ];
-        header('Content-Type: text/html; charset=UTF-8');
 
         $zip = new \ZipArchive();
 
@@ -112,6 +158,13 @@ class AppController extends Controller {
         if ($zip->open($tmpZipPath, \ZipArchive::CREATE) === false) {
             throw new IllegalStateException("failed to create zip file. ${tmpZipPath}");
         }
+
+        // プログレス
+        $zip->registerProgressCallback(0.01, function ($r) use ($progressEvent) {
+            if ($progressEvent) {
+                $progressEvent($r * 100);
+            }
+        });
 
         foreach ($datas as $_ => $data) {
             $filename = $data['name'] ?? '';
@@ -134,21 +187,31 @@ class AppController extends Controller {
             throw new IllegalStateException("failed to close zip file. ${tmpZipPath}");
         }
 
-        if (file_exists($tmpZipPath)) {
-            $this->response->type('application/zip');
-            $this->response->file($tmpZipPath, array('download' => true));
-            $this->response->download($zipname . '.zip');
-            $this->response->header('Pragma', 'public');
-            $this->response->header('Expires', '0');
-            $this->response->header('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
-            $this->response->header('Content-Transfer-Encoding', 'binary');
-            $this->response->header('Content-Type', 'application/octet-streams');
-            $this->response->header('Content-Disposition', 'attachment; filename=' . $zipname . '.zip');
-
-            return $this->response;
-        } else {
+        // 確認
+        if (!file_exists($tmpZipPath)) {
             return false;
         }
+
+        // コピー処理
+        if ($outputpath) {
+            if (rename($tmpZipPath, $outputpath)) {
+                // プログレス
+                if ($progressEvent) {
+                    $progressEvent(100);
+                }
+
+                return true;
+            }
+        }
+
+        // プログレス
+        if ($progressEvent) {
+            $progressEvent(100);
+        }
+
+        // アウトプット処理
+        $name = $zipname . '.zip';
+        return $this->downloadZip($tmpZipPath, $name);
     }
 
     /**
