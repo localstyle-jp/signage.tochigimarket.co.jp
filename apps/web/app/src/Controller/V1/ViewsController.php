@@ -101,7 +101,7 @@ class ViewsController extends AppController {
             return $this->setApi(['message' => '権限がありません'], 400);
         }
 
-        $this->uploadBuildZip($machine_box_id);
+        $this->buildZip($machine_box_id);
     }
 
 

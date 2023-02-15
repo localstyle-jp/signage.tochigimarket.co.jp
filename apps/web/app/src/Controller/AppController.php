@@ -100,7 +100,7 @@ class AppController extends Controller {
      * Buildデータの保存
      *
      */
-    public function uploadBuildZip($machine_box_id) {
+    public function buildZip($machine_box_id) {
         // ZIP用データ
         $data = $this->MachineBoxes->getBuildZipData($machine_box_id);
         if (!$data) {
@@ -231,7 +231,7 @@ class AppController extends Controller {
                     });
                 }
             }
-            
+
             // 途中経過を渡す
             if ($updateProgress) {
                 $updateProgress($rate * 100);
@@ -645,5 +645,77 @@ class AppController extends Controller {
     public function getSiteId() {
         return 1;
         // return $this->Session->read('current_site_id');
+    }
+
+    /**
+     * 
+     * contents -> machineContents に転送?する処理
+     * 
+     * [transferMachine description]
+     * @param  [type] $source_id 転送元コンテンツID
+     * @param  [type] $dest      転送先マシンコンテンツEntity
+     * @return [type]            [description]
+     */
+    private function transferMachine($source_id, $dest_id) {
+        if (empty($source_id)) {
+            return false;
+        }
+        // try {
+        $source = $this->Contents->get($source_id);
+        if (empty($source)) {
+            return false;
+        }
+
+        $update = $source->toArray();
+        unset($update['id'], $update['created'], $update['modified']);
+
+        // 転送先
+        $dest = $this->MachineContents->find()->where(['MachineContents.id' => $dest_id])->first();
+        if (empty($dest)) {
+            return false;
+        }
+
+        // 転送先コンテンツ素材を削除
+        $dest_materials = $this->MachineMaterials->find()->where(['MachineMaterials.machine_content_id' => $dest_id])->all();
+        if (!empty($dest_materials)) {
+            foreach ($dest_materials as $data) {
+                $this->modelName = 'MachineMaterials';
+                $this->_delete($data->id, 'content', null, ['redirect' => false]);
+            }
+        }
+
+        $entity = $this->MachineContents->patchEntity($dest, $update);
+
+        $r = $this->MachineContents->save($entity);
+
+        if (!$r) {
+            return false;
+        }
+
+        $content_materials = $this->ContentMaterials->find()->where(['ContentMaterials.content_id' => $source_id])->contain(['Materials'])->all();
+        if ($content_materials->isEmpty()) {
+            return false;
+        }
+
+        foreach ($content_materials as $source_material) {
+            $create = $source_material->material->toArray();
+            unset($create['id'], $create['created'], $create['modified']);
+
+            $material = $this->MachineMaterials->newEntity($create);
+            $material->machine_content_id = $entity->id;
+            $material->position = $source_material->position;
+            $material->view_second = $source_material->view_second;
+            $material->rolling_caption = $source_material->rolling_caption;
+            $material->sound = $source_material->sound;
+            $this->MachineMaterials->save($material);
+
+            // 画像コピー
+            $this->Materials->copyAttachement($source_material->material->id, 'MachineMaterials');
+        }
+        // } catch (Exception $e) {
+
+        // }
+
+        return true;
     }
 }
