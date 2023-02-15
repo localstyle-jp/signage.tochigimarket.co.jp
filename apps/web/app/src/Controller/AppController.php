@@ -116,12 +116,12 @@ class AppController extends Controller {
         $this->MachineBoxes->beforeBuild($machine_box_id);
 
         //　自分のバージョン取得処理(プログレス中変化があれば中止する)
-        $getVersion = function() use($machine_box_id){
+        $getVersion = function () use ($machine_box_id) {
             return $this->MachineBoxes->getBuildVersion($machine_box_id);
         };
 
         // プログレス更新処理
-        $updateProgress = function($progress) use($machine_box_id){
+        $updateProgress = function ($progress) use ($machine_box_id) {
             $this->MachineBoxes->updateProgress($machine_box_id, $progress);
         };
 
@@ -648,15 +648,15 @@ class AppController extends Controller {
     }
 
     /**
-     * 
+     *
      * contents -> machineContents に転送?する処理
-     * 
+     *
      * [transferMachine description]
      * @param  [type] $source_id 転送元コンテンツID
      * @param  [type] $dest      転送先マシンコンテンツEntity
      * @return [type]            [description]
      */
-    private function transferMachine($source_id, $dest_id) {
+    function transferMachine($source_id, $dest_id) {
         if (empty($source_id)) {
             return false;
         }
@@ -712,9 +712,7 @@ class AppController extends Controller {
             // 画像コピー
             $this->Materials->copyAttachement($source_material->material->id, 'MachineMaterials');
         }
-        // } catch (Exception $e) {
 
-        // }
 
         return true;
     }
