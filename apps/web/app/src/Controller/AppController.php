@@ -115,23 +115,20 @@ class AppController extends Controller {
         // 初期化処理
         $this->MachineBoxes->beforeBuild($machine_box_id);
 
-        //　自分のバージョン
-        $build_version = $this->MachineBoxes->getBuildVersion($machine_box_id);
-
-        // プログレス処理 1%ごとに呼ばれる
-        $progressEvent = function ($progress) use ($machine_box_id, $build_version) {
-            $progress = round($progress, 2);
-            $this->MachineBoxes->updateProgress($machine_box_id, $progress);
-
-             // 自分のバージョンが異なったら中止　多分1%ごとに呼ばれる
-            $_build_version = $this->MachineBoxes->getBuildVersion($machine_box_id);
-            return $build_version == $_build_version;
+        //　自分のバージョン取得処理(プログレス中変化があれば中止する)
+        $getVersion = function() use($machine_box_id){
+            return $this->MachineBoxes->getBuildVersion($machine_box_id);
         };
 
-//
+        // プログレス更新処理
+        $updateProgress = function($progress) use($machine_box_id){
+            $this->MachineBoxes->updateProgress($machine_box_id, $progress);
+        };
+
+        //
         $name = $this->MachineBoxes->getZipFolderName();
         $dest = $this->MachineBoxes->getUploadZipPath($machine_box_id);
-        $this->output_zip($data, $name, $dest, $progressEvent);
+        $this->output_zip($data, $name, $dest, $updateProgress, $getVersion);
     }
 
     /**
@@ -142,7 +139,7 @@ class AppController extends Controller {
      * @param zipname = String
      *
      */
-    public function output_zip($datas, $zipname, $outputpath = false, $progressEvent = null) {
+    public function output_zip($datas, $zipname, $outputpath = false, $updateProgress = null, $getVersion = null) {
         // $datas = [
         //     [
         //         'name' => '/〇〇/filename',
@@ -168,17 +165,10 @@ class AppController extends Controller {
             throw new IllegalStateException("failed to create zip file. ${tmpZipPath}");
         }
 
-        // プログレス
-        $zip->registerProgressCallback(0.02, function ($r) use ($progressEvent) {
-            if ($progressEvent) {
-                $res = $progressEvent($r * 100);
-                if (!$res) {
-                    $zip->registerCancelCallback(function () {
-                        return true;
-                    });
-                }
-            }
-        });
+        // プログレス処理
+        if ($updateProgress || $getVersion) {
+            $zip = $this->zipProgress($zip, $updateProgress, $getVersion);
+        }
 
         foreach ($datas as $_ => $data) {
             $filename = $data['name'] ?? '';
@@ -210,8 +200,8 @@ class AppController extends Controller {
         if ($outputpath) {
             if (rename($tmpZipPath, $outputpath)) {
                 // プログレス
-                if ($progressEvent) {
-                    $progressEvent(100);
+                if ($updateProgress) {
+                    $updateProgress(100);
                 }
 
                 return true;
@@ -219,13 +209,35 @@ class AppController extends Controller {
         }
 
         // プログレス
-        if ($progressEvent) {
-            $progressEvent(100);
+        if ($updateProgress) {
+            $updateProgress(100);
         }
 
         // アウトプット処理
         $name = $zipname . '.zip';
         return $this->downloadZip($tmpZipPath, $name);
+    }
+
+    // プログレス処理
+    public function zipProgress($zip, $updateProgress = null, $getVersion = null) {
+        $version = $getVersion ? $getVersion() : 0;
+        $zip->registerProgressCallback(0.02, function ($rate) use ($version, $updateProgress, $getVersion) {
+            // 自分のZIPバージョンと現在のZIPバージョンが異なれば、中止する。
+            if ($getVersion) {
+                if ($version != $getVersion()) {
+                    // 中止する
+                    $zip->registerCancelCallback(function () {
+                        return true;
+                    });
+                }
+            }
+            
+            // 途中経過を渡す
+            if ($updateProgress) {
+                $updateProgress($rate * 100);
+            }
+        });
+        return $zip;
     }
 
     /**
