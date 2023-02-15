@@ -713,6 +713,11 @@ class AppController extends Controller {
             $this->Materials->copyAttachement($source_material->material->id, 'MachineMaterials');
         }
 
+        // 更新完了時
+        $updatedMachineBoxIds = $this->MachineBoxes->find()->where(['machine_content_id' => $dest_id])->extract('id')->toArray();
+        foreach($updatedMachineBoxIds as $_machine_box_id){
+            $this->buildZip($_machine_box_id);
+        }
 
         return true;
     }
