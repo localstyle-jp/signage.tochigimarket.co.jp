@@ -101,12 +101,8 @@ class ViewsController extends AppController {
             return $this->setApi(['message' => '権限がありません'], 400);
         }
 
-        $this->buildZip($machine_box_id);
+        return $this->MachineBoxes->buildZip($machine_box_id);
     }
-
-
-
-    
 
     // 端末の表示権限チェック
     public function checkMachineSupported($machine_box_id) {

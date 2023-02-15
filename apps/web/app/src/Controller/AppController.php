@@ -79,6 +79,7 @@ class AppController extends Controller {
     }
 
     public function downloadZip($tmpZipPath, $name) {
+        $name = $name . '.zip';
         header('Content-Type: text/html; charset=UTF-8');
         set_time_limit(0);
 
@@ -92,152 +93,6 @@ class AppController extends Controller {
         $this->response->header('Content-Type', 'application/octet-streams');
         $this->response->header('Content-Disposition', 'attachment; filename=' . $name);
         return $this->response;
-    }
-
-    /**
-     *
-     *
-     * Buildデータの保存
-     *
-     */
-    public function buildZip($machine_box_id) {
-        // ZIP用データ
-        $data = $this->MachineBoxes->getBuildZipData($machine_box_id);
-        if (!$data) {
-            return false;
-        }
-
-        /**
-         *
-         * ZIP出力
-         *
-         */
-        // 初期化処理
-        $this->MachineBoxes->beforeBuild($machine_box_id);
-
-        //　自分のバージョン取得処理(プログレス中変化があれば中止する)
-        $getVersion = function () use ($machine_box_id) {
-            return $this->MachineBoxes->getBuildVersion($machine_box_id);
-        };
-
-        // プログレス更新処理
-        $updateProgress = function ($progress) use ($machine_box_id) {
-            $this->MachineBoxes->updateProgress($machine_box_id, $progress);
-        };
-
-        //
-        $name = $this->MachineBoxes->getZipFolderName();
-        $dest = $this->MachineBoxes->getUploadZipPath($machine_box_id);
-        $this->output_zip($data, $name, $dest, $updateProgress, $getVersion);
-    }
-
-    /**
-     *
-     * ZIP出力
-     *
-     * @param datas = 下述
-     * @param zipname = String
-     *
-     */
-    public function output_zip($datas, $zipname, $outputpath = false, $updateProgress = null, $getVersion = null) {
-        // $datas = [
-        //     [
-        //         'name' => '/〇〇/filename',
-        //         'data' => [
-        //             'path' => '/〇〇/filename.pdf', // 基本これだけでいい
-        //             'type' => 'json', // 使ってない
-        //             'content' => 'テキストです', // 指定するとテキストファイルになる
-        //         ]
-        //     ]
-        // ];
-
-        $zip = new \ZipArchive();
-
-        set_time_limit(0);
-
-        //$zipname = mb_convert_encoding( $zipname, 'SJIS-WIN', 'UTF-8' );
-        $tmpZipPath = '/tmp/' . $zipname . '.zip';
-        if (file_exists($tmpZipPath)) {
-            unlink($tmpZipPath);
-        }
-
-        if ($zip->open($tmpZipPath, \ZipArchive::CREATE) === false) {
-            throw new IllegalStateException("failed to create zip file. ${tmpZipPath}");
-        }
-
-        // プログレス処理
-        if ($updateProgress || $getVersion) {
-            $zip = $this->zipProgress($zip, $updateProgress, $getVersion);
-        }
-
-        foreach ($datas as $_ => $data) {
-            $filename = $data['name'] ?? '';
-            $filedata = $data['data'] ?? [];
-
-            $zip_filepath = $zipname . '/' . $filename;
-            $zip_filepath = mb_convert_encoding($zip_filepath, 'SJIS-WIN', 'UTF-8');
-
-            // テキスト
-            if ($text = $filedata['content'] ?? '') {
-                $zip->addFromString($zip_filepath, $text);
-            }
-            // ファイル指定
-            if ($file = $filedata['path'] ?? '') {
-                $zip->addFile($file, $zip_filepath);
-            }
-        }
-
-        if ($zip->close() === false) {
-            throw new IllegalStateException("failed to close zip file. ${tmpZipPath}");
-        }
-
-        // 確認
-        if (!file_exists($tmpZipPath)) {
-            return false;
-        }
-
-        // コピー処理
-        if ($outputpath) {
-            if (rename($tmpZipPath, $outputpath)) {
-                // プログレス
-                if ($updateProgress) {
-                    $updateProgress(100);
-                }
-
-                return true;
-            }
-        }
-
-        // プログレス
-        if ($updateProgress) {
-            $updateProgress(100);
-        }
-
-        // アウトプット処理
-        $name = $zipname . '.zip';
-        return $this->downloadZip($tmpZipPath, $name);
-    }
-
-    // プログレス処理
-    public function zipProgress($zip, $updateProgress = null, $getVersion = null) {
-        $version = $getVersion ? $getVersion() : 0;
-        $zip->registerProgressCallback(0.02, function ($rate) use ($version, $updateProgress, $getVersion) {
-            // 自分のZIPバージョンと現在のZIPバージョンが異なれば、中止する。
-            if ($getVersion) {
-                if ($version != $getVersion()) {
-                    // 中止する
-                    $zip->registerCancelCallback(function () {
-                        return true;
-                    });
-                }
-            }
-
-            // 途中経過を渡す
-            if ($updateProgress) {
-                $updateProgress($rate * 100);
-            }
-        });
-        return $zip;
     }
 
     /**
@@ -656,7 +511,7 @@ class AppController extends Controller {
      * @param  [type] $dest      転送先マシンコンテンツEntity
      * @return [type]            [description]
      */
-    function transferMachine($source_id, $dest_id) {
+    public function transferMachine($source_id, $dest_id) {
         if (empty($source_id)) {
             return false;
         }
@@ -710,13 +565,14 @@ class AppController extends Controller {
             $this->MachineMaterials->save($material);
 
             // 画像コピー
+            // todo ziptmpが消える怒
             $this->Materials->copyAttachement($source_material->material->id, 'MachineMaterials');
         }
 
         // 更新完了時
         $updatedMachineBoxIds = $this->MachineBoxes->find()->where(['machine_content_id' => $dest_id])->extract('id')->toArray();
-        foreach($updatedMachineBoxIds as $_machine_box_id){
-            $this->buildZip($_machine_box_id);
+        foreach ($updatedMachineBoxIds as $_machine_box_id) {
+            exec("../apps/web/app/bin/cake build_zip {$_machine_box_id} > /dev/null &");
         }
 
         return true;

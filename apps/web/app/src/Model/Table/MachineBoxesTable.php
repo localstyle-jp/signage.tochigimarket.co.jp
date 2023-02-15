@@ -4,6 +4,7 @@ namespace App\Model\Table;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\Utility\Inflector;
+use App\Utils\Zip;
 
 class MachineBoxesTable extends AppTable {
     // テーブルの初期値を設定する
@@ -43,8 +44,49 @@ class MachineBoxesTable extends AppTable {
         return $validator;
     }
 
+    /**
+     *
+     *
+     * Buildデータの保存
+     *
+     */
+    public function buildZip($machine_box_id) {
+        // ZIP用データ
+        $data = $this->getBuildZipData($machine_box_id);
+        if (!$data) {
+            return false;
+        }
+
+        /**
+         *
+         * ZIP出力
+         *
+         */
+        // 初期化処理
+        $this->beforeBuild($machine_box_id);
+
+        //　自分のバージョン取得処理(プログレス中変化があれば中止する)
+        $getVersion = function () use ($machine_box_id) {
+            return $this->getBuildVersion($machine_box_id);
+        };
+
+        // プログレス更新処理
+        $updateProgress = function ($progress) use ($machine_box_id) {
+            $this->updateProgress($machine_box_id, $progress);
+        };
+
+        //
+        $name = $this->getZipFolderName();
+        $dest = $this->getUploadZipPath($machine_box_id);
+
+        //
+        $zip = new Zip;
+        $zip->addProgressEvent($updateProgress, $getVersion);
+        $zip->make($data, $name, $dest);
+    }
+
     public function getZipFolderName() {
-        return 'caters-signage.zip';
+        return 'caters-signage';
     }
 
     /**

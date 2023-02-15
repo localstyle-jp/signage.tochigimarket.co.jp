@@ -67,7 +67,7 @@ class FileAttacheBehavior extends Behavior {
         // afterFindの代わり
         $query->formatResults(function ($results) use ($table, $primary) {
             return $results->map(function ($row) use ($table, $primary) {
-                if (is_object($row) && !array_key_exists('existing', $row)) {
+                if (is_object($row) && !isset($row['existing'])) {
                     $results = $this->_attachesFind($table, $row, $primary);
                 }
                 return $row;

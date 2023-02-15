@@ -29,7 +29,7 @@ if (!defined('CONFIG')) {
     define('CONFIG', ROOT . DS . 'config' . DS);
 }
 if (!defined('WWW_ROOT')) {
-    define('WWW_ROOT', dirname(__FILE__) . DS);
+    define('WWW_ROOT', dirname(dirname(dirname(dirname(dirname(__FILE__))))) . DS . 'public_html' . DS);
 }
 
 /**
