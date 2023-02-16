@@ -308,7 +308,7 @@ class FileAttacheBehavior extends Behavior {
 
                             $old_entity->set($columns, $newname);
                             if (empty($old_entity->{$columns . '_name'})) {
-                                $old_entity->set($columns . '_name', $this->getFileName($tmp_data['name'], $current_extention));
+                                $old_entity->set($columns . '_name', $this->getFileName($tmp_data['name']));
                             }
                             $old_entity->set($columns . '_size', $tmp_data['size']);
                             $old_entity->set($columns . '_extension', $current_extention);
@@ -340,8 +340,9 @@ class FileAttacheBehavior extends Behavior {
     public function getExtension($filename) {
         return strtolower(substr(strrchr($filename, '.'), 1));
     }
-    public function getFileName($filename, $ext) {
-        return str_replace('.' . $ext, '', $filename);
+    public function getFileName($filename) {
+        preg_match('/(.*)\./u', $filename, $matched);
+        return $matched[1] ?? '';
     }
 
     /**
