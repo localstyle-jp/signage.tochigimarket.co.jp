@@ -162,7 +162,7 @@
 
                     <li>
                         <?= $this->Form->input("file", array('type' => 'file', 'class' => 'attaches form-control'));?>
-                        <div class="remark">※MP4(.mp4)ファイルのみ</div>
+                        <div class="remark">※mp4 , mov ファイルのみ</div>
                         <!-- <div>※ファイルサイズxxxMB以内</div> -->
                     </li>
 
