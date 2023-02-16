@@ -279,14 +279,14 @@ class FileAttacheBehavior extends Behavior {
                         // アップロード先
                         $basedir = WWW_ROOT . UPLOAD_BASE_URL . DS . $table->getAlias() . DS . 'files' . DS;
                         $newname = sprintf($fileConf['file_name'], $id, $uuid) . '.' . $current_extention;
-                        $newname_path = $basedir . $newname;
+                        $new_filepath = $basedir . $newname;
 
                         if (in_array($current_extention, $fileConf['extensions'])) {
                             //アップロード処理
-                            $this->uploadFileCn($current_extention, $tmp_filepath, $newname_path);
+                            $this->uploadFileCn($current_extention, $tmp_filepath, $new_filepath);
 
                             // 権限処理
-                            chmod($newname_path, $this->uploadFileMask);
+                            chmod($new_filepath, $this->uploadFileMask);
 
                             if ($current_extention == 'mp4') {
                                 $newdist = WWW_ROOT . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS;
@@ -301,8 +301,7 @@ class FileAttacheBehavior extends Behavior {
                                 // // マスターファイルの作成
                                 // $this->create_master_m3u8($newdist, $id, $bitrates);
                                 // DBへの記録準備
-                                $old_entity->set('view_second', $this->getViewSeconds($newname_path));
-                                // $newname = '';
+                                $old_entity->set('view_second', $this->getViewSeconds($new_filepath));
                                 $filenameMaster = 'm' . $id . '.m3u8';
                                 $old_entity->set('url', 'm' . $id . DS . $filenameMaster);
                             }
