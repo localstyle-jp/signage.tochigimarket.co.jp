@@ -276,19 +276,22 @@ class FileAttacheBehavior extends Behavior {
                         // 実際の拡張子
                         $current_extention = $this->getExtension($tmp_data['name']);
 
+                        // ファイル変換後の拡張子
+                        $extention = $this->getConvertedExtention($current_extention);
+
                         // アップロード先
                         $basedir = WWW_ROOT . UPLOAD_BASE_URL . DS . $table->getAlias() . DS . 'files' . DS;
-                        $newname = sprintf($fileConf['file_name'], $id, $uuid) . '.' . $current_extention;
+                        $newname = sprintf($fileConf['file_name'], $id, $uuid) . '.' . $extention;
                         $new_filepath = $basedir . $newname;
 
-                        if (in_array($current_extention, $fileConf['extensions'])) {
+                        if (in_array($extention, $fileConf['extensions'])) {
                             //アップロード処理
                             $this->uploadFileCn($current_extention, $tmp_filepath, $new_filepath);
 
                             // 権限処理
                             chmod($new_filepath, $this->uploadFileMask);
 
-                            if ($current_extention == 'mp4') {
+                            if ($extention == 'mp4') {
                                 $newdist = WWW_ROOT . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS;
                                 $this->checkConvertDirectoryMp4($newdist);
                                 // // tsファイルへの分割
@@ -311,7 +314,7 @@ class FileAttacheBehavior extends Behavior {
                                 $old_entity->set($columns . '_name', $this->getFileName($tmp_data['name']));
                             }
                             $old_entity->set($columns . '_size', $tmp_data['size']);
-                            $old_entity->set($columns . '_extension', $current_extention);
+                            $old_entity->set($columns . '_extension', $extention);
                             // $table->patchEntity($entity, $_data, ['validate' => false]);
                             $table->save($old_entity);
 
@@ -331,9 +334,27 @@ class FileAttacheBehavior extends Behavior {
         }
     }
 
+    public function convertMov2Mp4($mov, $dest) {
+        exec("ffmpeg -i {$mov} {$dest}");
+        return $dest;
+    }
+
     public function uploadFileCn($current_extention, $tmp, $dest) {
+        if ($current_extention == 'mov') {
+            $this->convertMov2Mp4($tmp, $dest);
+            return;
+        }
+
         move_uploaded_file($tmp, $dest);
     }
+
+    public function getConvertedExtention($extention) {
+        if ($extention == 'mov') {
+            return 'mp4';
+        }
+        return $extention;
+    }
+
     /**
      * 拡張子の取得
      * */

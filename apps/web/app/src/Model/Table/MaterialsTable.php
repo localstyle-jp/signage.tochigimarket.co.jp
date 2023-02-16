@@ -29,8 +29,8 @@ class MaterialsTable extends AppTable {
     ),
         'files' => array(
             'file' => array(
-                'extensions' => array('mp4', 'mp3'),
-                'file_name' => 'e_f_%d_%s'
+                'extensions' => array('mp4', 'mp3', 'mov'),
+                'file_name' => 'e_f_%d_%s',
             )
             // file_1
             // 'file_webm' => array(
