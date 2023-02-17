@@ -148,9 +148,9 @@ class MachineBoxesController extends AppController {
 
         if (!empty($box)) {
             $machine_box = $this->MachineBoxes->patchEntity($box, [/*'reload_flag' => 1, */'reload_flag_device' => 1]);
-            $this->MachineBoxes->save($machine_box);
 
             $this->transferMachine($box->content_id, $box->machine_content_id);
+            $this->MachineBoxes->save($machine_box);
         }
 
         return $this->redirect(['controller' => 'home', 'action' => 'index']);

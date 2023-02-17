@@ -20,8 +20,6 @@
         <th>ID</th>
         <th style="text-align:left;">カテゴリ / 素材名</th>
         <th>タイプ</th>
-        <th>登録日時</th>
-        <th>更新日時</th>
       </tr>
 
     </thead>
@@ -35,6 +33,13 @@ foreach ($data_query->toArray() as $key => $data):
     ?>
       <a name="m_<?= $id ?>"></a>
       <tr class="visible" id="content-<?= $data->id ?>">
+
+        <td>
+          <div class="btn_area center">
+            <a href="#" class="btn btn-danger w-50 btn-sm"
+              onClick="parent.pop_box.select('<?= $data->id;?>');">選択</a>
+          </div>
+        </td>
 
         <td>
           <?= h($data->id); ?>
@@ -62,12 +67,7 @@ foreach ($data_query->toArray() as $key => $data):
           </div>
         </td>
 
-        <td>
-          <div class="btn_area center">
-            <a href="#" class="btn btn-danger w-50 btn-sm"
-              onClick="parent.pop_box.select('<?= $data->id;?>');">選択</a>
-          </div>
-        </td>
+
 
       </tr>
 

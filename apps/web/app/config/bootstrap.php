@@ -95,7 +95,7 @@ use Cake\Utility\Security;
 try {
     Configure::config('default', new PhpConfig());
     Configure::load('app', 'default', false);
-    if (strpos(env('HTTP_HOST'), 'demo-v5m') === false && (strpos(env('HTTP_HOST'), 'test') !== false || strpos(env('HTTP_HOST'), 'caters') !== false)) {
+    if (strpos(env('HTTP_HOST'), 'demo-v5m') === false && (strpos(env('HTTP_HOST'), 'test') !== false )) {
         Configure::load('app_develop', 'default');
     } elseif (env('HTTP_HOST') === 'localhost') {
         Configure::load('app_develop', 'default');

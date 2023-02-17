@@ -52,12 +52,12 @@
     <div>
       <img
         src="<?= h($material['material']['attaches']['image']['s']) ?>"
-        class="w-100">
+        class="" style="height:100px;">
     </div>
 
     <?php elseif($material['material']['type'] == Material::TYPE_MOVIE):?>
     <div>
-      <iframe width="300"
+      <iframe height="100"
         src="https://www.youtube.com/embed/<?= $material['material']['movie_tag']; ?>"
         title="YouTube video player" frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -66,7 +66,7 @@
     </div>
 
     <?php elseif ($material['material']['type'] == Material::TYPE_MOVIE_MP4): ?>
-    <video playsinline controls muted width="300px;"
+    <video playsinline controls muted height="100px;"
       id="mate_mp4_<?= $material['id'] ?>">
       <source
         src="<?= $material['material']['attaches']['file']['src']; ?>#t=1,2">

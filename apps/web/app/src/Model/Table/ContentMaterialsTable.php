@@ -37,7 +37,7 @@ class ContentMaterialsTable extends AppTable {
     }
 
     public function minLimit($value, $context) {
-        if ($value >= 15) {             // 次の素材をロードするのにかかる時間以上の時間を確保する
+        if ($value >= 10) {             // 次の素材をロードするのにかかる時間以上の時間を確保する
             return true;
         } elseif ($value == 0) {         // 無限ループ用
             return true;
