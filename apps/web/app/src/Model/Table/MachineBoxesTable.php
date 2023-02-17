@@ -217,6 +217,9 @@ class MachineBoxesTable extends AppTable {
             return null;
         }
 
+        // 共通の字幕
+        $override_caption = $machine_box->caption_flg == 'machine' ? ($machine_box->rolling_caption ?? '') : '';
+
         //
         $files = [];
         $contents = [];
@@ -254,10 +257,14 @@ class MachineBoxesTable extends AppTable {
                 }
             }
 
+            $caption = $material['rolling_caption'] ?? '';
+            if ($override_caption) {
+                $caption = $override_caption;
+            }
             $contents[] = [
                 'id' => $material['id'],
                 'display_seconds' => $material['view_second'],
-                'subtitle' => $material['rolling_caption'],
+                'subtitle' => $caption,
                 'type' => $type,
                 'source' => $source,
                 'bgm' => $sound,
