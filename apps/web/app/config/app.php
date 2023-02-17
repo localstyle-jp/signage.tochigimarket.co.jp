@@ -238,9 +238,9 @@ return [
              * the following line and set the port accordingly
              */
             //'port' => 'non_standard_port_number',
-            'username' => 'test-signage',
+            'username' => 'signage',
             'password' => 'caters040917',
-            'database' => 'test-signage',
+            'database' => 'signage',
             'encoding' => 'utf8',
             'timezone' => 'UTC',
             'flags' => [],

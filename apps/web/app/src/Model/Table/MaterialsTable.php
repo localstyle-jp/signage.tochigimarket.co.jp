@@ -14,8 +14,8 @@ class MaterialsTable extends AppTable {
     ];
 
     public $attaches = array('images' => array('image' => array('extensions' => array('jpg', 'jpeg', 'gif', 'png'),
-        'width' => 1200,
-        'height' => 1200,
+        'width' => 1920,
+        'height' => 1920,
         'file_name' => 'img_%d_%s',
         'thumbnails' => array(
             's' => array(

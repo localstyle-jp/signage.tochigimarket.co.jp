@@ -250,7 +250,7 @@ class ViewsController extends AppController {
     public function setMaterial($item_count, $material, $machine) {
         $data = [
             'material_id' => $material->id,
-            'no' => $item_count,
+            'no' => intval($item_count),
             'type' => Material::$type_list_api[$material->type],
             'source' => '',
             'movie_tag' => '',
@@ -266,8 +266,9 @@ class ViewsController extends AppController {
             $data['source'] = Router::url(DS . UPLOAD_MOVIE_BASE_URL . DS . $material->url, true);
         } elseif ($material->type == Material::TYPE_IMAGE) {
             $data['source'] = Router::url($material->attaches['image']['0'], true);
+            $data['sound'] = '';
             if ($material->sound) {
-                $data['sound'] = "https://test-signage.caters.jp/upload/Materials/files/{$material->sound}";
+                $data['sound'] = Route::url("/upload/Materials/files/{$material->sound}", true);
             }
         } elseif ($material->type == Material::TYPE_URL) {
             $data['source'] = $material->url;
