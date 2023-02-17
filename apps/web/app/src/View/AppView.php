@@ -23,9 +23,7 @@ use App\Model\Entity\User;
  *
  * @link https://book.cakephp.org/3.0/en/views.html#the-app-view
  */
-class AppView extends View
-{
-
+class AppView extends View {
     /**
      * Initialization hook method.
      *
@@ -35,19 +33,18 @@ class AppView extends View
      *
      * @return void
      */
-    public function initialize()
-    {
+    public function initialize() {
         parent::initialize();
         $this->loadHelper('Common');
         $this->loadHelper('Html', ['className' => 'MyHtml']);
         $this->loadHelper('Form', ['className' => 'MyForm',
-                                   'templates' => [
-                                       'inputContainer' => '{{content}}',
-                                        'inputContainerError' => '{{content}}<div class="error-message">{{error}}</div>',
-                                        'nestingLabel' => '{{input}}<label{{attrs}}>{{text}}</label>',
-                                        'radio' => '<input type="radio" name="{{name}}" value="{{value}}"{{attrs}}>',
-                                        'radioWrapper' => '<span style="margin-right:10px;color:#000;">{{label}}</span>'
-                                   ]]);
+            'templates' => [
+                'inputContainer' => '{{content}}',
+                'inputContainerError' => '{{content}}<div class="error-message">{{error}}</div>',
+                'nestingLabel' => '{{input}}<label{{attrs}}>{{text}}</label>',
+                'radio' => '<input type="radio" name="{{name}}" value="{{value}}"{{attrs}}>',
+                'radioWrapper' => '<span style="margin-right:10px;color:#000;">{{label}}</span>'
+            ]]);
 
         $user_roles = [
             'develop' => User::ROLE_DEVELOP,
@@ -57,7 +54,6 @@ class AppView extends View
         $this->set(compact('user_roles'));
 
         $this->setOptions();
-
     }
 
     private function setOptions() {
@@ -65,17 +61,17 @@ class AppView extends View
             'inputContainer' => '{{content}}',
             'inputContainerError' => '{{content}}{{error}}',
             'nestingLabel' => '{{input}}<label{{attrs}} class="form-check-label">{{text}}</label>',
-            
+
             'radio' => '<input type="radio" name="{{name}}" value="{{value}}"{{attrs}}>',
             'radioWrapper' => '<div class="radio icheck-midnightblue d-inline mr-2">{{label}}</div>',
 
             'error' => '<p class="error-msg">{{content}}</p>',
-            
+
             'checkbox' => '<input type="checkbox" name="{{name}}" value="{{value}}"{{attrs}}>',
             'checkboxFormGroup' => '{{label}}',
             'checkboxWrapper' => '<div class="checkbox-item checkbox-item--small checkbox-item--white">{{label}}</div>',
-         ];
-         
-         $this->set(compact('search_templates'));
+        ];
+
+        $this->set(compact('search_templates'));
     }
 }

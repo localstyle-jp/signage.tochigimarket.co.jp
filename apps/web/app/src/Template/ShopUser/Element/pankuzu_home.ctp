@@ -1,1 +1,2 @@
-<li><a href="<?= $this->Url->build(['_name' => 'shopAdmin']); ?>" class="icon-icn_home">&nbsp;</a></li>
+<li><a href="<?= $this->Url->build(['_name' => 'shopAdmin']); ?>"
+        class="icon-icn_home">&nbsp;</a></li>

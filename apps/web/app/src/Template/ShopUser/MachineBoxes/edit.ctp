@@ -1,6 +1,8 @@
 <?php
 
-use App\Model\Entity\Material; ?>
+use App\Model\Entity\Material;
+
+?>
 
 <!-- Content Header (Page header) -->
 <div class="content-header">
@@ -11,9 +13,13 @@ use App\Model\Entity\Material; ?>
       </div><!-- /.col -->
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
-          <li class="breadcrumb-item"><a href="<?= $this->Url->build(['_name' => 'shopAdmin']); ?>">Home</a></li>
+          <li class="breadcrumb-item"><a
+              href="<?= $this->Url->build(['_name' => 'shopAdmin']); ?>">Home</a>
+          </li>
           <li class="breadcrumb-item"><span>表示端末</span></li>
-          <li class="breadcrumb-item active"><span><?= ($data['id'] > 0) ? '編集' : '新規登録'; ?></span></li>
+          <li class="breadcrumb-item active">
+            <span><?= ($data['id'] > 0) ? '編集' : '新規登録'; ?></span>
+          </li>
         </ol>
       </div><!-- /.col -->
     </div><!-- /.row -->
@@ -32,7 +38,9 @@ use App\Model\Entity\Material; ?>
       <div class="col-12">
         <div class="card">
           <div class="card-header bg-gray-dark">
-            <h2 class="card-title"><?= ($data["id"] > 0) ? '編集' : '新規登録'; ?></h2>
+            <h2 class="card-title">
+              <?= ($data['id'] > 0) ? '編集' : '新規登録'; ?>
+            </h2>
           </div>
 
           <div class="card-body">
@@ -49,18 +57,19 @@ use App\Model\Entity\Material; ?>
                 </div>
               </div>
 
-            <?php if (false): ?>
+              <?php if (false): ?>
               <!-- URL -->
               <div class="form-group row">
-                <label for="" class="col-12 col-md-3 col-form-label control_title">URL<span class="attent">※必須</span></label>
+                <label for="" class="col-12 col-md-3 col-form-label control_title">URL<span
+                    class="attent">※必須</span></label>
                 <div class="col-12 col-md-9 control_value">
                   <?= '/view/' . $site_config->slug . '/'; ?><?= $this->Form->input('url', array('type' => 'text', 'maxlength' => 100, 'class' => 'form-control')); ?>
                   <span>※URLのみを入力してください</span>
                 </div>
               </div>
-            <?php else: ?>
+              <?php else: ?>
               <?= $this->Form->input('url', array('type' => 'hidden')); ?>
-            <?php endif; ?>
+              <?php endif; ?>
 
               <!-- 表示コンテンツ -->
               <div class="form-group row">
@@ -88,19 +97,19 @@ use App\Model\Entity\Material; ?>
               <div class="form-group row">
                 <label for="" class="col-12 col-md-3 col-form-label control_title">モニター位置</label>
                 <div class="col-12 col-md-9 control_value">
-                <?php if (false): ?>
+                  <?php if (false): ?>
                   <?= $this->Form->hidden('is_vertical', ['value' => '0']); ?>
                   <div class="icheck-primary d-inline ml-2">
                     <?= $this->Form->input('is_vertical', ['type' => 'checkbox', 'hiddenField' => false, 'value' => 1, 'label' => ['class' => 'form-check-label', 'text' => '縦表示'], 'class' => '']); ?>
                   </div>
-                <?php else: ?>
-                    <?= $this->Form->hidden('is_vertical'); ?>
-                  <?php if ($entity->is_vertical == 1): ?>
-                    縦表示
                   <?php else: ?>
-                    横表示
+                  <?= $this->Form->hidden('is_vertical'); ?>
+                  <?php if ($entity->is_vertical == 1): ?>
+                  縦表示
+                  <?php else: ?>
+                  横表示
                   <?php endif; ?>
-                <?php endif; ?>
+                  <?php endif; ?>
                 </div>
               </div>
 
@@ -111,12 +120,12 @@ use App\Model\Entity\Material; ?>
                   <?= $this->Form->input('memo', ['type' => 'textarea', 'style' => 'height:80px;', 'class' => 'form-control']); ?>
                 </div>
               </div>
-              
+
               <!-- 表示する字幕の設定 -->
               <div class="form-group row" id="caption_flg_wrapper">
                 <label for="" class="col-12 col-md-3 col-form-label control_title">表示する字幕の設定</label>
                 <div class="col-12 col-md-9 control_value">
-                  <?= $this->Form->input('caption_flg', array('type' => 'radio','hiddenField' => false, 'options' => array('machine' => '共通の字幕', 'content' => '素材ごとに異なる字幕')));?>
+                  <?= $this->Form->input('caption_flg', array('type' => 'radio', 'hiddenField' => false, 'options' => array('machine' => '共通の字幕', 'content' => '素材ごとに異なる字幕')));?>
                 </div>
               </div>
 
@@ -128,7 +137,7 @@ use App\Model\Entity\Material; ?>
                 </div>
               </div>
 
-            <?php if (false): ?>
+              <?php if (false): ?>
               <div class="form-group row">
                 <?php $_column = 'file'; ?>
                 <label for="" class="col-12 col-md-3 col-form-label control_title">状態</label>
@@ -136,22 +145,23 @@ use App\Model\Entity\Material; ?>
                   <?= $this->Form->input('status', array('type' => 'select', 'options' => array('draft' => '無効', 'publish' => '有効'))); ?>
                 </div>
               </div>
-            <?php endif; ?>
+              <?php endif; ?>
 
             </div>
 
             <div class="btn_area center">
               <?php if (!empty($data['id']) && $data['id'] > 0) { ?>
-                <a href="#" class="btn btn-danger btn_post submitButton"><i class="fas fa-check"></i> 変更する</a>
-                <?php if (empty($is_import_data)) : ?>
-                  <a href="javascript:kakunin('データを完全に削除します。よろしいですか？','<?= $this->Url->build(array('action' => 'delete', $data['id'], 'content')) ?>')" class="btn btn_post btn_delete">
-                    <i class="far fa-trash-alt"></i> 削除する</a>
-                <?php else : ?>
-                  <a href="#" class="btn btn_post btn_delete disabled" role="button" aria-disabled="true">
-                    <i class="far fa-trash-alt"></i> 削除する</a><span class="attent">紐づいてるデータがあるので削除出来ません。</span>
-                <?php endif; ?>
+              <a href="#" class="btn btn-danger btn_post submitButton"><i class="fas fa-check"></i> 変更する</a>
+              <?php if (empty($is_import_data)) : ?>
+              <a href="javascript:kakunin('データを完全に削除します。よろしいですか？','<?= $this->Url->build(array('action' => 'delete', $data['id'], 'content')) ?>')"
+                class="btn btn_post btn_delete">
+                <i class="far fa-trash-alt"></i> 削除する</a>
+              <?php else : ?>
+              <a href="#" class="btn btn_post btn_delete disabled" role="button" aria-disabled="true">
+                <i class="far fa-trash-alt"></i> 削除する</a><span class="attent">紐づいてるデータがあるので削除出来ません。</span>
+              <?php endif; ?>
               <?php } else { ?>
-                <a href="#" class="btn btn-danger btn_post submitButton"><i class="fas fa-check"></i> 登録する</a>
+              <a href="#" class="btn btn-danger btn_post submitButton"><i class="fas fa-check"></i> 登録する</a>
               <?php } ?>
             </div>
             <?= $this->Form->end(); ?>
@@ -173,36 +183,34 @@ use App\Model\Entity\Material; ?>
 <link rel="stylesheet" href="/user/common/css/cms.css">
 
 <script>
+  function changeResolution() {
+    var type = $("#resolution").val();
 
-function changeResolution() {
-  var type = $("#resolution").val();
-
-  if (type > 0) {
-    $("#resolution_wh").hide();
-  } else {
-    $("#resolution_wh").show();
+    if (type > 0) {
+      $("#resolution_wh").hide();
+    } else {
+      $("#resolution_wh").show();
+    }
   }
-}
 
-$(function() {
-  changeResolution();
-})
+  $(function() {
+    changeResolution();
+  })
 
-function changeTargetType() {
-  var type = $('#caption_flg_wrapper [type="radio"]:checked').val();
-  if (type === 'content') {
-    $("#rolling_caption_wrapper").hide();
-  } else if (type === 'machine') {
-    $("#rolling_caption_wrapper").show();
+  function changeTargetType() {
+    var type = $('#caption_flg_wrapper [type="radio"]:checked').val();
+    if (type === 'content') {
+      $("#rolling_caption_wrapper").hide();
+    } else if (type === 'machine') {
+      $("#rolling_caption_wrapper").show();
+    }
   }
-}
-$(function() {
-  changeTargetType();
-  $('#caption_flg_wrapper [type="radio"]').on('change', function() {
+  $(function() {
     changeTargetType();
+    $('#caption_flg_wrapper [type="radio"]').on('change', function() {
+      changeTargetType();
+    });
   });
-});
-
 </script>
 
 <?php $this->end(); ?>

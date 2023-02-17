@@ -22,16 +22,13 @@ use Psy\Shell as PsyShell;
 /**
  * Simple console wrapper around Psy\Shell.
  */
-class ConsoleShell extends Shell
-{
-
+class ConsoleShell extends Shell {
     /**
      * Start the shell and interactive console.
      *
      * @return int|null
      */
-    public function main()
-    {
+    public function main() {
         if (!class_exists('Psy\Shell')) {
             $this->err('<error>Unable to load Psy\Shell.</error>');
             $this->err('');
@@ -46,7 +43,7 @@ class ConsoleShell extends Shell
             return self::CODE_ERROR;
         }
 
-        $this->out("You can exit with <info>`CTRL-C`</info> or <info>`exit`</info>");
+        $this->out('You can exit with <info>`CTRL-C`</info> or <info>`exit`</info>');
         $this->out('');
 
         Log::drop('debug');
@@ -64,8 +61,7 @@ class ConsoleShell extends Shell
      *
      * @return \Cake\Console\ConsoleOptionParser
      */
-    public function getOptionParser()
-    {
+    public function getOptionParser() {
         $parser = new ConsoleOptionParser('console');
         $parser->setDescription(
             'This shell provides a REPL that you can use to interact ' .

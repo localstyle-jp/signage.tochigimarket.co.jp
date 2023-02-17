@@ -1,10 +1,9 @@
-<?php 
+<?php
 namespace App\Validator;
 
 use Cake\Validation\Validation;
 
-class AppValidation
-{
+class AppValidation {
     public static function checkEmail($value, $context) {
         return (bool) preg_match('/\A[a-zA-Z0-9_-]([a-zA-Z0-9_\!#\$%&~\*\+-\/\=\.]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.([a-zA-Z]{2,20})\z/', $value);
     }
@@ -34,12 +33,11 @@ class AppValidation
     }
 
     public static function checkDate($value, $context) {
-
         return self::_checkDate($value);
     }
 
     public static function checkDateTime($value, $context) {
-        return self::_checkDateTime($value);   
+        return self::_checkDateTime($value);
     }
 
     public static function checkBirthday($value, $context) {
@@ -59,7 +57,7 @@ class AppValidation
         return $r;
     }
 
-    static function _checkDate($value) {
+    public static function _checkDate($value) {
         if ($value == DATE_ZERO || $value == '0000-00-00') {
             return false;
         }
@@ -77,7 +75,7 @@ class AppValidation
         return true;
     }
 
-    static function _checkDateTime($value) {
+    public static function _checkDateTime($value) {
         if ($value == DATETIME_ZERO || $value == '0000-00-00 00:00:00') {
             return false;
         }
@@ -95,8 +93,7 @@ class AppValidation
         return true;
     }
 
-    public static function isUnique($value, $context, $mode='') {
-
+    public static function isUnique($value, $context, $mode = '') {
         $field = $context['field'];
         $table = $context['providers']['table'];
 
@@ -108,11 +105,11 @@ class AppValidation
         $now = new \DateTime();
 
         $cond = [
-            $table->getAlias().".id !=" => $id,
-            $table->getAlias().".{$field}" => $value,
+            $table->getAlias() . '.id !=' => $id,
+            $table->getAlias() . ".{$field}" => $value,
         ];
         if ($mode == 'publishOnly') {
-            $cond[$table->geAlias().".status"] = 'publish';
+            $cond[$table->geAlias() . '.status'] = 'publish';
         }
 
         $count = $table->find()->where($cond)->count();
@@ -136,16 +133,16 @@ class AppValidation
     }
 
     public static function checkHira($value, $context) {
-        if(preg_match("/^[ぁ-ゞー・． 　０-９]+$/u",$value)){
+        if (preg_match('/^[ぁ-ゞー・． 　０-９]+$/u', $value)) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
     public static function checkKatakana($value, $context) {
-        if(preg_match("/^[ァ-ヾ0-9０-９ー、。 　]+$/u",$value)){
+        if (preg_match('/^[ァ-ヾ0-9０-９ー、。 　]+$/u', $value)) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }

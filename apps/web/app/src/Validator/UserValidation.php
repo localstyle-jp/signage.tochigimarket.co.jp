@@ -1,13 +1,11 @@
-<?php 
+<?php
 namespace App\Validator;
 
 use Cake\Validation\Validation;
 use App\Model\Table\UsersTable;
 
-class UserValidation
-{
+class UserValidation {
     public static function isUnique($value, $context) {
-
         $field = $context['field'];
         $table = $context['providers']['table'];
 
@@ -41,13 +39,11 @@ class UserValidation
         }
     }
 
-    public static function checkUsername($value, $context)
-    {
+    public static function checkUsername($value, $context) {
         if (preg_match('/^[a-zA-Z][a-zA-Z0-9\-_]{2,29}$/', $value)) {
             return true;
         } else {
             return false;
         }
     }
-
 }

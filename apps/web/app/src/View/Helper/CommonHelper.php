@@ -1,12 +1,11 @@
-<?php 
+<?php
 namespace App\View\Helper;
 
 use Cake\Datasource\ModelAwareTrait;
 use App\Model\Entity\User;
 use App\Lib\Util;
 
-class CommonHelper extends AppHelper
-{
+class CommonHelper extends AppHelper {
     use ModelAwareTrait;
 
     public function session_read($key) {
@@ -25,7 +24,6 @@ class CommonHelper extends AppHelper
     }
 
     public function isCategoryEnabled($page_config) {
-
         if (!$this->getCategoryEnabled()) {
             return false;
         }
@@ -61,10 +59,9 @@ class CommonHelper extends AppHelper
         return false;
     }
 
-    public function isViewSort($page_config, $category_id=0) {
-
+    public function isViewSort($page_config, $category_id = 0) {
         if ($this->getCategoryEnabled() && $page_config->is_category === 'Y'
-             && ($this->isCategorySort($page_config->id)) || (!$this->isCategorySort($page_config->id) && !$category_id) ) {
+             && ($this->isCategorySort($page_config->id)) || (!$this->isCategorySort($page_config->id) && !$category_id)) {
             return true;
         }
 
@@ -76,22 +73,17 @@ class CommonHelper extends AppHelper
     }
 
     public function isUserRole($role_key, $isOnly = false) {
-        
         $role = $this->session_read('user_role');
-        
+
         if (intval($role) === 0) {
             $res = 'develop';
-        }
-        elseif ($role < 10) {
+        } elseif ($role < 10) {
             $res = 'admin';
-        } 
-        elseif ($role < 20) {
+        } elseif ($role < 20) {
             $res = 'staff';
-        }
-        elseif ($role < 30) {
+        } elseif ($role < 30) {
             $res = 'shop';
-        }
-        else if ($role >= 90) {
+        } elseif ($role >= 90) {
             $res = 'demo';
         }
         /** 必要に応じて追加 */
@@ -107,14 +99,13 @@ class CommonHelper extends AppHelper
             } elseif ($role_key == 'shop') {
                 $role_key = ['develop', 'admin', 'staff', 'shop'];
             }
-        } 
+        }
 
         if (in_array($res, (array)$role_key)) {
             return true;
         } else {
             return false;
         }
-
     }
 
     public function getuserRoleKey() {
@@ -125,10 +116,8 @@ class CommonHelper extends AppHelper
         return $key;
     }
 
-    public function Round($number, $decimal=0, $type=1) {
-
+    public function Round($number, $decimal = 0, $type = 1) {
         return Util::Round($number, $decimal, $type);
-
     }
 
     public function getAdminMenu() {

@@ -15,6 +15,7 @@
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <?= $this->Html->charset() ?>
     <title>
@@ -29,6 +30,7 @@
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
 </head>
+
 <body>
     <div id="container">
         <div id="header">
@@ -44,4 +46,5 @@
         </div>
     </div>
 </body>
+
 </html>
