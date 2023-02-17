@@ -24,6 +24,8 @@ class MaterialsController extends AppController {
     public function initialize() {
         $this->MaterialCategories = $this->getTableLocator()->get('MaterialCategories');
 
+        $this->Users = $this->getTableLocator()->get('Users');
+
         parent::initialize();
     }
 
@@ -250,6 +252,9 @@ class MaterialsController extends AppController {
         $list = array(
             'type_list' => Material::$type_list,
         );
+
+        //
+        $list['user_list'] = $this->Users->getShopList();
 
         if (!empty($list)) {
             $this->set(array_keys($list), $list);

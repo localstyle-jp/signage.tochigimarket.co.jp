@@ -66,6 +66,13 @@
         </tr>
         <?php endif; ?>
 
+        <tr>
+          <td>所有者<span class="attent">※必須</span></td>
+          <td>
+            <?= $this->Form->select('user_id', $user_list, ['empty' => [0 => '管理者(共有)']]);?>
+          </td>
+        </tr>
+
         <tr class="changeArea imageArea contentArea">
           <td>画像<span class="attent">※必須</span></td>
           <?php if (!empty($entity['attaches']['image']['0'])) :?>

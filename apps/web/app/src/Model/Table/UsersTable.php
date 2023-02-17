@@ -158,4 +158,9 @@ class UsersTable extends AppTable {
 
         return $user_ids;
     }
+
+    // 店舗一覧 admin以下
+    public function getShopList() {
+        return $this->find('list')->where(['role >' => User::ROLE_ADMIN, 'status' => 'publish'])->toArray();
+    }
 }
