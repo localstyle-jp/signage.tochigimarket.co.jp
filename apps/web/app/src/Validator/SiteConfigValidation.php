@@ -1,13 +1,11 @@
-<?php 
+<?php
 namespace App\Validator;
 
 use Cake\Validation\Validation;
 use App\Model\Table\PageConfigsTable;
 
-class SiteConfigValidation
-{
+class SiteConfigValidation {
     public static function isUnique($value, $context) {
-
         $field = $context['field'];
         $table = $context['providers']['table'];
 
@@ -16,7 +14,7 @@ class SiteConfigValidation
             $id = $context['data']['id'];
         }
         $cond = [
-            "SiteConfigs.id !=" => $id,
+            'SiteConfigs.id !=' => $id,
             "SiteConfigs.{$field}" => $value
         ];
 
@@ -30,7 +28,6 @@ class SiteConfigValidation
     }
 
     public static function ngSlugName($value, $context) {
-
         $words = ['home', 'index', 'edit', 'logout', 'login', 'detail', 'admin', 'user', 'assets'];
 
         if (in_array($value, $words)) {
@@ -40,16 +37,13 @@ class SiteConfigValidation
     }
 
     public static function checkPasswordRule($value, $context) {
-
     }
 
-    public static function checkName($value, $context)
-    {
+    public static function checkName($value, $context) {
         if (preg_match('/^[a-zA-Z][a-zA-Z0-9_]{1,29}$/', $value)) {
             return true;
         } else {
             return false;
         }
     }
-
 }

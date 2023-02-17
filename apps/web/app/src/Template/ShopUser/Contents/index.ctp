@@ -1,4 +1,6 @@
-<?php use App\Model\Entity\Material; ?>
+<?php use App\Model\Entity\Material;
+
+?>
 
 <!-- Content Header (Page header) -->
 <div class="content-header">
@@ -9,7 +11,9 @@
       </div><!-- /.col -->
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
-          <li class="breadcrumb-item"><a href="<?= $this->Url->build(['_name' => 'shopAdmin']); ?>">Home</a></li>
+          <li class="breadcrumb-item"><a
+              href="<?= $this->Url->build(['_name' => 'shopAdmin']); ?>">Home</a>
+          </li>
           <li class="breadcrumb-item active"><span>コンテンツ</span></li>
         </ol>
       </div><!-- /.col -->
@@ -31,36 +35,40 @@
           <div class="card-header bg-gray-dark">
             <h2 class="card-title">検索条件</h2>
             <div class="card-tools">
-              <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+              <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i
+                  class="fas fa-plus"></i></button>
             </div>
           </div>
 
           <div class="card-body" style="display:none;">
-<?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'url' => array('action' => 'index'), 'class' => '', 'templates' => $search_templates)); ?>
+            <?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'url' => array('action' => 'index'), 'class' => '', 'templates' => $search_templates)); ?>
             <div class="table__search">
 
-                <ul class="search__row">
-                  <li>
-                    <div class="search__title">素材所有者</div>
-                    <div class="search__column">
-                      <div class="">
+              <ul class="search__row">
+                <li>
+                  <div class="search__title">素材所有者</div>
+                  <div class="search__column">
+                    <div class="">
                       <?= $this->Form->input('sch_user_type', ['type' => 'radio',
-                                                              'options' => $user_type_list,
-                                                              'value' => $query['sch_user_type']
-                                                    ]); ?>
-                      </div>
+                          'options' => $user_type_list,
+                          'value' => $query['sch_user_type']
+                      ]); ?>
                     </div>
-                  </li>
-                </ul>
+                  </div>
+                </li>
+              </ul>
 
 
             </div>
 
             <div class="btn_area center">
-              <a class="btn btn-secondary" href="<?= $this->Url->build(['action' => 'index']); ?>"><i class="fas fa-eraser"></i> クリア</a>
-              <button class="btn btn-primary" onclick="document.fm_search.submit();"><i class="fas fa-search"></i> 検索開始</button>
+              <a class="btn btn-secondary"
+                href="<?= $this->Url->build(['action' => 'index']); ?>"><i
+                  class="fas fa-eraser"></i> クリア</a>
+              <button class="btn btn-primary" onclick="document.fm_search.submit();"><i class="fas fa-search"></i>
+                検索開始</button>
             </div>
-<?= $this->Form->end(); ?>
+            <?= $this->Form->end(); ?>
           </div>
 
         </div>
@@ -70,11 +78,11 @@
     <!-- /.row -->
 
 
-<?php
+    <?php
 //データの位置まで走査
 $count = array('total' => 0,
-           'enable' => 0,
-           'disable' => 0);
+    'enable' => 0,
+    'disable' => 0);
 // $count['total'] = $data_query->count();
 $count['total'] = $numrows;
 ?>
@@ -82,23 +90,31 @@ $count['total'] = $numrows;
       <div class="col-12">
         <div class="card">
           <div class="card-header bg-gray-dark">
-            <h2 class="card-title">登録一覧　<span class="count"><?php echo $count['total']; ?>件の登録</span></h2>
+            <h2 class="card-title">登録一覧　<span
+                class="count"><?php echo $count['total']; ?>件の登録</span>
+            </h2>
 
           </div>
 
           <div class=" card-body">
             <div class="btn_area center">
-              <a href="<?= $this->Url->build(array('action' => 'edit', '?' => $query)); ?>" class="btn btn_post w-20 rounded-pill"><i class="far fa-plus-square"></i> 新規登録</a>
+              <a href="<?= $this->Url->build(array('action' => 'edit', '?' => $query)); ?>"
+                class="btn btn_post w-20 rounded-pill"><i class="far fa-plus-square"></i> 新規登録</a>
             </div>
-            
-            <div style="" class="mb-2 mt-2 text-center"><?= $this->element('pagination');?></div>
+
+            <div style="" class="mb-2 mt-2 text-center">
+              <?= $this->element('pagination');?>
+            </div>
 
             <?= $this->element('index_list-contents', ['count' => $count]); ?>
 
-            <div style="" class="mb-2 mt-2 text-center"><?= $this->element('pagination');?></div>
+            <div style="" class="mb-2 mt-2 text-center">
+              <?= $this->element('pagination');?>
+            </div>
 
             <div class="btn_area center">
-              <a href="<?= $this->Url->build(array('action' => 'edit', '?' => $query)); ?>" class="btn btn_post w-20 rounded-pill"><i class="far fa-plus-square"></i> 新規登録</a>
+              <a href="<?= $this->Url->build(array('action' => 'edit', '?' => $query)); ?>"
+                class="btn btn_post w-20 rounded-pill"><i class="far fa-plus-square"></i> 新規登録</a>
             </div>
           </div>
 
@@ -119,18 +135,18 @@ $count['total'] = $numrows;
 <script src="/shop_user/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
 <script src="/shop_user/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script> -->
 <script>
-$(function () {
+  $(function() {
 
-// $('.table_list_area table').DataTable({
-//   "paging": true,
-//   "lengthChange": false,
-//   "searching": false,
-//   "ordering": false,
-//   "info": true,
-//   "autoWidth": false,
-//   "responsive": true,
-// });
-});
+    // $('.table_list_area table').DataTable({
+    //   "paging": true,
+    //   "lengthChange": false,
+    //   "searching": false,
+    //   "ordering": false,
+    //   "info": true,
+    //   "autoWidth": false,
+    //   "responsive": true,
+    // });
+  });
 </script>
 
 <?php $this->end(); ?>

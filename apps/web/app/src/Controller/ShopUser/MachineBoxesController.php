@@ -195,5 +195,4 @@ class MachineBoxesController extends AppController {
         $this->list = $list;
         return $list;
     }
-    
 }

@@ -35,9 +35,9 @@ class MachineBoxesUsersTable extends AppTable {
     }
 
     /**
-     * 
+     *
      * 権限確認
-     * 
+     *
      */
     public function isSupported($user_id, $machine_box_id) {
         return (bool) $this->find()->where(['user_id' => $user_id, 'machine_box_id' => $machine_box_id])->first();

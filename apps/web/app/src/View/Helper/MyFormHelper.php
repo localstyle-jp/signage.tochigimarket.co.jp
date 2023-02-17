@@ -1,11 +1,10 @@
-<?php 
+<?php
 namespace App\View\Helper;
 
 use Cake\View\Helper\FormHelper;
 use Cake\Datasource\ModelAwareTrait;
 
-class MyFormHelper extends FormHelper
-{
+class MyFormHelper extends FormHelper {
     use ModelAwareTrait;
 
     public function input($fieldName, array $options = []) {
@@ -19,9 +18,8 @@ class MyFormHelper extends FormHelper
             'templateVars' => [],
             'labelOptions' => true
         ], $options);
-        
+
         return parent::control($fieldName, $options);
-        
     }
     /**
      * Tableから画像の推奨サイズを取得
@@ -32,7 +30,7 @@ class MyFormHelper extends FormHelper
      * @param  array  $options   [description]
      * @return [type]            [description]
      */
-    public function getRecommendSize($model, $column, $options=[]) {
+    public function getRecommendSize($model, $column, $options = []) {
         $this->modelFactory('Table', ['Cake\ORM\TableRegistry', 'get']);
         $this->loadModel($model);
 
@@ -52,13 +50,13 @@ class MyFormHelper extends FormHelper
 
             if (array_key_exists($column, $config) && array_key_exists($column, $attaches)) {
                 if ($config[$column] === true) {
-                    if ($prefix == "") {
+                    if ($prefix == '') {
                         $strSize = "{$attaches[$column]['width']}{$separator}{$attaches[$column]['height']}";
-                    } elseif(array_key_exists($prefix, $attaches[$column]['thumbnails'])) {
+                    } elseif (array_key_exists($prefix, $attaches[$column]['thumbnails'])) {
                         $tmp = $attaches[$column]['thumbnails'][$prefix];
                         $strSize = "{$tmp['width']}{$separator}{$tmp['height']}";
                     }
-                } elseif(is_array($config[$column])) {
+                } elseif (is_array($config[$column])) {
                     $strSize = "{$config[$column]['width']}{$separator}{$config[$column]['height']}";
                 } elseif ($config[$column] !== false) {
                     $strSize = $config[$column];

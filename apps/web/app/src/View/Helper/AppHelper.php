@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace App\View\Helper;
 
 use Cake\Core\Configure;
@@ -15,6 +15,5 @@ use Cake\View\View;
  * @property \Cake\View\Helper\UrlHelper $Url
  * @link https://book.cakephp.org/3.0/en/views/helpers/html.html
  */
-class AppHelper extends Helper
-{
+class AppHelper extends Helper {
 }

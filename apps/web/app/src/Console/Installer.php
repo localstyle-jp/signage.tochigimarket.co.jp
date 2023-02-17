@@ -22,9 +22,7 @@ use Exception;
  * Provides installation hooks for when this application is installed via
  * composer. Customize this class to suit your needs.
  */
-class Installer
-{
-
+class Installer {
     /**
      * An array of directories to be made writable
      */
@@ -46,8 +44,7 @@ class Installer
      * @throws \Exception Exception raised by validator.
      * @return void
      */
-    public static function postInstall(Event $event)
-    {
+    public static function postInstall(Event $event) {
         $io = $event->getIO();
 
         $rootDir = dirname(dirname(__DIR__));
@@ -91,8 +88,7 @@ class Installer
      * @param \Composer\IO\IOInterface $io IO interface to write to console.
      * @return void
      */
-    public static function createAppConfig($dir, $io)
-    {
+    public static function createAppConfig($dir, $io) {
         $appConfig = $dir . '/config/app.php';
         $defaultConfig = $dir . '/config/app.default.php';
         if (!file_exists($appConfig)) {
@@ -108,8 +104,7 @@ class Installer
      * @param \Composer\IO\IOInterface $io IO interface to write to console.
      * @return void
      */
-    public static function createWritableDirectories($dir, $io)
-    {
+    public static function createWritableDirectories($dir, $io) {
         foreach (static::WRITABLE_DIRS as $path) {
             $path = $dir . '/' . $path;
             if (!file_exists($path)) {
@@ -128,8 +123,7 @@ class Installer
      * @param \Composer\IO\IOInterface $io IO interface to write to console.
      * @return void
      */
-    public static function setFolderPermissions($dir, $io)
-    {
+    public static function setFolderPermissions($dir, $io) {
         // Change the permissions on a path and output the results.
         $changePerms = function ($path, $perms, $io) {
             // Get permission bits from stat(2) result.
@@ -173,8 +167,7 @@ class Installer
      * @param \Composer\IO\IOInterface $io IO interface to write to console.
      * @return void
      */
-    public static function setSecuritySalt($dir, $io)
-    {
+    public static function setSecuritySalt($dir, $io) {
         $newKey = hash('sha256', Security::randomBytes(64));
         static::setSecuritySaltInFile($dir, $io, $newKey, 'app.php');
     }
@@ -188,8 +181,7 @@ class Installer
      * @param string $file A path to a file relative to the application's root
      * @return void
      */
-    public static function setSecuritySaltInFile($dir, $io, $newKey, $file)
-    {
+    public static function setSecuritySaltInFile($dir, $io, $newKey, $file) {
         $config = $dir . '/config/' . $file;
         $content = file_get_contents($config);
 
@@ -219,8 +211,7 @@ class Installer
      * @param string $file A path to a file relative to the application's root
      * @return void
      */
-    public static function setAppNameInFile($dir, $io, $appName, $file)
-    {
+    public static function setAppNameInFile($dir, $io, $appName, $file) {
         $config = $dir . '/config/' . $file;
         $content = file_get_contents($config);
         $content = str_replace('__APP_NAME__', $appName, $content, $count);

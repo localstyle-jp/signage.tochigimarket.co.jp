@@ -1,11 +1,11 @@
 <?php
 namespace App\Lib;
-use setasign\Fpdi; 
+
+use setasign\Fpdi;
 use setasign\Fpdi\TcpdfFpdi;
 
 class XFpdi extends TcpdfFpdi {
-
-    public function setSizeFont($str,$width, $font, $size = null, $min_size=null) {
+    public function setSizeFont($str, $width, $font, $size = null, $min_size = null) {
         $r = true;
         $fontsizes = [
             // 文字数 => フォントサイズ
@@ -27,7 +27,7 @@ class XFpdi extends TcpdfFpdi {
             $size = $this->defaultFontSize;
         }
 
-        $max=count($fontsizes);
+        $max = count($fontsizes);
         $start = 0;
         if (!is_null($size)) {
             foreach ($fontsizes as $cnt => $_size) {
@@ -38,7 +38,7 @@ class XFpdi extends TcpdfFpdi {
             }
         }
 
-        for($i=$start; $i<$max; $i++) {
+        for ($i = $start; $i < $max; $i++) {
             $this->SetFont($font, '', $fontsizes[$i]);
             $w = $this->GetStringWidth($str);
             if ($w <= $width) {

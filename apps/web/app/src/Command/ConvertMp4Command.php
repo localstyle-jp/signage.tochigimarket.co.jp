@@ -7,23 +7,20 @@ use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 
-class ConvertMp4Command extends Command
-{
+class ConvertMp4Command extends Command {
     public $uploadDirCreate = true;
     public $uploadDirMask = 0777;
     public $uploadFileMask = 0666;
 
     //ffmpeg configure
     public $convertPath_mp4 = 'ffmpeg';
-    
-    public function initialize()
-    {
+
+    public function initialize() {
         parent::initialize();
         $this->loadModel('Materials');
     }
 
-    protected function buildOptionParser(ConsoleOptionParser $parser)
-    {
+    protected function buildOptionParser(ConsoleOptionParser $parser) {
         $parser
             ->addArguments([
                 'id' => ['required' => true],
@@ -35,26 +32,25 @@ class ConvertMp4Command extends Command
         return $parser;
     }
 
-    public function execute(Arguments $args, ConsoleIo $io)
-    {   
+    public function execute(Arguments $args, ConsoleIo $io) {
         $id = $args->getArgument('id');
         $basedir = $args->getArgument('basedir');
         $newdist = $args->getArgument('newdist');
         $name_mp4 = $args->getArgument('name_mp4');
 
         // $material = $this->Materials->query()->update()->where(['id' => $id])->set(['status_mp4' => 'converting'])->execute();
-        $io->out((new \DateTime('now'))->format('Y/m/d H:i:s') . ' START material_id : ' . $id . ' mp4_file : ' . $basedir.$name_mp4 . ' -> hls_file : ' . $newdist);
+        $io->out((new \DateTime('now'))->format('Y/m/d H:i:s') . ' START material_id : ' . $id . ' mp4_file : ' . $basedir . $name_mp4 . ' -> hls_file : ' . $newdist);
 
         // tsファイルへの分割
         $bitrates = [/*BITRATE_LOW, BITRATE_MID, */BITRATE_HIGH];
         foreach ($bitrates as $bitrate) {
             $filenameM3u8 = 'm' . $id . '_' . $bitrate . 'k.m3u8';
-            $this->_split_mp4($basedir.$name_mp4, $newdist, $filenameM3u8, $bitrate);
+            $this->_split_mp4($basedir . $name_mp4, $newdist, $filenameM3u8, $bitrate);
         }
         // マスターファイルの作成
         $this->_create_master_m3u8($newdist, $id, $bitrates);
 
-        $io->out((new \DateTime('now'))->format('Y/m/d H:i:s') . ' FINISH material_id : ' . $id . ' mp4_file : ' . $basedir.$name_mp4 . ' -> hls_file : ' . $newdist);
+        $io->out((new \DateTime('now'))->format('Y/m/d H:i:s') . ' FINISH material_id : ' . $id . ' mp4_file : ' . $basedir . $name_mp4 . ' -> hls_file : ' . $newdist);
         $material = $this->Materials->query()->update()->where(['id' => $id])->set(['status_mp4' => 'converted'])->execute();
     }
 
@@ -70,20 +66,20 @@ class ConvertMp4Command extends Command
         $cmdline = $this->convertPath_mp4;
         $src = '-i ' . $source;
         $codec = '-c:v libx264 -c:a aac';
-        $bitrate = '-b:v '. $n_bitrate .'k -minrate '. $n_bitrate .'k -maxrate '. $n_bitrate .'k -bufsize '. $n_bitrate*2 .'k -b:a 128k';
+        $bitrate = '-b:v ' . $n_bitrate . 'k -minrate ' . $n_bitrate . 'k -maxrate ' . $n_bitrate . 'k -bufsize ' . $n_bitrate * 2 . 'k -b:a 128k';
         // $scale = '-s 1920x1080';
-        $format = "-f hls -hls_time 10 -hls_playlist_type vod -g 30 -keyint_min 30 -sc_threshold 0";
-        $dist = "-hls_segment_filename \"" . $dist_dir . "v1_".$n_bitrate."k_%4d.ts\" " . $dist_dir . $filenameM3u8;
+        $format = '-f hls -hls_time 10 -hls_playlist_type vod -g 30 -keyint_min 30 -sc_threshold 0';
+        $dist = '-hls_segment_filename "' . $dist_dir . 'v1_' . $n_bitrate . 'k_%4d.ts" ' . $dist_dir . $filenameM3u8;
 
         // コマンド実行
-        $command = $cmdline . ' ' . $src . ' ' . $codec . ' ' . $bitrate . 
-                    // ' ' . $scale . 
+        $command = $cmdline . ' ' . $src . ' ' . $codec . ' ' . $bitrate .
+                    // ' ' . $scale .
                     ' ' . $format . ' ' . $dist;
         $a = system(escapeshellcmd($command));
         // パーミッション
-        @chmod($dist_dir.$filenameM3u8, $this->uploadFileMask);
+        @chmod($dist_dir . $filenameM3u8, $this->uploadFileMask);
         $idFile = 0;
-        while ( @chmod($dist_dir.sprintf('v1_'.$n_bitrate.'k_%s.ts', sprintf('%04d', $idFile)), $this->uploadFileMask) ) {
+        while (@chmod($dist_dir . sprintf('v1_' . $n_bitrate . 'k_%s.ts', sprintf('%04d', $idFile)), $this->uploadFileMask)) {
             $idFile += 1;
         }
 
@@ -107,17 +103,16 @@ class ConvertMp4Command extends Command
             //     continue;
             // }
             $filenameM3u8 = 'm' . $id . '_' . $bitrate . 'k.m3u8';
-            $contents .= '#EXT-X-STREAM-INF:BANDWIDTH='.$bitrate*1000*1.2;
+            $contents .= '#EXT-X-STREAM-INF:BANDWIDTH=' . $bitrate * 1000 * 1.2;
             // $contents .= ',RESOLUTION=1920x1080';
-            $contents .= ',CODECS="avc1.42e00a,mp4a.40.2"'."\n";
-            $contents .= DS . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS.$filenameM3u8."\n";
+            $contents .= ',CODECS="avc1.42e00a,mp4a.40.2"' . "\n";
+            $contents .= DS . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS . $filenameM3u8 . "\n";
         }
-        
+
         // マスターファイル作成
-        $filenameMaster = $dist_dir.'m'.$id.'.m3u8';
+        $filenameMaster = $dist_dir . 'm' . $id . '.m3u8';
         file_put_contents($filenameMaster, $contents);
         // パーミッション
-        @chmod($dist_dir.'m'.$id.'.m3u8', $this->uploadFileMask);
+        @chmod($dist_dir . 'm' . $id . '.m3u8', $this->uploadFileMask);
     }
-
 }

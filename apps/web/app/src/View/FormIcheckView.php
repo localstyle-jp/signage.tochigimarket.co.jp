@@ -15,7 +15,6 @@ namespace App\View;
 
 use Cake\View\View;
 
-
 /**
  * Application View
  *
@@ -23,36 +22,31 @@ use Cake\View\View;
  *
  * @link https://book.cakephp.org/3.0/en/views.html#the-app-view
  */
-class FormIcheckView extends AppView
-{
-
-    public function initialize()
-    {
+class FormIcheckView extends AppView {
+    public function initialize() {
         parent::initialize();
 
         $form_templates = [
             'inputContainer' => '{{content}}',
             'inputContainerError' => '{{content}}{{error}}',
             'nestingLabel' => '{{input}}<label{{attrs}} class="form-check-label">{{text}}</label>',
-            
+
             'radio' => '<input type="radio" name="{{name}}" value="{{value}}"{{attrs}}>',
             'radioWrapper' => '<div class="icheck-primary">{{label}}</div>',
 
             'error' => '<p class="error-msg">{{content}}</p>',
-            
+
             'checkbox' => '<input type="checkbox" name="{{name}}" value="{{value}}"{{attrs}}>',
             'checkboxFormGroup' => '{{label}}',
             'checkboxWrapper' => '<div class="checkbox-item checkbox-item--small checkbox-item--white">{{label}}</div>',
-         ];
-         
-         $this->set(compact('form_templates'));
+        ];
 
+        $this->set(compact('form_templates'));
     }
 
-
 //     public function render($view = null, $layout = null)
-//     {   
-        
+//     {
+
 //         // カスタムロジックをここに。
 //         $INFO = new Info();
 //         $this->set(compact('INFO'));

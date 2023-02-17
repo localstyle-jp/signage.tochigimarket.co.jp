@@ -2,15 +2,12 @@
 
 namespace App\Lib;
 
-
-class Util
-{
+class Util {
     /**
      * 端数処理
      * @param [type] $value [description]
      */
-    static function Round($number, $decimal=0, $type=1) {
-
+    public static function Round($number, $decimal = 0, $type = 1) {
         $res = $number;
         // 四捨五入
         if ($type == 0) {
@@ -19,7 +16,7 @@ class Util
         } elseif ($type == 1) {
             $rate = 1;
             if ($decimal > 0) {
-                for ($i=0; $i < $decimal; $i++) {
+                for ($i = 0; $i < $decimal; $i++) {
                     $rate = $rate * 10;
                 }
                 $number = $number * $rate;
@@ -28,7 +25,7 @@ class Util
 
             if ($decimal > 0) {
                 $rate = 1;
-                for($i=0;$i<$decimal;$i++) {
+                for ($i = 0;$i < $decimal;$i++) {
                     $rate = $rate * 0.1;
                 }
                 $res = $res * $rate;
@@ -37,7 +34,7 @@ class Util
         } elseif ($type == 2) {
             $rate = 1;
             if ($decimal > 0) {
-                for ($i=0; $i < $decimal; $i++) {
+                for ($i = 0; $i < $decimal; $i++) {
                     $rate = $rate * 10;
                 }
                 $number = $number * $rate;
@@ -46,7 +43,7 @@ class Util
 
             if ($decimal > 0) {
                 $rate = 1;
-                for($i=0;$i<$decimal;$i++) {
+                for ($i = 0;$i < $decimal;$i++) {
                     $rate = $rate * 0.1;
                 }
                 $res = $res * $rate;
@@ -54,10 +51,9 @@ class Util
         }
 
         return $res;
-
     }
 
-    static function wareki($date) {
+    public static function wareki($date) {
         $ymd = (new \DateTime($date))->format('Ymd');
         $y = (new \DateTime($date))->format('Y');
 
@@ -68,8 +64,7 @@ class Util
                 'alphabet' => 'R',
                 'year' => $y - 2019 + 1
             );
-        }
-        elseif ($ymd >= '19890108') {
+        } elseif ($ymd >= '19890108') {
             $ret = array(
                 'era' => '平成',
                 'short' => '平',
