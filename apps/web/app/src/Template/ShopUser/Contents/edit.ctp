@@ -138,7 +138,9 @@ if (empty($data['id']) || ($data['id'] && $entity->user_id == $this->Session->re
 
                 <thead class="bg-gray">
                   <th class="show_pc"></th>
-                  <th>カテゴリ / 素材名</th>
+                  <th>
+                    <?= VIEW_MCAETGORY ? 'カテゴリ / ' : '' ?>素材名
+                  </th>
                   <th>種別</th>
                   <th>表示秒数<br>(※15秒以上で指定、0秒の場合は永続表示)</th>
                   <th>内容</th>
