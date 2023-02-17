@@ -98,7 +98,12 @@ use Cake\Utility\Security;
 try {
     Configure::config('default', new PhpConfig());
     Configure::load('app', 'default', false);
-    if (strpos(env('HTTP_HOST'), 'demo-v5m') === false && (strpos(env('HTTP_HOST'), 'test') !== false)) {
+
+    //ドメインがない(コンソール処理)場合はドキュメントルートのパスで切り替える。
+    $is_docker = !env('HTTP_HOST') && is_included_docRoot(['test']);
+    if ($is_docker) {
+        Configure::load('app_develop', 'default');
+    } elseif (strpos(env('HTTP_HOST'), 'demo-v5m') === false && (strpos(env('HTTP_HOST'), 'test') !== false)) {
         Configure::load('app_develop', 'default');
     } elseif (env('HTTP_HOST') === 'localhost') {
         Configure::load('app_develop', 'default');
@@ -110,6 +115,18 @@ try {
 
 if (strpos(env('HTTP_HOST'), 'test') !== false || strpos(env('HTTP_HOST'), 'caters') !== false) {
 } else {
+}
+
+function is_included_docRoot($targets = array()) {
+    foreach ($targets as $target) {
+        if (strpos((env('SCRIPT_FILENAME') ?? ''), $target) !== false) {
+            return true;
+        }
+        if (strpos(ROOT, $target) !== false) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /*
