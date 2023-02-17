@@ -72,6 +72,7 @@
                 </div>
               </div>
 
+              <?php if(VIEW_MCAETGORY): ?>
               <div class="form-group row">
                 <label for="" class="col-12 col-md-3 col-form-label control_title">素材カテゴリ<span
                     class="attent">※必須</span></label>
@@ -86,6 +87,7 @@
                   <?= $this->Form->error('category_id');?>
                 </div>
               </div>
+              <?php endif; ?>
 
               <div class="form-group row changeArea imageArea contentArea">
                 <label for="" class="col-12 col-md-3 col-form-label control_title">画像<span

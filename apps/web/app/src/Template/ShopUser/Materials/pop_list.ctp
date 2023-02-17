@@ -35,6 +35,8 @@
           <div class="card-body">
             <?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'class' => '', 'templates' => $search_templates)); ?>
             <div class="table__search">
+
+              <?php if(VIEW_MCAETGORY): ?>
               <ul class="search__row">
                 <li>
                   <div class="search__title">素材カテゴリ</div>
@@ -52,6 +54,7 @@
                   </div>
                 </li>
               </ul>
+              <?php endif; ?>
 
               <ul class="search__row">
                 <li>

@@ -30,6 +30,8 @@ $count['total'] = $numrows;
     <div class="table_area form_area">
       <?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'url' => array('action' => 'index'), 'class' => '')); ?>
       <table class=" table border-0" style="width: fit-content;">
+
+        <?php if(VIEW_MCAETGORY): ?>
         <!-- 素材カテゴリ -->
         <tr>
           <td class="border-0" style="width: 120px;text-align: center;vertical-align: middle;">素材カテゴリ</td>
@@ -46,6 +48,7 @@ $count['total'] = $numrows;
             <?php endforeach; ?>
           </td>
         </tr>
+        <?php endif; ?>
 
         <tr>
           <!-- 素材名 -->
@@ -130,10 +133,13 @@ $count['total'] = $numrows;
       <?= $this->Paginator->numbers();?>
     </div>
 
+
+    <?php if(VIEW_MCAETGORY): ?>
     <div class="btn_area" style="margin-top:10px; text-align:right; margin-right:30px;">
       <a href="<?= $this->Url->build(array('controller' => 'material_categories', 'action' => 'index')); ?>"
         class="btn btn-primary">素材カテゴリ一覧</a>
     </div>
+    <?php endif; ?>
 
     <div class="table_area">
       <table class="table__list table-hover" style="table-layout: fixed;">
@@ -158,7 +164,11 @@ $count['total'] = $numrows;
           <th>状態</th>
           <?php endif; ?>
           <th>ID</th>
-          <th style="text-align:left;">カテゴリ / 素材名</th>
+
+          <th style="text-align:left;">
+            <?= VIEW_MCAETGORY ? 'カテゴリ / ' : '' ?>素材名
+          </th>
+
           <th>タイプ</th>
           <th>登録日時</th>
           <th>更新日時</th>
@@ -199,7 +209,10 @@ foreach ($data_query->toArray() as $key => $data):
           </td>
 
           <td>
-            【<?= h($data->material_category->name); ?>】
+            <?php if(VIEW_MCAETGORY): ?>
+            【<?= h($data->material_category->name ?? ''); ?>】
+            <?php endif; ?>
+
             <?= $this->Html->link(h($data->name), ['action' => 'edit', $data->id, '?' => ['sch_type' => $query['sch_type'], 'sch_category_id' => $query['sch_category_id']]], ['class' => 'btn-block text-left'])?>
           </td>
 

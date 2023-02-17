@@ -51,6 +51,7 @@
           </td>
         </tr>
 
+        <?php if(VIEW_MCAETGORY): ?>
         <tr>
           <td>素材カテゴリ<span class="attent">※必須</span></td>
           <td>
@@ -63,6 +64,7 @@
             <?php endif; ?>
           </td>
         </tr>
+        <?php endif; ?>
 
         <tr class="changeArea imageArea contentArea">
           <td>画像<span class="attent">※必須</span></td>

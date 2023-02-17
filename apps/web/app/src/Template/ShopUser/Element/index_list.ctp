@@ -25,7 +25,9 @@
         <?php endif; ?>
         <th class="sorting sorting_asc" tabindex="0" rowspan="1" colspan="1" area-controls="index_list"
           area-sort="ascending" area-label="ID"></th>
-        <th style="text-align:left;">カテゴリ / 素材名</th>
+        <th style="text-align:left;">
+          <?= VIEW_MCAETGORY ? 'カテゴリ / ' : '' ?>素材名
+        </th>
         <th>タイプ</th>
         <th>操作</th>
         <?php if (!$is_search): ?>
@@ -68,8 +70,12 @@ foreach ($data_query->toArray() as $key => $data):
           <?php endif; ?>
         </td>
 
-        <td data-label="カテゴリ／素材名">
-          【<?= h($data->material_category->name); ?>】
+        <td
+          data-label="<?= VIEW_MCAETGORY ? 'カテゴリ／' : '' ?>素材名">
+          <?php if(VIEW_MCAETGORY): ?>
+          【<?= h($data->material_category->name ?? ''); ?>】
+          <?php endif; ?>
+
           <div class="val_block">
             <?= $this->Html->link(h($data->name), ['action' => 'edit', $data->id, '?' => ['sch_type' => $query['sch_type'], 'sch_category_id' => $query['sch_category_id']]], ['class' => 'btn btn-light w-100 text-left'])?>
           </div>
