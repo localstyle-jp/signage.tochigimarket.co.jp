@@ -78,11 +78,12 @@
                 <div class="col-12 col-md-9 control_value">
                   <?php if (empty($category_list)) : ?>
                   <?= $this->Form->input('category_id', ['type' => 'hidden', 'value' => '', 'class' => 'form-control']);?>
-                  <?= $this->Form->error('category_id');?>
                   <span>※素材カテゴリを設定してください</span>
                   <?php else : ?>
-                  <?= $this->Form->select('category_id', $category_list, ['class' => 'form-control']);?>
+                  <?= $this->Form->select('category_id', $category_list, ['class' => 'form-control', 'empty' => [0 => '選択してください']]);?>
                   <?php endif; ?>
+
+                  <?= $this->Form->error('category_id');?>
                 </div>
               </div>
 
