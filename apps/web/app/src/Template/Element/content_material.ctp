@@ -9,9 +9,13 @@
 
   <!-- カテゴリ / 素材名 -->
   <td>
+
+    <?php if(VIEW_MCAETGORY): ?>
     <div>
       【<?= h($category_list[$material['material']['category_id']]) ?>】
     </div>
+    <?php endif; ?>
+
     <div>
       <?= h($material['material']['name']) ?>
     </div>

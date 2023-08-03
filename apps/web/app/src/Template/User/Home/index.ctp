@@ -73,6 +73,11 @@
             <div class="card-body">
               <h5 class="card-title"><?= h($data->name); ?></h5>
               <div class="btn_area">
+
+                <a href="<?= $this->Url->build(array('prefix' => 'v1', 'controller' => 'Views', 'action' => 'download-build', '?' => ['id' => $data->id])) ?>"
+                  hidden data-id="<?= $data->id ?>"
+                  class="builddonload btn btn-success btn-sm"></a>
+
                 <a href="<?= '/view/' . $data->site_config->slug . '/' . trim($data->url, '/') . '/'; ?>"
                   target="_blank" class="btn btn-info btn-sm"><i class="fas fa-search"></i> プレビュー</a>
                 <a href="<?= $this->Url->build(['controller' => 'machine-boxes', 'action' => 'edit', $data->id]); ?>"
@@ -98,6 +103,10 @@
 <?php $this->start('beforeBodyClose');?>
 <script src="/user/common/js/jquery.ui.datepicker-ja.js"></script>
 <script src="/user/common/js/cms.js"></script>
+
+<!-- BUILDプログレス対応 -->
+<?= $this->element('progress_js'); ?>
+
 <script>
   function change_category() {
     $("#fm_search").submit();

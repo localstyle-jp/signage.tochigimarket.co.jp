@@ -14,6 +14,8 @@
     <div class="table_area form_area">
       <?= $this->Form->create(false, array('type' => 'get', 'name' => 'fm_search', 'id' => 'fm_search', 'class' => '')); ?>
       <table class=" table border-0">
+
+        <?php if(VIEW_MCAETGORY): ?>
         <!-- 素材カテゴリ -->
         <tr>
           <td class="border-0" style="white-space: nowrap; text-align: center; vertical-align: middle;">素材カテゴリ</td>
@@ -30,6 +32,7 @@
             <?php endforeach; ?>
           </td>
         </tr>
+        <?php endif; ?>
 
         <tr>
           <!-- 素材名 -->
@@ -121,7 +124,11 @@
         <tr>
           <th>選択</th>
           <th>ID</th>
-          <th style="text-align:left;">カテゴリ / 素材名</th>
+
+          <th style="text-align:left;">
+            <?= VIEW_MCAETGORY ? 'カテゴリ / ' : '' ?>素材名
+          </th>
+
           <th>タイプ</th>
           <th>登録日時</th>
           <th>更新日時</th>
@@ -148,7 +155,10 @@ foreach ($data_query->toArray() as $key => $data):
           </td>
 
           <td style="padding: 0;padding-left: 10px;">
-            【<?= h($data->material_category->name); ?>】<br>
+            <?php if(VIEW_MCAETGORY): ?>
+            【<?= h($data->material_category->name ?? ''); ?>】<br>
+            <?php endif; ?>
+
             <?= h($data->name); ?>
           </td>
 

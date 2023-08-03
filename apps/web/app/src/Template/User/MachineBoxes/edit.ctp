@@ -157,6 +157,13 @@
         <div class="text-danger"><strong>※「変更する」ボタンを押すと最新版のコンテンツに更新されます。</strong></div>
         <?php endif; ?>
         <?php if (!empty($data['id']) && $data['id'] > 0) { ?>
+
+        <a href="<?= $this->Url->build(array('prefix' => 'v1', 'controller' => 'Views', 'action' => 'download-build', '?' => ['id' => $data['id']])) ?>"
+          hidden data-id="<?= $data['id'] ?>"
+          class="builddonload btn btn-success btn-sm"></a>
+
+
+
         <a href="#" class="btn btn-primary w-20 rounded-pill submitButton"><i class="fas fa-check"></i> 変更する</a>
         <?php if (empty($is_import_data)): ?>
         <a href="javascript:kakunin('データを完全に削除します。よろしいですか？','<?= $this->Url->build(array('action' => 'delete', $data['id'], 'content'))?>')"
@@ -185,6 +192,10 @@
 <script src="/user/common/js/cms.js"></script>
 
 <?= $this->Html->script('/user/common/js/system/pop_box'); ?>
+
+<!-- BUILDプログレス対応 -->
+<?= $this->element('progress_js'); ?>
+
 <script>
   function changeResolution() {
     var type = $("#resolution").val();

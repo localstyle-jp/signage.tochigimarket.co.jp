@@ -29,8 +29,8 @@ class MaterialsTable extends AppTable {
     ),
         'files' => array(
             'file' => array(
-                'extensions' => array('mp4', 'mp3'),
-                'file_name' => 'e_f_%d_%s'
+                'extensions' => array('mp4', 'mp3', 'mov'),
+                'file_name' => 'e_f_%d_%s',
             )
             // file_1
             // 'file_webm' => array(
@@ -62,7 +62,8 @@ class MaterialsTable extends AppTable {
         $validator
             ->notEmpty('name', '入力してください')
             ->add('name', 'maxLength', ['rule' => ['maxLength', 40], 'message' => ('40字以内で入力してください')])
-            ->notEmpty('category_id', '選択してください');
+            // ->notEmpty('category_id', '選択してください')
+;
 
         return $validator;
     }

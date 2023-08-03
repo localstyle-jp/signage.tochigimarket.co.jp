@@ -72,19 +72,22 @@
                 </div>
               </div>
 
+              <?php if(VIEW_MCAETGORY): ?>
               <div class="form-group row">
                 <label for="" class="col-12 col-md-3 col-form-label control_title">素材カテゴリ<span
                     class="attent">※必須</span></label>
                 <div class="col-12 col-md-9 control_value">
                   <?php if (empty($category_list)) : ?>
                   <?= $this->Form->input('category_id', ['type' => 'hidden', 'value' => '', 'class' => 'form-control']);?>
-                  <?= $this->Form->error('category_id');?>
                   <span>※素材カテゴリを設定してください</span>
                   <?php else : ?>
-                  <?= $this->Form->select('category_id', $category_list, ['class' => 'form-control']);?>
+                  <?= $this->Form->select('category_id', $category_list, ['class' => 'form-control', 'empty' => [0 => '選択してください']]);?>
                   <?php endif; ?>
+
+                  <?= $this->Form->error('category_id');?>
                 </div>
               </div>
+              <?php endif; ?>
 
               <div class="form-group row changeArea imageArea contentArea">
                 <label for="" class="col-12 col-md-3 col-form-label control_title">画像<span
@@ -124,7 +127,6 @@
                       class="<?= h($entity['attaches'][$_column]['extention']); ?>">
                       <?= $this->Form->input('file_name', ['type' => 'hidden', 'maxlength' => '50', 'style' => 'width:300px;', 'placeholder' => '添付ファイル']); ?>
                       <?= $this->Form->input('file_size', ['type' => 'hidden', 'value' => h($entity['file_size'])]); ?>
-                      <!-- <div><-?= $this->Html->link('ダウンロード', $entity['attaches'][$_column]['0'], array('target' => '_blank'))?></div> -->
                     </li>
                     <?= $this->Form->input("_old_{$_column}", array('type' => 'hidden', 'value' => h($entity[$_column]))); ?>
 
@@ -180,7 +182,6 @@
                       class="<?= h($entity['attaches'][$_column]['extention']); ?>">
                       <?= $this->Form->input('file_name', ['type' => 'hidden', 'maxlength' => '50', 'style' => 'width:300px;', 'placeholder' => '添付ファイル']); ?>
                       <?= $this->Form->input('file_size', ['type' => 'hidden', 'value' => h($entity['file_size'])]); ?>
-                      <!-- <div><-?= $this->Html->link('ダウンロード', $entity['attaches'][$_column]['0'], array('target' => '_blank'))?></div> -->
                     </li>
                     <?= $this->Form->input("_old_{$_column}", array('type' => 'hidden', 'value' => h($entity[$_column]))); ?>
 
@@ -188,7 +189,7 @@
 
                     <li>
                       <?= $this->Form->input('file', array('type' => 'file', 'class' => 'attaches form-control'));?>
-                      <div class="remark">※MP4(.mp4)ファイルのみ</div>
+                      <div class="remark">※mp4 , mov ファイルのみ</div>
                       <!-- <div>※ファイルサイズxxxMB以内</div> -->
                     </li>
 

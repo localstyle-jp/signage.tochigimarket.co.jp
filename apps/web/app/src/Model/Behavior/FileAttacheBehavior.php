@@ -67,7 +67,7 @@ class FileAttacheBehavior extends Behavior {
         // afterFindの代わり
         $query->formatResults(function ($results) use ($table, $primary) {
             return $results->map(function ($row) use ($table, $primary) {
-                if (is_object($row) && !array_key_exists('existing', $row)) {
+                if (is_object($row) && !isset($row['existing'])) {
                     $results = $this->_attachesFind($table, $row, $primary);
                 }
                 return $row;
@@ -263,23 +263,35 @@ class FileAttacheBehavior extends Behavior {
             if (!empty($_att_files)) {
                 //upload files
                 foreach ($_att_files as $columns => $val) {
-                    $file_name = array();
+                    $tmp_data = array();
                     if (!empty($_data['_' . $columns])) {
-                        $file_name = $_data['_' . $columns];
+                        $tmp_data = $_data['_' . $columns];
                     }
-                    if (!empty($file_name['tmp_name']) && $file_name['error'] === UPLOAD_ERR_OK) {
-                        $basedir = WWW_ROOT . UPLOAD_BASE_URL . DS . $table->getAlias() . DS . 'files' . DS;
+
+                    // アップロード元
+                    $tmp_filepath = $tmp_data['tmp_name'] ?? '';
+                    if (!empty($tmp_filepath) && $tmp_data['error'] === UPLOAD_ERR_OK) {
                         $fileConf = $_att_files[$columns];
-                        $ext = $this->getExtension($file_name['name']);
-                        $filepattern = $fileConf['file_name'];
-                        $file = $file_name;
 
-                        if (in_array($ext, $fileConf['extensions'])) {
-                            $newname = sprintf($filepattern, $id, $uuid) . '.' . $ext;
-                            move_uploaded_file($file['tmp_name'], $basedir . $newname);
-                            chmod($basedir . $newname, $this->uploadFileMask);
+                        // 実際の拡張子
+                        $current_extention = $this->getExtension($tmp_data['name']);
 
-                            if ($ext == 'mp4') {
+                        // ファイル変換後の拡張子
+                        $extention = $this->getConvertedExtention($current_extention);
+
+                        // アップロード先
+                        $basedir = WWW_ROOT . UPLOAD_BASE_URL . DS . $table->getAlias() . DS . 'files' . DS;
+                        $newname = sprintf($fileConf['file_name'], $id, $uuid) . '.' . $extention;
+                        $new_filepath = $basedir . $newname;
+
+                        if (in_array($extention, $fileConf['extensions'])) {
+                            //アップロード処理
+                            $this->uploadFileCn($current_extention, $tmp_filepath, $new_filepath);
+
+                            // 権限処理
+                            chmod($new_filepath, $this->uploadFileMask);
+
+                            if ($extention == 'mp4') {
                                 $newdist = WWW_ROOT . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS;
                                 $this->checkConvertDirectoryMp4($newdist);
                                 // // tsファイルへの分割
@@ -292,21 +304,17 @@ class FileAttacheBehavior extends Behavior {
                                 // // マスターファイルの作成
                                 // $this->create_master_m3u8($newdist, $id, $bitrates);
                                 // DBへの記録準備
-                                $old_entity->set('view_second', $this->getViewSeconds($basedir . $newname));
-                                // $newname = '';
+                                $old_entity->set('view_second', $this->getViewSeconds($new_filepath));
                                 $filenameMaster = 'm' . $id . '.m3u8';
                                 $old_entity->set('url', 'm' . $id . DS . $filenameMaster);
                             }
 
-                            // $_data[$columns] = $newname;
-                            // $_data[$columns.'_name'] = $file_name['name'];
-                            // $_data[$columns.'_size'] = $file_name['size'];
                             $old_entity->set($columns, $newname);
                             if (empty($old_entity->{$columns . '_name'})) {
-                                $old_entity->set($columns . '_name', $this->getFileName($file_name['name'], $ext));
+                                $old_entity->set($columns . '_name', $this->getFileName($tmp_data['name']));
                             }
-                            $old_entity->set($columns . '_size', $file_name['size']);
-                            $old_entity->set($columns . '_extension', $ext);
+                            $old_entity->set($columns . '_size', $tmp_data['size']);
+                            $old_entity->set($columns . '_extension', $extention);
                             // $table->patchEntity($entity, $_data, ['validate' => false]);
                             $table->save($old_entity);
 
@@ -318,10 +326,6 @@ class FileAttacheBehavior extends Behavior {
                                     }
                                 }
                             }
-                            // 分割前mp4ファイルの削除
-                            // if ($ext=='mp4') {
-                            //     @unlink($basedir.$newname);
-                            // }
                         }
                     }
                 }
@@ -330,14 +334,36 @@ class FileAttacheBehavior extends Behavior {
         }
     }
 
+    public function convertMov2Mp4($mov, $dest) {
+        exec("ffmpeg -i {$mov} {$dest}");
+        return $dest;
+    }
+
+    public function uploadFileCn($current_extention, $tmp, $dest) {
+        if ($current_extention == 'mov') {
+            $this->convertMov2Mp4($tmp, $dest);
+            return;
+        }
+
+        move_uploaded_file($tmp, $dest);
+    }
+
+    public function getConvertedExtention($extention) {
+        if ($extention == 'mov') {
+            return 'mp4';
+        }
+        return $extention;
+    }
+
     /**
      * 拡張子の取得
      * */
     public function getExtension($filename) {
         return strtolower(substr(strrchr($filename, '.'), 1));
     }
-    public function getFileName($filename, $ext) {
-        return str_replace('.' . $ext, '', $filename);
+    public function getFileName($filename) {
+        preg_match('/(.*)\./u', $filename, $matched);
+        return $matched[1] ?? '';
     }
 
     /**

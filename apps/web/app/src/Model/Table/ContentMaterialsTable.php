@@ -30,18 +30,8 @@ class ContentMaterialsTable extends AppTable {
     public function validationDefault(Validator $validator) {
         $validator
             ->notEmpty('view_second', '入力してください')
-            ->add('view_second', 'num', ['rule' => ['numeric'], 'message' => ('数字で入力してください')])
-            ->add('view_second', 'minLimit', ['rule' => [$this, 'minLimit'], 'message' => ('15秒以上でご入力ください')]);
+            ->add('view_second', 'num', ['rule' => ['numeric'], 'message' => ('数字で入力してください')]);
 
         return $validator;
-    }
-
-    public function minLimit($value, $context) {
-        if ($value >= 10) {             // 次の素材をロードするのにかかる時間以上の時間を確保する
-            return true;
-        } elseif ($value == 0) {         // 無限ループ用
-            return true;
-        }
-        return false;
     }
 }

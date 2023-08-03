@@ -99,8 +99,6 @@ class AppController extends BaseController {
                         }
                     }
                 }
-                // TODO::
-                // $this->redirect($this->referer());
 
                 $this->set('data', $data);
                 $isValid = false;

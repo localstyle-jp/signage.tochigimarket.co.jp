@@ -4,6 +4,7 @@ namespace App\Model\Table;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\Utility\Inflector;
+use App\Utils\Zip;
 
 class MachineBoxesTable extends AppTable {
     // テーブルの初期値を設定する
@@ -41,5 +42,248 @@ class MachineBoxesTable extends AppTable {
 ;
 
         return $validator;
+    }
+
+    /**
+     *
+     *
+     * Buildデータの保存
+     *
+     */
+    public function buildZip($machine_box_id) {
+        // ZIP用データ
+        $data = $this->getBuildZipData($machine_box_id);
+        if (!$data) {
+            return false;
+        }
+
+        /**
+         *
+         * ZIP出力
+         *
+         */
+        // 初期化処理
+        $this->beforeBuild($machine_box_id);
+
+        //　自分のバージョン取得処理(プログレス中変化があれば中止する)
+        $getVersion = function () use ($machine_box_id) {
+            return $this->getBuildVersion($machine_box_id);
+        };
+
+        // プログレス更新処理
+        $updateProgress = function ($progress) use ($machine_box_id) {
+            $this->updateProgress($machine_box_id, $progress);
+        };
+
+        //
+        $name = $this->getZipFolderName();
+        $dest = $this->getUploadZipPath($machine_box_id);
+
+        //
+        $zip = new Zip;
+        $zip->addProgressEvent($updateProgress, $getVersion);
+        $zip->make($data, $name, $dest);
+    }
+
+    public function getZipFolderName() {
+        return 'caters-signage';
+    }
+
+    /**
+     *
+     * ZIPの場所
+     *
+     */
+    public function getUploadZipPath($id) {
+        return UPLOAD_DIR . 'MachineBoxes/' . $id . '.zip';
+    }
+
+    /**
+     *
+     * ビルド初期化処理
+     *
+     */
+    public function beforeBuild($id) {
+        $entity = $this->find()->where(['id' => $id])->first();
+        if (!$entity) {
+            return false;
+        }
+        // 新しいビルドバージョン
+        $build_version = ($entity->build_version ?? 0) + 1;
+
+        $this->updateAll(['build_progress' => 0, 'build_version' => $build_version], ['id' => $id]);
+        return $build_version;
+    }
+
+    /**
+     *
+     * プログレス状況を更新する
+     *
+     */
+    public function updateProgress($id, $progress) {
+        $this->updateAll(['build_progress' => $progress], ['id' => $id]);
+    }
+
+    /**
+     *
+     * Builldバージョンを取得する
+     *
+     */
+    public function getBuildVersion($id) {
+        $entity = $this->find()->where(['id' => $id])->first();
+        if (!$entity) {
+            return false;
+        }
+
+        $build_version = $entity->build_version ?? 0;
+        return $build_version;
+    }
+
+    /**
+     *
+     * プログレス値を取得する
+     *
+     */
+    public function getProgress($id) {
+        $entity = $this->find()->where(['id' => $id])->first();
+        if (!$entity) {
+            return false;
+        }
+
+        $build_progress = $entity->build_progress ?? 0;
+        return $build_progress;
+    }
+
+    /**
+     *
+     *
+     * ビルドデータをZIP出力用に変換
+     *
+     *
+     */
+    public function getBuildZipData($id) {
+        $data = $this->getBuildData($id);
+        if (!$data) {
+            return false;
+        }
+
+        /**
+         *
+         * ビルドjson
+         *
+         */
+        $json = [
+            [
+                'name' => 'build.json',
+                'data' => [
+                    'content' => json_encode($data)
+                ]
+            ]
+        ];
+
+        /**
+         *
+         * ソースデータ
+         *
+         */
+        $public_root = WWW_ROOT;
+        $public_root = rtrim($public_root, '/');
+        $files = array_map(function ($_file) use ($public_root) {
+            return [
+                'name' => 'sources/' . $_file['name'],
+                'data' => [
+                    'path' => $public_root . $_file['path']
+                ]
+            ];
+        }, $data['files'] ?? []);
+
+        //
+        return array_merge($json, $files);
+    }
+
+    /**
+     *
+     *
+     * ビルドデータをまとめる
+     *
+     *
+     */
+    public function getBuildData(int $id):?array {
+        // 表示端末
+        $machine_box = $this->find()->where(['MachineBoxes.id' => $id])->contain(['MachineContents' => ['MachineMaterials' => function ($q) {
+            return $q->order(['MachineMaterials.position' => 'ASC']);
+        }]])->first();
+        if (!$machine_box) {
+            return null;
+        }
+
+        // 共通の字幕
+        $override_caption = $machine_box->caption_flg == 'machine' ? ($machine_box->rolling_caption ?? '') : '';
+
+        //
+        $files = [];
+        $contents = [];
+        foreach (($machine_box->machine_content->machine_materials ?? []) as $k => $material) {
+            // file_extensionで判別する。　mp4かimageのみ想定
+
+            // なぜかimageの時に空白
+            $type = $material['file_extension'] == 'mp4' ? 'mp4' : 'image';
+
+            //
+            $source = '';
+            $sound = '';
+            if ($type == 'mp4') {
+                if ($source = $material['file']) {
+                    $files[] = [
+                        'name' => $source,
+                        'path' => $material['attaches']['file'][0] ?? ''
+                    ];
+                }
+            }
+            if ($type == 'image') {
+                if ($source = $material['image']) {
+                    $files[] = [
+                        'name' => $source,
+                        'path' => $material['attaches']['image'][0] ?? ''
+                    ];
+                }
+
+                //
+                if ($sound = $material['sound']) {
+                    $files[] = [
+                        'name' => $sound,
+                        'path' => '/upload/Materials/files/' . $sound
+                    ];
+                }
+            }
+
+            $caption = $material['rolling_caption'] ?? '';
+            if ($override_caption) {
+                $caption = $override_caption;
+            }
+            $contents[] = [
+                'id' => $material['id'],
+                'display_seconds' => $material['view_second'],
+                'subtitle' => $caption,
+                'type' => $type,
+                'source' => $source,
+                'bgm' => $sound,
+            ];
+        }
+        if (!$contents) {
+            return null;
+        }
+
+        $data = [
+            'setting' => [
+                'width' => $machine_box->width,
+                'height' => $machine_box->height,
+                'is_vertical' => $machine_box->is_vertical,
+            ],
+            'data' => $contents,
+            'files' => $files,
+        ];
+
+        return $data;
     }
 }

@@ -11,6 +11,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
 use Cake\Utility\Hash;
 use App\Model\Entity\Material;
+use App\Model\Entity\User;
 
 /**
  * Static content controller
@@ -30,6 +31,7 @@ class ViewsController extends AppController {
         $this->UserSites = $this->getTableLocator()->get('UserSites');
         $this->MachineBoxes = $this->getTableLocator()->get('MachineBoxes');
         $this->MachineContents = $this->getTableLocator()->get('MachineContents');
+        $this->MachineBoxesUsers = $this->getTableLocator()->get('MachineBoxesUsers');
 
         // $this->modelName = 'Infos';
         // $this->set('ModelName', $this->modelName);
@@ -42,6 +44,85 @@ class ViewsController extends AppController {
         $this->getEventManager()->off($this->Csrf);
     }
 
+    /**
+     *
+     * プログレス状況を返す
+     *
+     */
+    public function progressBuild() {
+        $machine_box_id = $this->request->getQuery('id');
+
+        // 端末の表示権限チェック
+        if (!$this->checkMachineSupported($machine_box_id)) {
+            return $this->setApi(['message' => '権限がありません'], 400);
+        }
+
+        $build_progress = $this->MachineBoxes->getProgress($machine_box_id);
+        return $this->setApi(['data' => ['progress' => $build_progress]]);
+    }
+
+    /**
+     *
+     * ビルドデータをダウンロードする
+     *
+     */
+    public function downloadBuild() {
+        $machine_box_id = $this->request->getQuery('id');
+
+        // 端末の表示権限チェック
+        if (!$this->checkMachineSupported($machine_box_id)) {
+            return $this->setApi(['message' => '権限がありません'], 400);
+        }
+
+        // 生成経過
+        $build_progress = $this->MachineBoxes->getProgress($machine_box_id);
+        if ($build_progress === false) {
+            return $this->setApi(['message' => '存在しません'], 400);
+        }
+        if ($build_progress === 100) {
+            $zipname = $this->MachineBoxes->getZipFolderName();
+            $dest = $this->MachineBoxes->getUploadZipPath($machine_box_id);
+            return $this->downloadZip($dest, $zipname);
+        } else {
+            return $this->setApi(['message' => '生成中です'], 400);
+        }
+    }
+
+    /**
+     *
+     * ビルドデータをZIPで返す
+     *
+     */
+    public function build() {
+        $machine_box_id = $this->request->getQuery('id');
+
+        // 端末の表示権限チェック
+        if (!$this->checkMachineSupported($machine_box_id)) {
+            return $this->setApi(['message' => '権限がありません'], 400);
+        }
+
+        return $this->MachineBoxes->buildZip($machine_box_id);
+    }
+
+    // 端末の表示権限チェック
+    public function checkMachineSupported($machine_box_id) {
+        $user_id = $this->getUserId();  // ユーザーID
+        if (!$user_id) {
+            return false;
+        }
+        $isAdmin = $this->Session->read('user_role') <= User::ROLE_ADMIN;
+        $isSupported = $this->MachineBoxesUsers->isSupported($user_id, $machine_box_id);
+        if (!$isAdmin && !$isSupported) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     *
+     *
+     *
+     */
     public function index() {
         $machine_id = $this->request->getData('id');
         if (empty($machine_id)) {

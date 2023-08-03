@@ -106,6 +106,13 @@
                         </div>
                         <div class="col-12">
                           <div class="btn_area center">
+
+                            <a href="<?= $this->Url->build(array('prefix' => 'v1', 'controller' => 'Views', 'action' => 'download-build', '?' => ['id' => $data['id']])) ?>"
+                              hidden
+                              data-id="<?= $data['id'] ?>"
+                              class="builddonload btn btn-success btn-sm"></a>
+
+
                             <a href="/shop_user/contents/edit/<?= $data->content_id; ?>?mode=machine"
                               class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> コンテンツ編集</a>
                           </div>
@@ -132,6 +139,10 @@
 
 
     <?php $this->start('beforeBodyClose'); ?>
+
+    <!-- BUILDプログレス対応 -->
+    <?= $this->element('progress_js'); ?>
+
     <script>
       $(function() {
         $(".btnUpdateContent").on('click', function() {

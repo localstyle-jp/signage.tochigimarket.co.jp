@@ -51,6 +51,7 @@
           </td>
         </tr>
 
+        <?php if(VIEW_MCAETGORY): ?>
         <tr>
           <td>素材カテゴリ<span class="attent">※必須</span></td>
           <td>
@@ -61,6 +62,14 @@
             <?php else : ?>
             <?= $this->Form->select('category_id', $category_list);?>
             <?php endif; ?>
+          </td>
+        </tr>
+        <?php endif; ?>
+
+        <tr>
+          <td>所有者<span class="attent">※必須</span></td>
+          <td>
+            <?= $this->Form->select('user_id', $user_list, ['empty' => [0 => '管理者(共有)']]);?>
           </td>
         </tr>
 
@@ -99,7 +108,6 @@
                 class="<?= h($entity['attaches'][$_column]['extention']); ?>">
                 <?= $this->Form->input('file_name', ['type' => 'hidden', 'maxlength' => '50', 'style' => 'width:300px;', 'placeholder' => '添付ファイル']); ?>
                 <?= $this->Form->input('file_size', ['type' => 'hidden', 'value' => h($entity['file_size'])]); ?>
-                <!-- <div><-?= $this->Html->link('ダウンロード', $entity['attaches'][$_column]['0'], array('target' => '_blank'))?></div> -->
               </li>
               <?= $this->Form->input("_old_{$_column}", array('type' => 'hidden', 'value' => h($entity[$_column]))); ?>
 
@@ -164,7 +172,6 @@
                 class="<?= h($entity['attaches'][$_column]['extention']); ?>">
                 <?= $this->Form->input('file_name', ['type' => 'hidden', 'maxlength' => '50', 'style' => 'width:300px;', 'placeholder' => '添付ファイル']); ?>
                 <?= $this->Form->input('file_size', ['type' => 'hidden', 'value' => h($entity['file_size'])]); ?>
-                <!-- <div><-?= $this->Html->link('ダウンロード', $entity['attaches'][$_column]['0'], array('target' => '_blank'))?></div> -->
               </li>
               <?= $this->Form->input("_old_{$_column}", array('type' => 'hidden', 'value' => h($entity[$_column]))); ?>
 
@@ -172,7 +179,7 @@
 
               <li>
                 <?= $this->Form->input('file', array('type' => 'file', 'class' => 'attaches'));?>
-                <div class="remark">※MP4(.mp4)ファイルのみ</div>
+                <div class="remark">※mp4 , mov ファイルのみ</div>
                 <!-- <div>※ファイルサイズxxxMB以内</div> -->
               </li>
 
