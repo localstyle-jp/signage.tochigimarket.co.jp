@@ -74,6 +74,7 @@
       </table>
 
       <table id="blockTable" class="vertical_table block_area table__edit" style="table-layout: fixed;">
+        <?php if ($query_param['vmode'] != 'simple'): ?>
         <colgroup>
           <col style="width: 70px;">
           <col style="width: 150px;">
@@ -83,6 +84,13 @@
           <col style="width: 400px;">
           <col style="width: 90px;">
         </colgroup>
+        <?php else: ?>
+          <col style="width: 70px;">
+          <col style="min-width: 150px;">
+          <col style="width: 100px;">
+          <col style="width: 160px;">
+          <col style="width: 90px;">
+        <?php endif; ?>
 
         <thead>
           <th></th>
@@ -91,15 +99,17 @@
           </th>
           <th>種別</th>
           <th>表示秒数<br>(※15秒以上で指定、0秒の場合は永続表示)</th>
+          <?php if ($query_param['vmode'] != 'simple'): ?>
           <th>内容</th>
           <th>字幕/BGM（画像のみ）</th>
+          <?php endif; ?>
           <th></th>
         </thead>
 
         <tbody id="blockArea" class="list_table">
           <?php if (!empty($data['content_materials'])): ?>
           <?php foreach ($data['content_materials'] as $k => $material): ?>
-          <?= $this->element('content_material', ['material' => $material, 'rownum' => $k]); ?>
+          <?= $this->element('content_material', ['material' => $material, 'rownum' => $k, 'vmode' => $query_param['vmode']]); ?>
           <?php endforeach; ?>
           <?php endif; ?>
         </tbody>

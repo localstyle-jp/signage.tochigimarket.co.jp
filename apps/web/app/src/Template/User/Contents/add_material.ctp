@@ -1,1 +1,1 @@
-<?= $this->element('content_material', ['material' => $material, 'rownum' => $rownum]);
+<?= $this->element('content_material', ['material' => $material, 'rownum' => $rownum, 'vmode' => $vmode]);

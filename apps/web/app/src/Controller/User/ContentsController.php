@@ -42,6 +42,12 @@ class ContentsController extends AppController {
 
     protected function _getQuery() {
         $query = [];
+        $query['vmode'] = $this->request->getQuery('vmode');
+        if (is_null($query['vmode'])) {
+            $this->Session->delete('vmode');
+        } else {
+            $this->Session->write('vmode', $query['vmode']);
+        }
 
         return $query;
     }
@@ -83,7 +89,7 @@ class ContentsController extends AppController {
 
         $this->setList();
 
-        $query_param = [];
+        $query_param = $this->_getQuery();
         $query_param['mode'] = (empty($this->request->getQuery('mode')) ? '' : $this->request->getQuery('mode'));
         $this->set(compact('query_param'));
 
@@ -177,6 +183,7 @@ class ContentsController extends AppController {
 
         $rownum = $this->request->getData('rownum');
         $material_id = $this->request->getData('material_id');
+        $vmode = $this->Session->read('vmode');
 
         $master = $this->Materials->find()->where(['Materials.id' => $material_id])->first();
 
@@ -204,7 +211,7 @@ class ContentsController extends AppController {
         $result = $this->ContentMaterials->newEntity($data);
         $result['material']['content'] = $master->content;
         $material = $result->toArray();
-        $this->set(compact('rownum', 'material'));
+        $this->set(compact('rownum', 'material', 'vmode'));
     }
 
     public function position($id, $pos) {

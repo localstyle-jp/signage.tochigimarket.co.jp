@@ -130,7 +130,10 @@ $count['total'] = $numrows;
     </div>
 
     <div style="text-align: center; margin-top: 10px;">
-      <?= $this->Paginator->numbers();?>
+        <ul>
+            <?= $this->Paginator->numbers();?>
+
+        </ul>
     </div>
 
 

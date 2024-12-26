@@ -41,8 +41,18 @@
     <?= $this->Form->input("content_materials.{$rownum}.view_second", ['type' => 'text', 'maxlength' => 5, 'value' => $material['view_second'] ?? 0, 'error' => false]); ?>秒
     <?= $this->Form->error("content_materials.{$rownum}.view_second"); ?>
     <?php endif; ?>
+
+      <?php if ($vmode == 'simple'): ?>
+          <?= $this->Form->input("content_materials.{$rownum}.rolling_caption", ['type' => 'hidden','value' => $material['rolling_caption']]); ?>
+          <?= $this->Form->input("content_materials.{$rownum}.id", ['type' => 'hidden', 'value' => $material['id']]); ?>
+          <?= $this->Form->input("content_materials.{$rownum}.position", ['type' => 'hidden', 'value' => $material['position']]); ?>
+          <?= $this->Form->input("content_materials.{$rownum}.material_id", ['type' => 'hidden', 'value' => $material['material_id']]); ?>
+          <?= $this->Form->input("content_materials.{$rownum}.is_delete", ['type' => 'hidden', 'value' => 0, 'id' => 'idIsDelete_' . $rownum]); ?>
+      <?php endif; ?>
+
   </td>
 
+  <?php if ($vmode != 'simple'): ?>
   <!-- 内容 -->
   <td>
     <?= $this->Form->input("content_materials.{$rownum}.id", ['type' => 'hidden', 'value' => $material['id']]); ?>
@@ -58,7 +68,7 @@
 
     <?php elseif($material['material']['type'] == Material::TYPE_MOVIE):?>
     <div>
-      <iframe width="300"
+      <iframe width="150"
         src="https://www.youtube.com/embed/<?= $material['material']['movie_tag']; ?>"
         title="YouTube video player" frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -67,7 +77,7 @@
     </div>
 
     <?php elseif ($material['material']['type'] == Material::TYPE_MOVIE_MP4): ?>
-    <video width="300px;"
+    <video width="120px;"
       id="mate_mp4_<?= $material['id'] ?>"
       playsinline>
       <source
@@ -114,6 +124,7 @@
     <?= $this->Form->input("content_materials.{$rownum}.sound", ['type' => 'select', 'options' => $sound_list, 'empty' => ['' => 'BGMなし']]); ?>
     <?php endif; ?>
   </td>
+  <?php endif; ?>
 
   <td>
     <div class='btn_area' style=''>
