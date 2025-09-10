@@ -17,6 +17,9 @@
     <?php endif; ?>
 
     <div>
+        <?php if ($material['view_second'] <= 20): ?>
+        <span class="badge badge-warning">CM</span>
+        <?php endif; ?>
       <?= h($material['material']['name']) ?>
     </div>
   </td>
