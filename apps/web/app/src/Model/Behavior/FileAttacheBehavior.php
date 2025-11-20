@@ -22,6 +22,7 @@ class FileAttacheBehavior extends Behavior {
 
     //ffmpeg configure
     public $convertPath_mp4 = 'ffmpeg';
+    public $ffprobePath = 'ffprobe';
 
     // cake command configure
     // public $cakeCommPath = ROOT . DS . 'bin/cake';
@@ -29,6 +30,9 @@ class FileAttacheBehavior extends Behavior {
     public function initialize(array $config) {
         $entity = $this->getTable()->newEntity();
         $entity->setVirtual(['attaches']);
+        // ffmpeg / ffprobe の実行パスを解決（WWW_ROOT/.local/bin を優先）
+        $this->convertPath_mp4 = $this->resolveBinaryPath('ffmpeg');
+        $this->ffprobePath = $this->resolveBinaryPath('ffprobe');
     }
 
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) {
@@ -76,9 +80,6 @@ class FileAttacheBehavior extends Behavior {
     }
 
     public function afterSave(Event $event, EntityInterface $entity, ArrayObject $options) {
-        // pr($event);
-        // pr($entity);
-        // pr($options);
         //アップロード処理
         $this->_uploadAttaches($event, $entity);
     }
@@ -123,13 +124,12 @@ class FileAttacheBehavior extends Behavior {
             $_att_files = $table->attaches['files'];
         }
         $entity = $results;
-        // foreach ($results as $entity) {
+
         $columns = null;
 
         $entity->setVirtual(['attaches']);
         $_ = $entity->toArray();
         $entity_attaches = [];
-        // pr($_);
         //image
         foreach ($_att_images as $columns => $_att) {
             $_attaches = array();
@@ -149,7 +149,6 @@ class FileAttacheBehavior extends Behavior {
                         }
                     }
                 }
-                // pr($_attaches);
                 $entity_attaches[$columns] = $_attaches;
             }
         }
@@ -173,7 +172,6 @@ class FileAttacheBehavior extends Behavior {
             }
         }
         $entity->attaches = $entity_attaches;
-        // }
         return $results;
     }
 
@@ -182,8 +180,6 @@ class FileAttacheBehavior extends Behavior {
         $this->checkUploadDirectory($table);
 
         $uuid = Text::uuid();
-
-        // $table->eventManager()->off('Model.afterSave');
 
         if (!empty($entity)) {
             $_data = $entity->toArray();
@@ -242,10 +238,7 @@ class FileAttacheBehavior extends Behavior {
                                     );
                                 }
                             }
-                            //
-                            // $_data[$columns] = $newname;
                             $old_entity->set($columns, $newname);
-                            // $table->patchEntity($entity, $_data, ['validate' => false]);
                             $table->save($old_entity);
 
                             // 旧ファイルの削除
@@ -294,15 +287,6 @@ class FileAttacheBehavior extends Behavior {
                             if ($extention == 'mp4') {
                                 $newdist = WWW_ROOT . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS;
                                 $this->checkConvertDirectoryMp4($newdist);
-                                // // tsファイルへの分割
-                                // $newdist = WWW_ROOT . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS;
-                                // $bitrates = [/*BITRATE_LOW, BITRATE_MID, */BITRATE_HIGH];
-                                // foreach ($bitrates as $bitrate) {
-                                //     $filenameM3u8 = 'm' . $id . '_' . $bitrate . 'k.m3u8';
-                                //     $this->convert_mp4($basedir.$newname, $newdist, $filenameM3u8, $bitrate);
-                                // }
-                                // // マスターファイルの作成
-                                // $this->create_master_m3u8($newdist, $id, $bitrates);
                                 // DBへの記録準備
                                 $old_entity->set('view_second', $this->getViewSeconds($new_filepath));
                                 $filenameMaster = 'm' . $id . '.m3u8';
@@ -315,7 +299,6 @@ class FileAttacheBehavior extends Behavior {
                             }
                             $old_entity->set($columns . '_size', $tmp_data['size']);
                             $old_entity->set($columns . '_extension', $extention);
-                            // $table->patchEntity($entity, $_data, ['validate' => false]);
                             $table->save($old_entity);
 
                             // 旧ファイルの削除
@@ -330,12 +313,13 @@ class FileAttacheBehavior extends Behavior {
                     }
                 }
             }
-            // $table->addBehavior('Position');
         }
     }
 
     public function convertMov2Mp4($mov, $dest) {
-        exec("ffmpeg -i {$mov} {$dest}");
+        $bin = escapeshellcmd($this->convertPath_mp4);
+        $cmd = $bin . ' -y -i ' . escapeshellarg($mov) . ' ' . escapeshellarg($dest);
+        exec($cmd, $out, $code);
         return $dest;
     }
 
@@ -370,12 +354,28 @@ class FileAttacheBehavior extends Behavior {
      * 動画時間の取得
      * */
     public function getViewSeconds($source) {
-        // コマンド実行
-        $command = 'ffprobe ' . $source . ' -hide_banner -show_entries format=duration';
-        $last_line = exec(escapeshellcmd($command), $out);
-        $time = preg_match('/^duration=([0-9]+)\.([0-9]+)/', $out[1], $matches);
+        // まず ffprobe（優先）で取得
+        $bin = escapeshellcmd($this->ffprobePath);
+        $cmd = $bin . ' -v error -hide_banner -show_entries format=duration -of default=noprint_wrappers=1:nokey=0 ' . escapeshellarg($source);
+        $out = [];
+        $code = 0;
+        exec($cmd, $out, $code);
+        $joined = implode("\n", (array)$out);
+        if ($code === 0 && preg_match('/^duration=([\d\.]+)/m', $joined, $m)) {
+            return (int)floor((float)$m[1]);
+        }
 
-        return $matches[1];
+        // ffprobe が無い/失敗時は ffmpeg の出力から Duration を解析
+        $ffmpegBin = escapeshellcmd($this->convertPath_mp4);
+        $cmd2 = $ffmpegBin . ' -i ' . escapeshellarg($source) . ' 2>&1';
+        $out2 = [];
+        exec($cmd2, $out2);
+        $joined2 = implode("\n", (array)$out2);
+        if (preg_match('/Duration:\s*([0-9]{2}):([0-9]{2}):([0-9]{2})/', $joined2, $mm)) {
+            $h = (int)$mm[1]; $m = (int)$mm[2]; $s = (int)$mm[3];
+            return $h * 3600 + $m * 60 + $s;
+        }
+        return 0;
     }
 
     /**
@@ -458,30 +458,20 @@ class FileAttacheBehavior extends Behavior {
     }
 
     /**
-     * mp4ファイルアップロード
-     * @param $source 変換前のファイルパス(フルパス)
-     * @param $dist_dir 変換後の格納先（フォルダパス）
-     * @param $filenameM3u8 変換後のm3u8ファイル名
-     * @param $n_bitrate 動画のビットレート(単位：kbps)
+     * mp4ファイルアップロード（参考：未使用・コメントアウト）
      * */
     // public function convert_mp4($source, $dist_dir, $filenameM3u8, $n_bitrate) {
     //     // ディレクトリの存在をチェック(なければ作成)
     //     $this->checkConvertDirectoryMp4($dist_dir);
-
     //     // ffmpegコマンドの要素作成
     //     $cmdline = $this->convertPath_mp4;
     //     $src = '-i ' . $source;
     //     $codec = '-c:v libx264 -c:a aac';
     //     $bitrate = '-b:v '. $n_bitrate .'k -minrate '. $n_bitrate .'k -maxrate '. $n_bitrate .'k -bufsize '. $n_bitrate*2 .'k -b:a 128k';
-    //     // $scale = '-s 1920x1080';
-    //     // $format = "-f hls -hls_time 1 -hls_playlist_type vod";
     //     $format = "-f hls -hls_time 10 -hls_playlist_type vod -g 30 -keyint_min 30 -sc_threshold 0";
     //     $dist = "-hls_segment_filename \"" . $dist_dir . "v1_".$n_bitrate."k_%4d.ts\" " . $dist_dir . $filenameM3u8;
-
     //     // コマンド実行
-    //     $command = $cmdline . ' ' . $src . ' ' . $codec . ' ' . $bitrate .
-    //                 // ' ' . $scale .
-    //                 ' ' . $format . ' ' . $dist;
+    //     $command = $cmdline . ' ' . $src . ' ' . $codec . ' ' . $bitrate . ' ' . $format . ' ' . $dist;
     //     $a = system(escapeshellcmd($command));
     //     // パーミッション
     //     @chmod($dist_dir.$filenameM3u8, $this->uploadFileMask);
@@ -489,35 +479,39 @@ class FileAttacheBehavior extends Behavior {
     //     while ( @chmod($dist_dir.sprintf('v1_'.$n_bitrate.'k_%s.ts', sprintf('%04d', $idFile)), $this->uploadFileMask) ) {
     //         $idFile += 1;
     //     }
-
     //     return $a;
     // }
 
     /**
-     * マスターm3u8ファイルの作成
-     * @param $dist_dir 変換後の格納先（フォルダパス）
-     * @param $id データベース保存時の動画のid
-     * @param $bitrates 動画のビットレートの配列(単位：kbps)
+     * マスターm3u8ファイルの作成（参考：未使用・コメントアウト）
      * */
     // public function create_master_m3u8($dist_dir, $id, $bitrates) {
-    //     // ディレクトリの存在をチェック(なければ作成)
     //     $this->checkConvertDirectoryMp4($dist_dir);
-
-    //     // マスターファイルの文面作成
     //     $contents = "#EXTM3U\n";
     //     foreach ($bitrates as $bitrate) {
-    //         // if ($bitrate < 4000) {
-    //         //     continue;
-    //         // }
     //         $filenameM3u8 = 'm' . $id . '_' . $bitrate . 'k.m3u8';
     //         $contents .= '#EXT-X-STREAM-INF:BANDWIDTH='.$bitrate*1000*1.2.',RESOLUTION=1920x1080,CODECS="avc1.42e00a,mp4a.40.2"'."\n";
     //         $contents .= DS . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS.$filenameM3u8."\n";
     //     }
-
-    //     // マスターファイル作成
     //     $filenameMaster = $dist_dir.'m'.$id.'.m3u8';
     //     file_put_contents($filenameMaster, $contents);
-    //     // パーミッション
     //     @chmod($dist_dir.'m'.$id.'.m3u8', $this->uploadFileMask);
     // }
+
+    private function resolveBinaryPath($binary) {
+        $candidates = [
+            rtrim(WWW_ROOT, DS) . DS . '.local' . DS . 'bin' . DS . $binary,
+            '.local' . DS . 'bin' . DS . $binary,
+            $binary,
+        ];
+        foreach ($candidates as $p) {
+            if ($p === $binary) {
+                return $p; // 環境PATHにある場合
+            }
+            if (is_executable($p)) {
+                return $p;
+            }
+        }
+        return $binary;
+    }
 }

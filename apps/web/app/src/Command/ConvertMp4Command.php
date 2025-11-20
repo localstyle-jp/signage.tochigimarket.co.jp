@@ -18,6 +18,7 @@ class ConvertMp4Command extends Command {
     public function initialize() {
         parent::initialize();
         $this->loadModel('Materials');
+        $this->convertPath_mp4 = $this->resolveFfmpegPath();
     }
 
     protected function buildOptionParser(ConsoleOptionParser $parser) {
@@ -54,6 +55,23 @@ class ConvertMp4Command extends Command {
         $material = $this->Materials->query()->update()->where(['id' => $id])->set(['status_mp4' => 'converted'])->execute();
     }
 
+    private function resolveFfmpegPath() {
+        $candidates = [
+            rtrim(WWW_ROOT, DS) . DS . '.local' . DS . 'bin' . DS . 'ffmpeg',
+            '.local' . DS . 'bin' . DS . 'ffmpeg',
+            'ffmpeg',
+        ];
+        foreach ($candidates as $p) {
+            if ($p === 'ffmpeg') {
+                return $p;
+            }
+            if (is_executable($p)) {
+                return $p;
+            }
+        }
+        return 'ffmpeg';
+    }
+
     /**
      * mp4ファイル分割
      * @param $source 変換前のファイルパス(フルパス)
@@ -64,7 +82,7 @@ class ConvertMp4Command extends Command {
     private function _split_mp4($source, $dist_dir, $filenameM3u8, $n_bitrate) {
         // ffmpegコマンドの要素作成
         $cmdline = $this->convertPath_mp4;
-        $src = '-i ' . $source;
+        $src = '-i ' . escapeshellarg($source);
         $codec = '-c:v libx264 -c:a aac';
         $bitrate = '-b:v ' . $n_bitrate . 'k -minrate ' . $n_bitrate . 'k -maxrate ' . $n_bitrate . 'k -bufsize ' . $n_bitrate * 2 . 'k -b:a 128k';
         // $scale = '-s 1920x1080';
