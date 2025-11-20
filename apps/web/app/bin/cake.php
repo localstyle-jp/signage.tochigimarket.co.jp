@@ -1,16 +1,16 @@
 #!/usr/bin/php -q
 <?php
-// Check platform requirements
-// require dirname(__DIR__) . '/config/requirements.php';
-// require dirname(__DIR__) . '/vendor/autoload.php';
-require '/home/test-signage/apps/web/app/config/requirements.php';
-require '/home/test-signage/vendor/autoload.php';
+ // Bootstrap paths
+$APP_DIR = dirname(__DIR__); // apps/web/app
+$ROOT_DIR = dirname(dirname(dirname($APP_DIR))); // document root
+
+// Check platform requirements and autoload
+require $APP_DIR . '/config/requirements.php';
+require $ROOT_DIR . '/vendor/autoload.php';
 
 use App\Application;
 use Cake\Console\CommandRunner;
 
-define('CAKE_CORE_INCLUDE_PATH', '/home/test-signage/vendor' . DS . 'cakephp' . DS . 'cakephp');
 // Build the runner with an application and root executable name.
-// $runner = new CommandRunner(new Application(dirname(__DIR__) . '/config'), 'cake');
-$runner = new CommandRunner(new Application('/home/test-signage/apps/web/app/config'), 'cake');
+$runner = new CommandRunner(new Application($APP_DIR . '/config'), 'cake');
 exit($runner->run($argv));

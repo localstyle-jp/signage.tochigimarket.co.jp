@@ -10,6 +10,7 @@ use Cake\ORM\Query;
 use Cake\Utility\Text;
 use Cake\Filesystem\Folder;
 use Cake\Event\EventManager;
+use Cake\Log\Log;
 
 class FileAttacheBehavior extends Behavior {
     public $uploadDirCreate = true;
@@ -33,6 +34,7 @@ class FileAttacheBehavior extends Behavior {
         // ffmpeg / ffprobe の実行パスを解決（WWW_ROOT/.local/bin を優先）
         $this->convertPath_mp4 = $this->resolveBinaryPath('ffmpeg');
         $this->ffprobePath = $this->resolveBinaryPath('ffprobe');
+        Log::info('[FileAttacheBehavior::initialize] ffmpeg=' . $this->convertPath_mp4 . ' ffprobe=' . $this->ffprobePath, ['ffmpeg']);
     }
 
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) {
@@ -287,6 +289,16 @@ class FileAttacheBehavior extends Behavior {
                             if ($extention == 'mp4') {
                                 $newdist = WWW_ROOT . UPLOAD_MOVIE_BASE_URL . DS . 'm' . $id . DS;
                                 $this->checkConvertDirectoryMp4($newdist);
+                                Log::info('[FileAttacheBehavior::_uploadAttaches] mp4 uploaded: file=' . $new_filepath . ' newdist=' . $newdist . ' ffmpeg=' . $this->convertPath_mp4, ['ffmpeg']);
+                                $cmdHint = sprintf(
+                                    'php %s ConvertMp4 %d %s %s %s',
+                                    escapeshellarg(ROOT . DS . 'bin' . DS . 'cake'),
+                                    $id,
+                                    escapeshellarg($basedir),
+                                    escapeshellarg($newdist),
+                                    escapeshellarg($newname)
+                                );
+                                Log::info('[FileAttacheBehavior::_uploadAttaches] hint run: ' . $cmdHint, ['ffmpeg']);
                                 // DBへの記録準備
                                 $old_entity->set('view_second', $this->getViewSeconds($new_filepath));
                                 $filenameMaster = 'm' . $id . '.m3u8';
@@ -319,17 +331,27 @@ class FileAttacheBehavior extends Behavior {
     public function convertMov2Mp4($mov, $dest) {
         $bin = escapeshellcmd($this->convertPath_mp4);
         $cmd = $bin . ' -y -i ' . escapeshellarg($mov) . ' ' . escapeshellarg($dest);
-        exec($cmd, $out, $code);
+        $out = [];
+        $code = 0;
+        Log::info('[FileAttacheBehavior::convertMov2Mp4] cmd=' . $cmd, ['ffmpeg']);
+        exec($cmd . ' 2>&1', $out, $code);
+        Log::info('[FileAttacheBehavior::convertMov2Mp4] exit=' . $code . ' lines=' . count($out), ['ffmpeg']);
+        if ($code !== 0) {
+            Log::error('[FileAttacheBehavior::convertMov2Mp4] failed: ' . implode("\n", array_slice($out, 0, 50)), ['ffmpeg']);
+        }
         return $dest;
     }
 
     public function uploadFileCn($current_extention, $tmp, $dest) {
+        Log::info('[FileAttacheBehavior::uploadFileCn] ext=' . $current_extention . ' tmp=' . $tmp . ' dest=' . $dest, ['ffmpeg']);
         if ($current_extention == 'mov') {
+            Log::info('[FileAttacheBehavior::uploadFileCn] convert MOV->MP4 start', ['ffmpeg']);
             $this->convertMov2Mp4($tmp, $dest);
             return;
         }
 
-        move_uploaded_file($tmp, $dest);
+        $ok = @move_uploaded_file($tmp, $dest);
+        Log::info('[FileAttacheBehavior::uploadFileCn] move_uploaded_file result=' . ($ok ? 'ok' : 'fail'), ['ffmpeg']);
     }
 
     public function getConvertedExtention($extention) {
@@ -359,22 +381,30 @@ class FileAttacheBehavior extends Behavior {
         $cmd = $bin . ' -v error -hide_banner -show_entries format=duration -of default=noprint_wrappers=1:nokey=0 ' . escapeshellarg($source);
         $out = [];
         $code = 0;
+        Log::info('[FileAttacheBehavior::getViewSeconds] ffprobe cmd=' . $cmd, ['ffmpeg']);
         exec($cmd, $out, $code);
         $joined = implode("\n", (array)$out);
+        Log::info('[FileAttacheBehavior::getViewSeconds] ffprobe exit=' . $code . ' lines=' . count($out), ['ffmpeg']);
         if ($code === 0 && preg_match('/^duration=([\d\.]+)/m', $joined, $m)) {
-            return (int)floor((float)$m[1]);
+            $sec = (int)floor((float)$m[1]);
+            Log::info('[FileAttacheBehavior::getViewSeconds] duration=' . $sec . ' (ffprobe)', ['ffmpeg']);
+            return $sec;
         }
 
         // ffprobe が無い/失敗時は ffmpeg の出力から Duration を解析
         $ffmpegBin = escapeshellcmd($this->convertPath_mp4);
         $cmd2 = $ffmpegBin . ' -i ' . escapeshellarg($source) . ' 2>&1';
         $out2 = [];
+        Log::info('[FileAttacheBehavior::getViewSeconds] fallback ffmpeg cmd=' . $cmd2, ['ffmpeg']);
         exec($cmd2, $out2);
         $joined2 = implode("\n", (array)$out2);
         if (preg_match('/Duration:\s*([0-9]{2}):([0-9]{2}):([0-9]{2})/', $joined2, $mm)) {
             $h = (int)$mm[1]; $m = (int)$mm[2]; $s = (int)$mm[3];
-            return $h * 3600 + $m * 60 + $s;
+            $sec = $h * 3600 + $m * 60 + $s;
+            Log::info('[FileAttacheBehavior::getViewSeconds] duration=' . $sec . ' (ffmpeg)', ['ffmpeg']);
+            return $sec;
         }
+        Log::error('[FileAttacheBehavior::getViewSeconds] failed to get duration', ['ffmpeg']);
         return 0;
     }
 

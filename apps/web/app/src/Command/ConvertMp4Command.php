@@ -6,6 +6,7 @@ use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use Cake\Log\Log;
 
 class ConvertMp4Command extends Command {
     public $uploadDirCreate = true;
@@ -19,6 +20,7 @@ class ConvertMp4Command extends Command {
         parent::initialize();
         $this->loadModel('Materials');
         $this->convertPath_mp4 = $this->resolveFfmpegPath();
+        Log::info('[ConvertMp4Command::initialize] ffmpeg=' . $this->convertPath_mp4, ['ffmpeg']);
     }
 
     protected function buildOptionParser(ConsoleOptionParser $parser) {
@@ -39,6 +41,8 @@ class ConvertMp4Command extends Command {
         $newdist = $args->getArgument('newdist');
         $name_mp4 = $args->getArgument('name_mp4');
 
+        Log::info('[ConvertMp4Command::execute] id=' . $id . ' basedir=' . $basedir . ' newdist=' . $newdist . ' name_mp4=' . $name_mp4 . ' ffmpeg=' . $this->convertPath_mp4, ['ffmpeg']);
+
         // $material = $this->Materials->query()->update()->where(['id' => $id])->set(['status_mp4' => 'converting'])->execute();
         $io->out((new \DateTime('now'))->format('Y/m/d H:i:s') . ' START material_id : ' . $id . ' mp4_file : ' . $basedir . $name_mp4 . ' -> hls_file : ' . $newdist);
 
@@ -52,6 +56,7 @@ class ConvertMp4Command extends Command {
         $this->_create_master_m3u8($newdist, $id, $bitrates);
 
         $io->out((new \DateTime('now'))->format('Y/m/d H:i:s') . ' FINISH material_id : ' . $id . ' mp4_file : ' . $basedir . $name_mp4 . ' -> hls_file : ' . $newdist);
+        Log::info('[ConvertMp4Command::execute] finished id=' . $id . ' out_dir=' . $newdist, ['ffmpeg']);
         $material = $this->Materials->query()->update()->where(['id' => $id])->set(['status_mp4' => 'converted'])->execute();
     }
 
@@ -93,7 +98,15 @@ class ConvertMp4Command extends Command {
         $command = $cmdline . ' ' . $src . ' ' . $codec . ' ' . $bitrate .
                     // ' ' . $scale .
                     ' ' . $format . ' ' . $dist;
-        $a = system(escapeshellcmd($command));
+        $output = [];
+        $code = 0;
+        exec($command . ' 2>&1', $output, $code);
+        Log::info('[ConvertMp4Command::_split_mp4] cmd=' . $command, ['ffmpeg']);
+        Log::info('[ConvertMp4Command::_split_mp4] exit=' . $code . ' lines=' . count($output), ['ffmpeg']);
+        if ($code !== 0) {
+            Log::error('[ConvertMp4Command::_split_mp4] failed: ' . implode("\n", array_slice($output, 0, 50)), ['ffmpeg']);
+        }
+        $a = ($code === 0);
         // パーミッション
         @chmod($dist_dir . $filenameM3u8, $this->uploadFileMask);
         $idFile = 0;

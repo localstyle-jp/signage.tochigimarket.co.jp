@@ -58,7 +58,9 @@ define('CACHE', TMP . 'cache' . DS);
  * CakePHP should always be installed with composer, so look there.
  */
 if (!defined('CAKE_CORE_INCLUDE_PATH')) {
-    define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'vendor' . DS . 'cakephp' . DS . 'cakephp');
+    // Vendor はドキュメントルート直下に配置されているため、apps/web/app から 3 つ上へ遡る
+    $DOCROOT = dirname(dirname(dirname(ROOT)));
+    define('CAKE_CORE_INCLUDE_PATH', $DOCROOT . DS . 'vendor' . DS . 'cakephp' . DS . 'cakephp');
 }
 
 /**

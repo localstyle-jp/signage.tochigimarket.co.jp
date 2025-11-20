@@ -313,6 +313,14 @@ return [
             'scopes' => false,
             'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
         ],
+        'ffmpeg' => [
+            'className' => 'Cake\Log\Engine\FileLog',
+            'path' => LOGS,
+            'file' => 'ffmpeg',
+            'url' => env('LOG_FFMPEG_URL', null),
+            'scopes' => ['ffmpeg'],
+            'levels' => ['notice', 'info', 'debug', 'warning', 'error', 'critical', 'alert', 'emergency'],
+        ],
         // To enable this dedicated query log, you need set your datasource's log flag to true
         'queries' => [
             'className' => 'Cake\Log\Engine\FileLog',
