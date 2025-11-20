@@ -30,7 +30,7 @@ if (!defined('DS')) {
 /**
  * The full path to the directory which holds "src", WITHOUT a trailing DS.
  */
-$cakephpRoot = realpath(dirname(dirname(__FILE__)));
+$cakephpRoot = realpath(dirname(__FILE__));
 define('ROOT', $cakephpRoot . '/apps/web/app');
 
 /**

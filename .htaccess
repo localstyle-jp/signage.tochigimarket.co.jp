@@ -1,17 +1,9 @@
-
+Action myphp-script /php.fcgi
+AddHandler myphp-script .php .html
 AddType application/vnd.apple.mpegurl .m3u8
 AddType video/mp2t .ts
-
-#RewriteEngine on
-#RewriteCond %{HTTP_HOST} ^www.cms-v5.caters.jp\.asia
-#RewriteRule ^(.*)$ http://cms-v5.caters.jp//$1 [R=301,L]
-
-AddHandler server-parsed .html
-
 RewriteEngine On
 RewriteBase /
-
-
 #cakephp
 RewriteCond %{REQUEST_URI} !\.(gif|png|jpg|jpeg|js|css|ico)$ [NC]
 #RewriteCond %{REQUEST_FILENAME} !-d
@@ -19,8 +11,7 @@ RewriteCond %{REQUEST_FILENAME}/index.html !-f
 RewriteCond %{REQUEST_FILENAME}/index.php !-f
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)$ index.php [QSA,L]
-
-AuthType Basic
-AuthName "Input your ID and Password."
-AuthUserFile /home/test-signage/public_html/.htpasswd
+AuthUserFile "/home/localstyles/tochigimarket.co.jp/htpasswd/signage.tochigimarket.co.jp/.htpasswd"
+AuthName "Member Site"
+AuthType BASIC
 require valid-user
