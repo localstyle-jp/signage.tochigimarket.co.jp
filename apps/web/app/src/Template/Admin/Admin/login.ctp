@@ -23,7 +23,7 @@
 
     <div id="content">
       <div class="title_area">
-        <h1>HOMEPAGE MANAGER</h1>
+        <h1>SIGNAGE MANAGER</h1>
       </div>
       <!-- div class="error">error messeages error messeages error messeages error messeages error messeages</div -->
       <?= $this->element('error_message'); ?>

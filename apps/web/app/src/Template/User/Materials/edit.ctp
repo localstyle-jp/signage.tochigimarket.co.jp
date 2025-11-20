@@ -66,12 +66,16 @@
         </tr>
         <?php endif; ?>
 
+        <?php if ($this->Common->isUserRole('develop')): ?>
         <tr>
           <td>所有者<span class="attent">※必須</span></td>
           <td>
             <?= $this->Form->select('user_id', $user_list, ['empty' => [0 => '管理者(共有)']]);?>
           </td>
         </tr>
+        <?php else: ?>
+        <input type="hidden" name="user_id" value="<?= $this->Common->session_read('userid');?>">
+        <?php endif; ?>
 
         <tr class="changeArea imageArea contentArea">
           <td>画像<span class="attent">※必須</span></td>

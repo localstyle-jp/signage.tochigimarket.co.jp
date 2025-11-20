@@ -9,7 +9,7 @@ return [
      * Development Mode:
      * true: Errors and warnings shown.
      */
-    'debug' => filter_var(env('DEBUG', false), FILTER_VALIDATE_BOOLEAN),
+    'debug' => filter_var(env('DEBUG', true), FILTER_VALIDATE_BOOLEAN),
 
     /**
      * Configure basic information about the application.
@@ -54,7 +54,7 @@ return [
             'plugins' => [ROOT . DS . 'plugins' . DS],
             'templates' => [APP . 'Template' . DS],
             'locales' => [APP . 'Locale' . DS],
-        ],
+        ],  'locales' => [APP . 'Locale' . DS],
     ],
 
     /**
@@ -159,7 +159,7 @@ return [
      *   breathing room to complete logging or error handling.
      */
     'Error' => [
-        'errorLevel' => E_ALL,
+        'errorLevel' => E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_USER_DEPRECATED,
         'exceptionRenderer' => 'Cake\Error\ExceptionRenderer',
         'skipLog' => [],
         'log' => true,
@@ -238,9 +238,9 @@ return [
              * the following line and set the port accordingly
              */
             //'port' => 'non_standard_port_number',
-            'username' => 'signage',
-            'password' => 'caters040917',
-            'database' => 'signage',
+            'username' => 'localstyles_sign',
+            'password' => 'Kz2fHS8iE',
+            'database' => 'localstyles_signage',
             'encoding' => 'utf8',
             'timezone' => 'UTC',
             'flags' => [],

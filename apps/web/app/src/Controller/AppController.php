@@ -498,8 +498,8 @@ class AppController extends Controller {
     }
 
     public function getSiteId() {
-        return 1;
-        // return $this->Session->read('current_site_id');
+//        return 1;
+         return $this->Session->read('current_site_id');
     }
 
     /**

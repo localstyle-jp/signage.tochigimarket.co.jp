@@ -80,6 +80,8 @@ class ContentsController extends AppController {
 
         $this->set(compact('query', 'is_search'));
 
+        $site_config_id = $this->getSiteId();
+        $cond['Contents.site_config_id'] = $site_config_id;
         $this->_lists($cond, ['order' => 'position ASC',
             'limit' => null]);
     }

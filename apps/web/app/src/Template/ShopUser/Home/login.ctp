@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>HOMEPAGE MANAGER | Log in</title>
+  <title>SIGNAGE MANAGER | Log in</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet"
@@ -21,8 +21,8 @@
 <body class="hold-transition login-page">
   <div class="login-box">
     <div class="login-logo">
-      <b>HOMEPAGE MANAGER</b>
-      <div>CATERS</div>
+      <b>SIGNAGE MANAGER</b>
+      <div>LOCALSTYLE</div>
     </div>
     <!-- /.login-logo -->
     <div class="card">

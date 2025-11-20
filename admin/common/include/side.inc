@@ -1,5 +1,5 @@
 <div id="side">
-  <h1><a href="/">HOMEPAGE<br>MANAGER</a><span class="version">ver4.1</span></h1>
+  <h1><a href="/">SIGNAGE<br>MANAGER</a><span class="version">ver4.1</span></h1>
   <nav>
     <ul class="menu">
       <li>

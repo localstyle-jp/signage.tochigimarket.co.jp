@@ -266,7 +266,9 @@ class MaterialsController extends AppController {
 
     public function setCategoryListDefault() {
         $category_list = [];
+        $site_config_id = $this->getSiteId();
         $category_list = $this->MaterialCategories->find('list', ['keyField' => 'id', 'valueField' => 'name'])
+                                        ->where(['MaterialCategories.site_config_id' => $site_config_id])
                                         ->order(['MaterialCategories.position' => 'ASC'])
                                         ->toArray();
 

@@ -73,8 +73,8 @@ class HomeController extends AppController {
                         $is_login = true;
                     }
                 }
-
                 if ($r && $is_login) {
+                    $this->_getUserSite($r->id);
                     $this->Session->write(array('userid' => $r->id,
                         'data' => array(
                             'name' => $r->name
@@ -107,7 +107,6 @@ class HomeController extends AppController {
         $machines = [];
 
         $site_config_id = $this->getSiteId();
-
         $machines = $this->MachineBoxes->find()->where(['MachineBoxes.site_config_id' => $site_config_id])
                                         ->contain(['SiteConfigs', 'Contents', 'MachineContents'])
                                         ->order(['MachineBoxes.position' => 'ASC'])

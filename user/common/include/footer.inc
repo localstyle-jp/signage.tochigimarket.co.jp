@@ -1,3 +1,3 @@
 <footer>
-  <div class="copy">&copy; CATERS Inc. all rights reserved.</div>
+  <div class="copy">&copy; LOCALSTYLE Inc. all rights reserved.</div>
 </footer>

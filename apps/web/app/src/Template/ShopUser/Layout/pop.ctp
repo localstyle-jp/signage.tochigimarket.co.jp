@@ -8,7 +8,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>HOMEPAGE MANAGER V5</title>
+  <title>SIGNAGE MANAGER V5</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet"
@@ -43,7 +43,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
       </div>
       <!-- Default to the left -->
-      <strong>Copyright &copy; CATERS Inc. all rights reserved.
+      <strong>Copyright &copy; LOCALSTYLE Inc. all rights reserved.
     </footer>
   </div>
   <!-- ./wrapper -->

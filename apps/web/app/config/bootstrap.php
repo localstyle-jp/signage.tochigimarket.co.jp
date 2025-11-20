@@ -98,17 +98,6 @@ use Cake\Utility\Security;
 try {
     Configure::config('default', new PhpConfig());
     Configure::load('app', 'default', false);
-
-    //ドメインがない(コンソール処理)場合はドキュメントルートのパスで切り替える。
-    $is_docker = !env('HTTP_HOST') && is_included_docRoot(['test']);
-    if ($is_docker) {
-        Configure::load('app_develop', 'default');
-    } elseif (strpos(env('HTTP_HOST'), 'demo-v5m') === false && (strpos(env('HTTP_HOST'), 'test') !== false)) {
-        Configure::load('app_develop', 'default');
-    } elseif (env('HTTP_HOST') === 'localhost') {
-        Configure::load('app_develop', 'default');
-    } else {
-    }
 } catch (\Exception $e) {
     exit($e->getMessage() . "\n");
 }

@@ -5,7 +5,7 @@
   <?php echo $this->Html->charset(); ?>
   <meta name="viewport"
     content="<?php include WWW_ROOT . 'user/common/include/viewport.inc' ?>">
-  <title>HOMEPAGE MANAGER</title>
+  <title>SIGNAGE MANAGER</title>
 
   <link rel="stylesheet" href="/user/common/css/normalize.css">
   <link rel="stylesheet" href="/user/common/css/font.css">

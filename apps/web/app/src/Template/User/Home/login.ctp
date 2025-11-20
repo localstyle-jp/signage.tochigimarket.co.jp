@@ -31,7 +31,7 @@
 
     <div id="content" class="login__content">
       <div class="title_area login__title-area">
-        <h1>HOMEPAGE MANAGER</h1>
+        <h1>SIGNAGE MANAGER</h1>
       </div>
       <!-- div class="error">error messeages error messeages error messeages error messeages error messeages</div -->
       <?= $this->element('error_message'); ?>

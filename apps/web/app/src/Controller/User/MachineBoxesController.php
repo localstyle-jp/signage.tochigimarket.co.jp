@@ -94,6 +94,8 @@ class MachineBoxesController extends AppController {
 
         $this->set(compact('query', 'is_search', 'site_config'));
 
+        $site_config_id = $this->getSiteId();
+        $cond['MachineBoxes.site_config_id'] = $site_config_id;
         $this->_lists($cond, ['order' => ['MachineBoxes.position' => 'ASC'],
             'limit' => null,
             'contain' => $contain

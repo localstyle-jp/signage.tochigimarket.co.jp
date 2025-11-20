@@ -6,7 +6,7 @@
   <!-- Brand Logo -->
   <a href="<?= $this->Url->build(['_name' => 'shopAdmin']); ?>"
     class="brand-link" style="background-color:#FFF;height: 60px;">
-    <p class="user__title"><img src="/user/common/images/theme/title_cms.png" alt="CATERS CMS" class="brand-image"></p>
+    <p class="user__title"><img src="/user/common/images/theme/title_cms.png" alt="LOCALSTYLE CMS" class="brand-image"></p>
     <!-- <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
       <span class="brand-text font-weight-light">AdminLTE 3</span> -->
   </a>
