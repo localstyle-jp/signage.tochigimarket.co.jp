@@ -69,21 +69,42 @@ class ViewsController extends AppController {
     public function downloadBuild() {
         $machine_box_id = $this->request->getQuery('id');
 
+        // デバッグログ
+        error_log("[DEBUG] downloadBuild called with id: {$machine_box_id}");
+
         // 端末の表示権限チェック
         if (!$this->checkMachineSupported($machine_box_id)) {
+            error_log("[DEBUG] Permission denied for id: {$machine_box_id}");
             return $this->setApi(['message' => '権限がありません'], 400);
         }
 
         // 生成経過
         $build_progress = $this->MachineBoxes->getProgress($machine_box_id);
+        error_log("[DEBUG] Build progress: " . var_export($build_progress, true));
+        
         if ($build_progress === false) {
+            error_log("[DEBUG] Machine box not found: {$machine_box_id}");
             return $this->setApi(['message' => '存在しません'], 400);
         }
         if ($build_progress === 100) {
-            $zipname = $this->MachineBoxes->getZipFolderName();
             $dest = $this->MachineBoxes->getUploadZipPath($machine_box_id);
-            return $this->downloadZip($dest, $zipname);
+            
+            error_log("[DEBUG] Checking zip file: {$dest}");
+            error_log("[DEBUG] File exists: " . (file_exists($dest) ? 'YES' : 'NO'));
+            error_log("[DEBUG] File size: " . (file_exists($dest) ? filesize($dest) : 'N/A'));
+            
+            // ZIPファイルの存在確認
+            if (!file_exists($dest)) {
+                error_log("[ERROR] Zip file not found: {$dest}");
+                return $this->setApi(['message' => 'ファイルが見つかりません'], 404);
+            }
+            
+            // 直接ZIPファイルURLにリダイレクト（タイムアウト回避）
+            $fileUrl = "/upload/MachineBoxes/{$machine_box_id}.zip";
+            error_log("[DEBUG] Redirecting to: {$fileUrl}");
+            return $this->redirect($fileUrl);
         } else {
+            error_log("[DEBUG] Build not complete: {$build_progress}%");
             return $this->setApi(['message' => '生成中です'], 400);
         }
     }
@@ -268,7 +289,7 @@ class ViewsController extends AppController {
             $data['source'] = Router::url($material->attaches['image']['0'], true);
             $data['sound'] = '';
             if ($material->sound) {
-                $data['sound'] = Route::url("/upload/Materials/files/{$material->sound}", true);
+                $data['sound'] = Router::url("/upload/Materials/files/{$material->sound}", true);
             }
         } elseif ($material->type == Material::TYPE_URL) {
             $data['source'] = $material->url;
