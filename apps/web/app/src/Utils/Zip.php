@@ -34,74 +34,127 @@ class Zip {
     *
     */
     public function make($datas, $zipname, $dest) {
-        // $datas = [
-        //     [
-        //         'name' => '/〇〇/filename',
-        //         'data' => [
-        //             'path' => '/〇〇/filename.pdf', // 基本これだけでいい
-        //             'type' => 'json', // 使ってない
-        //             'content' => 'テキストです', // 指定するとテキストファイルになる
-        //         ]
-        //     ]
-        // ];
-
-        $zip = new \ZipArchive();
-
+        error_log("[DEBUG] Zip.make started - dest: {$dest}");
+        error_log("[DEBUG] Data items count: " . count($datas));
+        
         set_time_limit(0);
 
-        //$zipname = mb_convert_encoding( $zipname, 'SJIS-WIN', 'UTF-8' );
-        $tmpZipPath = $dest;
-        if (file_exists($tmpZipPath)) {
-            unlink($tmpZipPath);
-        }
-
-        if ($zip->open($tmpZipPath, \ZipArchive::CREATE) === false) {
-            throw new IllegalStateException("failed to create zip file. ${tmpZipPath}");
-        }
-
-        // プログレス処理
-        $zip = $this->progress($zip);
-
-        foreach ($datas as $_ => $data) {
-            $filename = $data['name'] ?? '';
-            $filedata = $data['data'] ?? [];
-
-            $zip_filepath = $zipname . '/' . $filename;
-            $zip_filepath = mb_convert_encoding($zip_filepath, 'SJIS-WIN', 'UTF-8');
-
-            // テキスト
-            if ($text = $filedata['content'] ?? '') {
-                $zip->addFromString($zip_filepath, $text);
-            }
-            // ファイル指定
-            if ($file = $filedata['path'] ?? '') {
-                $zip->addFile($file, $zip_filepath);
-            }
-        }
-
-        if ($zip->close() === false) {
-            $this->clearProgress();
-            throw new IllegalStateException("failed to close zip file. ${tmpZipPath}");
-        }
-
-        // 確認
-        if (!file_exists($tmpZipPath)) {
+        // 作業用の一時ディレクトリを作成（最終保存先と同じ場所）
+        $tempDir = dirname($dest);
+        $workDir = $tempDir . '/zip_work_' . uniqid();
+        
+        if (!mkdir($workDir, 0777, true)) {
+            error_log("[ERROR] Failed to create work directory: {$workDir}");
             return false;
         }
+        
+        error_log("[DEBUG] Created work directory: {$workDir}");
 
-        $this->finishedProgress();
+        // プログレス処理用
+        $totalItems = count($datas);
+        $processedItems = 0;
 
-        // $finishToDownloda = function ($tmp, $finishedProgress) use ($name) {
-        //     $finishedProgress();
-        //     return $this->downloadZip($tmp, $name);
-        // };
+        try {
+            // ファイルを作業ディレクトリにコピー/作成
+            foreach ($datas as $index => $data) {
+                $filename = $data['name'] ?? '';
+                $filedata = $data['data'] ?? '';
+                
+                error_log("[DEBUG] Processing item {$index}: {$filename}");
 
-        // $finished = function ($tmp, $finishedProgress) use ($dest) {
-        //     if (rename($tmp, $dest)) {
-        //         $finishedProgress();
-        //         return true;
-        //     }
-        // };
+                $targetPath = $workDir . '/' . $zipname . '/' . $filename;
+                $targetDir = dirname($targetPath);
+                
+                // ディレクトリ作成
+                if (!is_dir($targetDir)) {
+                    mkdir($targetDir, 0777, true);
+                }
+
+                // $filedata が配列でない場合はスキップ
+                if (!is_array($filedata)) {
+                    error_log("[ERROR] Invalid filedata format for: {$filename}");
+                    continue;
+                }
+
+                // テキストコンテンツ
+                if ($text = $filedata['content'] ?? '') {
+                    error_log("[DEBUG] Writing text content for: {$filename}");
+                    file_put_contents($targetPath, $text);
+                }
+                // ファイルコピー
+                elseif ($file = $filedata['path'] ?? '') {
+                    // ファイルパスが実際にファイルかチェック
+                    if (is_dir($file)) {
+                        error_log("[ERROR] Path is a directory, not a file: {$file}");
+                        continue;
+                    }
+                    if (!file_exists($file)) {
+                        error_log("[ERROR] Source file does not exist: {$file}");
+                        continue;
+                    }
+                    if (!is_readable($file)) {
+                        error_log("[ERROR] Source file is not readable: {$file}");
+                        continue;
+                    }
+                    error_log("[DEBUG] Copying file: {$file} -> {$targetPath}");
+                    copy($file, $targetPath);
+                }
+
+                // プログレス更新
+                $processedItems++;
+                if ($this->updateProgress) {
+                    $progress = ($processedItems / $totalItems) * 90; // 90%まで（残り10%はzip作成）
+                    ($this->updateProgress)($progress);
+                }
+            }
+
+            // システムのzipコマンドを使用してZIPファイルを作成
+            error_log("[DEBUG] Creating ZIP file using system zip command");
+            
+            // 既存のZIPファイルを削除
+            if (file_exists($dest)) {
+                unlink($dest);
+            }
+            
+            // zipコマンドを実行（-rは再帰的、-q は静かに、-9は最高圧縮）
+            $zipCmd = sprintf(
+                'cd %s && zip -r -q -9 %s %s 2>&1',
+                escapeshellarg($workDir),
+                escapeshellarg(basename($dest)),
+                escapeshellarg($zipname)
+            );
+            
+            error_log("[DEBUG] Executing: {$zipCmd}");
+            exec($zipCmd, $output, $returnCode);
+            
+            if ($returnCode !== 0) {
+                error_log("[ERROR] zip command failed with code {$returnCode}: " . implode("\n", $output));
+                return false;
+            }
+            
+            // ZIPファイルを最終的な場所に移動
+            $tempZipPath = $workDir . '/' . basename($dest);
+            if (!file_exists($tempZipPath)) {
+                error_log("[ERROR] ZIP file was not created: {$tempZipPath}");
+                return false;
+            }
+            
+            if (!rename($tempZipPath, $dest)) {
+                error_log("[ERROR] Failed to move ZIP file to destination");
+                return false;
+            }
+            
+            $filesize = filesize($dest);
+            error_log("[DEBUG] Zip file created successfully: {$dest}, size: {$filesize} bytes");
+
+            $this->finishedProgress();
+            return true;
+            
+        } finally {
+            // 作業ディレクトリのクリーンアップ
+            error_log("[DEBUG] Cleaning up work directory");
+            $this->removeDirectory($workDir);
+        }
     }
 
     /**
@@ -113,29 +166,17 @@ class Zip {
     *
     */
     public function output($datas, $zipname, $finished) {
-        // $datas = [
-        //     [
-        //         'name' => '/〇〇/filename',
-        //         'data' => [
-        //             'path' => '/〇〇/filename.pdf', // 基本これだけでいい
-        //             'type' => 'json', // 使ってない
-        //             'content' => 'テキストです', // 指定するとテキストファイルになる
-        //         ]
-        //     ]
-        // ];
-
         $zip = new \ZipArchive();
 
         set_time_limit(0);
 
-        //$zipname = mb_convert_encoding( $zipname, 'SJIS-WIN', 'UTF-8' );
         $tmpZipPath = '/tmp/' . $this->getRandomStr() . '.zip';
         if (file_exists($tmpZipPath)) {
             unlink($tmpZipPath);
         }
 
         if ($zip->open($tmpZipPath, \ZipArchive::CREATE) === false) {
-            throw new IllegalStateException("failed to create zip file. ${tmpZipPath}");
+            throw new \Exception("failed to create zip file. ${tmpZipPath}");
         }
 
         // プログレス処理
@@ -159,7 +200,7 @@ class Zip {
         }
 
         if ($zip->close() === false) {
-            throw new IllegalStateException("failed to close zip file. ${tmpZipPath}");
+            throw new \Exception("failed to close zip file. ${tmpZipPath}");
         }
 
         // 確認
@@ -174,18 +215,24 @@ class Zip {
             };
             $finished($tmpZipPath, $finishedEvent);
         }
+    }
 
-        // $finishToDownloda = function ($tmp, $finishedProgress) use ($name) {
-        //     $finishedProgress();
-        //     return $this->downloadZip($tmp, $name);
-        // };
-
-        // $finished = function ($tmp, $finishedProgress) use ($dest) {
-        //     if (rename($tmp, $dest)) {
-        //         $finishedProgress();
-        //         return true;
-        //     }
-        // };
+    // ディレクトリを再帰的に削除
+    private function removeDirectory($dir) {
+        if (!is_dir($dir)) {
+            return;
+        }
+        
+        $files = array_diff(scandir($dir), ['.', '..']);
+        foreach ($files as $file) {
+            $path = $dir . '/' . $file;
+            if (is_dir($path)) {
+                $this->removeDirectory($path);
+            } else {
+                unlink($path);
+            }
+        }
+        rmdir($dir);
     }
 
     // プログレス処理
