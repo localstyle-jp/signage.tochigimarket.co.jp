@@ -572,9 +572,13 @@ class AppController extends Controller {
         // 更新完了時
         $updatedMachineBoxIds = $this->MachineBoxes->find()->where(['machine_content_id' => $dest_id])->extract('id')->toArray();
         foreach ($updatedMachineBoxIds as $_machine_box_id) {
-            // 環境変数から構築したパスを使用
-            $cakePath = ROOT . DS . 'bin' . DS . 'cake';
-            exec("php {$cakePath} build_zip {$_machine_box_id} > /dev/null &");
+            // cake.php を直接PHPで実行
+            $cakePhpPath = ROOT . DS . 'bin' . DS . 'cake.php';
+            $logFile = LOGS . 'build_zip_exec.log';
+            
+            // デバッグ用：エラー出力をログファイルに保存
+            error_log("[DEBUG] Executing: php {$cakePhpPath} build_zip {$_machine_box_id}");
+            exec("php {$cakePhpPath} build_zip {$_machine_box_id} >> {$logFile} 2>&1 &");
         }
 
         return true;
