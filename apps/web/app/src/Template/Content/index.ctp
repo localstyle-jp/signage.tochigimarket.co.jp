@@ -314,18 +314,9 @@
         // var now = new Date();
         // console.log('\n-----------\n'+now+' bandwidth: '+mp4[i].hls.bandwidthEstimate+' '+i);
         mp4[i].obj.currentTime = 0;
+        mp4[i].obj.muted = true; // 自動再生のため最初はミュート
         // mp4[i].obj.play();
         promise = mp4[i].obj.play();
-        promise.then(
-          function(resolve) {
-            // var now = new Date();
-            // console.log(now+' playMp4 '+i+' '+n);
-          },
-          function(reject) {
-            var now = new Date();
-            console.log(now + 'rejectMp4 ' + i + ' ' + n);
-          }
-        );
         // console.log(promise);
         // console.log('playMp4 '+i+' '+n);
       } else if (n < 3) {
@@ -632,6 +623,20 @@
     //     }
     //   });
     // };
+
+    // クリックでミュート解除
+    var isUnmuted = false;
+    document.body.addEventListener('click', function() {
+      if (!isUnmuted) {
+        $.each(mp4, function(i, val) {
+          if (mp4[i].obj != null) {
+            mp4[i].obj.muted = false;
+          }
+        });
+        isUnmuted = true;
+        console.log('音声ON');
+      }
+    });
 
     window.onload = function() {
       scene_manager();
