@@ -98,12 +98,17 @@ use Cake\Utility\Security;
 try {
     Configure::config('default', new PhpConfig());
     Configure::load('app', 'default', false);
+    if (strpos(env('HTTP_HOST'), 'dev') !== false ) {
+        Configure::load('app_develop', 'default');
+    } elseif (strpos(env('HTTP_HOST'), 'old') !== false) {
+        Configure::load('app_old', 'default');
+    } elseif (strpos(env('HTTP_HOST'), 'test') !== false || strpos(env('HTTP_HOST'), 'local') !== false) {
+        Configure::load('app_local', 'default');
+    } else {
+        
+    }
 } catch (\Exception $e) {
     exit($e->getMessage() . "\n");
-}
-
-if (strpos(env('HTTP_HOST'), 'test') !== false || strpos(env('HTTP_HOST'), 'caters') !== false) {
-} else {
 }
 
 function is_included_docRoot($targets = array()) {
