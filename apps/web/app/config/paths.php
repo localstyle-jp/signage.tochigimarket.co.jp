@@ -29,7 +29,8 @@ if (!defined('CONFIG')) {
     define('CONFIG', ROOT . DS . 'config' . DS);
 }
 if (!defined('WWW_ROOT')) {
-    define('WWW_ROOT', dirname(dirname(dirname(dirname(dirname(__FILE__))))) . DS . 'public_html' . DS);
+    // 実際のドキュメントルートは signage.tochigimarket.co.jp/ なので public_html は不要
+    define('WWW_ROOT', dirname(dirname(dirname(dirname(dirname(__FILE__))))) . DS);
 }
 
 /**
