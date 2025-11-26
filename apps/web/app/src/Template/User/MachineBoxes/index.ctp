@@ -70,7 +70,7 @@ $count = array('total' => 0,
           <col>
           <col style="width: 250px;">
           <col style="width: 150px;">
-          <col style="width: 300px;">
+          <col style="width: 400px;">
           <?php if (!$is_search): ?>
           <col style="width: 150px;">
           <?php endif; ?>
@@ -155,6 +155,11 @@ foreach ($data_query->toArray() as $key => $data):
                 target="_blank"><i class="fas fa-search"></i> プレビュー</a>
 
               <?php if ($data->content_id && $data->content) : ?>
+              <!-- プログレス表示用（JavaScriptで制御） -->
+              <a href="<?= $this->Url->build(array('prefix' => 'v1', 'controller' => 'Views', 'action' => 'download-build', '?' => ['id' => $data->id])) ?>"
+                hidden
+                data-id="<?= $data->id ?>"
+                class="builddonload btn btn-info btn-sm"></a>
               <?php if ($data->content->serial_no != $data->machine_content->serial_no): ?>
               <a href="javascript:void(0);" class="btn btn-warning btn-sm blinking btnUpdateContent"
                 style="color:#212529;" data-id="<?= $data->id; ?>"><i
@@ -165,6 +170,7 @@ foreach ($data_query->toArray() as $key => $data):
               <a href="#" class="btn btn-success btn-sm disabled" aria-disabled="true"><i class="fas fa-sync-alt"></i>
                 最新版です</a>
               <?php endif; ?>
+      
               <?php endif; ?>
 
             </div>
@@ -219,6 +225,10 @@ foreach ($data_query->toArray() as $key => $data):
 <link rel="stylesheet" href="/user/common/css/cms.css">
 <script src="/user/common/js/jquery.ui.datepicker-ja.js"></script>
 <script src="/user/common/js/cms.js"></script>
+
+<!-- BUILDプログレス対応 -->
+<?= $this->element('progress_js'); ?>
+
 <script>
   function change_category() {
     $("#fm_search").submit();
