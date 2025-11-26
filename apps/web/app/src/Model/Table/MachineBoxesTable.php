@@ -5,6 +5,7 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\Utility\Inflector;
 use App\Utils\Zip;
+use Exception;
 
 class MachineBoxesTable extends AppTable {
     // テーブルの初期値を設定する
@@ -51,11 +52,22 @@ class MachineBoxesTable extends AppTable {
      *
      */
     public function buildZip($machine_box_id) {
+        error_log("[DEBUG] buildZip started for id: {$machine_box_id}");
+        
+        // ZipArchive拡張確認
+        if (!extension_loaded('zip')) {
+            error_log("[ERROR] ZipArchive extension not loaded");
+            return false;
+        }
+        
         // ZIP用データ
         $data = $this->getBuildZipData($machine_box_id);
         if (!$data) {
+            error_log("[ERROR] No build data for id: {$machine_box_id}");
             return false;
         }
+        
+        error_log("[DEBUG] Build data count: " . count($data));
 
         /**
          *
@@ -63,7 +75,8 @@ class MachineBoxesTable extends AppTable {
          *
          */
         // 初期化処理
-        $this->beforeBuild($machine_box_id);
+        $build_version = $this->beforeBuild($machine_box_id);
+        error_log("[DEBUG] Build initialized with version: {$build_version}");
 
         //　自分のバージョン取得処理(プログレス中変化があれば中止する)
         $getVersion = function () use ($machine_box_id) {
@@ -72,17 +85,28 @@ class MachineBoxesTable extends AppTable {
 
         // プログレス更新処理
         $updateProgress = function ($progress) use ($machine_box_id) {
+            error_log("[DEBUG] Progress update: {$progress}% for id: {$machine_box_id}");
             $this->updateProgress($machine_box_id, $progress);
         };
 
         //
         $name = $this->getZipFolderName();
         $dest = $this->getUploadZipPath($machine_box_id);
+        
+        error_log("[DEBUG] Zip destination: {$dest}");
+        error_log("[DEBUG] Destination dir writable: " . (is_writable(dirname($dest)) ? 'YES' : 'NO'));
 
         //
-        $zip = new Zip;
-        $zip->addProgressEvent($updateProgress, $getVersion);
-        $zip->make($data, $name, $dest);
+        try {
+            $zip = new Zip;
+            $zip->addProgressEvent($updateProgress, $getVersion);
+            $result = $zip->make($data, $name, $dest);
+            error_log("[DEBUG] Zip creation result: " . ($result ? 'SUCCESS' : 'FAILED'));
+            return $result;
+        } catch (Exception $e) {
+            error_log("[ERROR] Zip creation exception: " . $e->getMessage());
+            return false;
+        }
     }
 
     public function getZipFolderName() {
@@ -188,11 +212,16 @@ class MachineBoxesTable extends AppTable {
          */
         $public_root = WWW_ROOT;
         $public_root = rtrim($public_root, '/');
+        
+        error_log("[DEBUG] WWW_ROOT: {$public_root}");
+        
         $files = array_map(function ($_file) use ($public_root) {
+            $fullPath = $public_root . $_file['path'];
+            error_log("[DEBUG] File mapping: name={$_file['name']}, path={$_file['path']}, fullPath={$fullPath}");
             return [
                 'name' => 'sources/' . $_file['name'],
                 'data' => [
-                    'path' => $public_root . $_file['path']
+                    'path' => $fullPath
                 ]
             ];
         }, $data['files'] ?? []);
@@ -234,17 +263,31 @@ class MachineBoxesTable extends AppTable {
             $sound = '';
             if ($type == 'mp4') {
                 if ($source = $material['file']) {
+                    // attaches が空の場合はファイル名から直接パスを構築
+                    $attachPath = $material['attaches']['file'][0] ?? '';
+                    if (empty($attachPath)) {
+                        $attachPath = '/upload/MachineMaterials/files/' . $source;
+                        error_log("[DEBUG] MP4 attach path built from filename: {$attachPath}");
+                    }
+                    error_log("[DEBUG] MP4 file: source={$source}, attachPath={$attachPath}");
                     $files[] = [
                         'name' => $source,
-                        'path' => $material['attaches']['file'][0] ?? ''
+                        'path' => $attachPath
                     ];
                 }
             }
             if ($type == 'image') {
                 if ($source = $material['image']) {
+                    // attaches が空の場合はファイル名から直接パスを構築
+                    $attachPath = $material['attaches']['image'][0] ?? '';
+                    if (empty($attachPath)) {
+                        $attachPath = '/upload/MachineMaterials/images/' . $source;
+                        error_log("[DEBUG] Image attach path built from filename: {$attachPath}");
+                    }
+                    error_log("[DEBUG] Image file: source={$source}, attachPath={$attachPath}");
                     $files[] = [
                         'name' => $source,
-                        'path' => $material['attaches']['image'][0] ?? ''
+                        'path' => $attachPath
                     ];
                 }
 
