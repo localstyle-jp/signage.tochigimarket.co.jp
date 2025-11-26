@@ -572,7 +572,9 @@ class AppController extends Controller {
         // 更新完了時
         $updatedMachineBoxIds = $this->MachineBoxes->find()->where(['machine_content_id' => $dest_id])->extract('id')->toArray();
         foreach ($updatedMachineBoxIds as $_machine_box_id) {
-            exec("../apps/web/app/bin/cake build_zip {$_machine_box_id} > /dev/null &");
+            // 環境変数から構築したパスを使用
+            $cakePath = ROOT . DS . 'bin' . DS . 'cake';
+            exec("php {$cakePath} build_zip {$_machine_box_id} > /dev/null &");
         }
 
         return true;
