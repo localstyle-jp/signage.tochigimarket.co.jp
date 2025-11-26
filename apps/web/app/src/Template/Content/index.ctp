@@ -314,7 +314,10 @@
         // var now = new Date();
         // console.log('\n-----------\n'+now+' bandwidth: '+mp4[i].hls.bandwidthEstimate+' '+i);
         mp4[i].obj.currentTime = 0;
-        mp4[i].obj.muted = true; // 自動再生のため最初はミュート
+        // ユーザーがクリックしてミュート解除済みでなければミュートで開始
+        if (!isUnmuted) {
+          mp4[i].obj.muted = true;
+        }
         // mp4[i].obj.play();
         promise = mp4[i].obj.play();
         // console.log(promise);
