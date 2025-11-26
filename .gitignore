@@ -4,3 +4,8 @@
 
 /.idea
 /vendor
+/upload
+/apps/web/app/tmp/cache
+/apps/web/app/logs
+debug_kit.sqlite
+app_local.php
